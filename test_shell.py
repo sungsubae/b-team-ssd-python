@@ -1,4 +1,7 @@
+from pytest_mock import MockerFixture
+
 from shell import Shell
+import pytest, pytest_mock
 
 def test_read_valid_index(capsys):
     shell = Shell()
@@ -12,8 +15,11 @@ def test_read_invalid_index(capsys):
     captured = capsys.readouterr()
     assert captured.out.strip() == "[Read] ERROR"
 
-def test_help_call():
-    pass
+def test_help_call(mocker:MockerFixture):
+    mk = mocker.Mock(spec=Shell)
+    mk.help()
+
+    mk.help.assert_called_once()
 
 def test_help_text_valid():
     pass
