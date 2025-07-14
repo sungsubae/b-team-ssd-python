@@ -1,6 +1,24 @@
 class SSD:
-    def __init__(self):
-        ...
+    def __init__(self, ssd_nand, ssd_output):
+        self.ssd_nand = ssd_nand
+        self.ssd_output = ssd_output
+
+    def read(self, lba: int):
+        if lba < 0 or lba > 99:
+            with open(self.ssd_output, 'w', encoding='utf-8') as file:
+                file.write('ERROR')
+            return
+
+        with open(self.ssd_nand, 'r', encoding='utf-8') as file:
+            lines = file.readlines()
+
+        value = ''
+        for line in lines:
+            if int(line.split(' ')[0]) == lba:
+                value = line.split(' ')[-1]
+
+        with open(self.ssd_output, 'w', encoding='utf-8') as file:
+            file.write(value)
 
     def read_all(self):
         with open("ssd_nand.txt", 'r', encoding='utf-8') as f:
