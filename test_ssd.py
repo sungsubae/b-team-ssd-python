@@ -51,3 +51,13 @@ def test_read_same_with_output():
         line = file.readline()
 
     assert value.strip() == line.strip()
+
+def test_read_invalid_lba_access():
+    nand = 'ssd_nand.txt'
+    output = 'ssd_output.txt'
+    lba = 100
+    ssd = SSD(nand, output)
+    ssd.read(lba)
+    with open(output, 'r', encoding='utf-8') as file:
+        line = file.readline()
+    assert line.strip() == "ERROR"
