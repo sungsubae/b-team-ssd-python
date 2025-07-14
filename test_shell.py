@@ -3,7 +3,7 @@ import pytest
 from pytest_mock import MockerFixture
 
 from shell import Shell, main
-from unittest.mock import patch, call
+from unittest.mock import patch
 
 def test_cmd_read(mocker:MockerFixture):
     mk = mocker.Mock(spec=Shell)
@@ -52,11 +52,6 @@ def test_cmd_PartialLBAWrite(mocker:MockerFixture):
         main(mk)
 
     assert mk.PartialLBAWrite.call_count == 2
-import pytest
-from pytest_mock import MockerFixture
-
-from shell import Shell, main
-from unittest.mock import patch, call
 
 def test_read_valid_index(capsys):
     shell = Shell()
