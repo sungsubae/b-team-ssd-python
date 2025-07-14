@@ -5,9 +5,9 @@ import random
 
 
 class Shell:
-    def __init__(self, size=128):
+
+    def __init__(self):
         self.ssd = SSD()
-        self.data = [0] * size  # 내부 스토리지
 
     def read(self, lba: int):
         if 0 <= lba <= 99:
