@@ -20,4 +20,4 @@ def test_ssd_write(mocker: MockerFixture):
 
     ssd.write(987, '0x00113456')
     contents = ssd.read_all()
-    assert contents[2] == f"02 0x00113456\n"
+    assert content == "ERROR"
