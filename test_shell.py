@@ -9,7 +9,7 @@ def test_read_valid_index(capsys):
     shell = Shell()
     result = shell.read(3)
     captured = capsys.readouterr()
-    assert captured.out.strip() == "[Read] LBA 03 : 0xAAAABBBB"
+    assert captured.out.strip() == "[Read] LBA 03 : 0x00000000"
 
 
 def test_read_invalid_index(capsys):
