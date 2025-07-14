@@ -1,7 +1,7 @@
 class SSD:
-    def __init__(self, ssd_nand, ssd_output):
-        self.ssd_nand = ssd_nand
-        self.ssd_output = ssd_output
+    def __init__(self, ssd_nand=None, ssd_output=None):
+        self.ssd_nand = ssd_nand if ssd_output is not None else "ssd_nand.txt"
+        self.ssd_output = ssd_output if ssd_output is not None else "ssd_output.txt"
 
     def read(self, lba: int):
         if lba < 0 or lba > 99:
