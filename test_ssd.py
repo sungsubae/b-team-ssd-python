@@ -13,22 +13,30 @@ def reset_ssd():
         f.write('')
 
 
-def test_ssd_write(reset_ssd):
+def test_ssd_write_error_1(reset_ssd):
     ssd = SSD()
-
     ssd.write(-1, '0x00113456')
     output = ssd.read_output()
     assert output == "ERROR"
 
+
+def test_ssd_write_error_2(reset_ssd):
+    ssd = SSD()
+    ssd.write(987, '0x00113456')
+    output = ssd.read_output()
+    assert output == "ERROR"
+
+
+def test_ssd_write_2(reset_ssd):
+    ssd = SSD()
     ssd.write(2, '0x00113456')
     contents = ssd.read_all()
     output = ssd.read_output()
     assert contents[2] == f"02 0x00113456\n" and output == ""
 
-    ssd.write(987, '0x00113456')
-    output = ssd.read_output()
-    assert output == "ERROR"
 
+def test_ssd_write_4(reset_ssd):
+    ssd = SSD()
     ssd.write(99, '0xFF34FF33')
     contents = ssd.read_all()
     output = ssd.read_output()
