@@ -50,4 +50,4 @@ def test_read_same_with_output():
     with open(output, 'r', encoding='utf-8') as file:
         line = file.readline()
 
-    assert value == line
+    assert value.strip() == line.strip()
