@@ -1,6 +1,9 @@
 class Shell:
-    def read(self, lba):
-        pass
+    def read(self, index: int):
+        if 0 <= index <= 99:
+            print(f"[Read] LBA {index:02d} : 0xAAAABBBB")
+        else:
+            print("[Read] ERROR")
 
     def write(self, lba, value):
         pass
@@ -54,11 +57,3 @@ def main(shell: Shell):
             shell.WriteReadAging()
         else:
             invalid_cmd = True
-
-        if invalid_cmd:
-            print("INVALID COMMAND")
-
-
-if __name__ == "__main__":
-    shell = Shell()
-    main(shell)

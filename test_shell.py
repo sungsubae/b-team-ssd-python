@@ -1,3 +1,4 @@
+from shell import Shell
 import pytest
 from pytest_mock import MockerFixture
 
@@ -52,11 +53,14 @@ def test_cmd_PartialLBAWrite(mocker:MockerFixture):
 
     assert mk.PartialLBAWrite.call_count == 2
 
-def test_cmd_WriteReadAging(mocker:MockerFixture):
-    mk = mocker.Mock(spec=Shell)
-    with patch("builtins.input", side_effect=["3_", "exit"]):
-        main(mk)
-    with patch("builtins.input", side_effect=["3_WriteReadAging", "exit"]):
-        main(mk)
+def test_read_valid_index(capsys):
+    shell = Shell()
+    result = shell.read(3)
+    captured = capsys.readouterr()
+    assert captured.out.strip() == "[Read] LBA 03 : 0xAAAABBBB"
 
-    assert mk.WriteReadAging.call_count == 2
+def test_read_invalid_index(capsys):
+    shell = Shell()
+    result = shell.read(100)
+    captured = capsys.readouterr()
+    assert captured.out.strip() == "[Read] ERROR"
