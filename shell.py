@@ -18,7 +18,14 @@ class Shell:
         print(f"[Full Write] Done")
 
     def write(self, line):
-        return 0
+        tokens = line.strip().split()
+        try:
+            lba = int(tokens[1])
+            value = int(tokens[2], 16) # 16진수
+            self.data[lba] = value
+            return "[Write] Done"
+        except Exception:
+            return "Usage: write <LBA> <VALUE>"
 
     def help(self):
         print('제작자: 배성수 팀장, 연진혁, 이정은, 이찬욱, 임창근, 정구환, 이근우')
