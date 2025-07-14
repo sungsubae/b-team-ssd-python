@@ -1,10 +1,8 @@
 import pytest, pytest_mock
 from pytest_mock import MockerFixture
 
-from shell import Shell
-
 from shell import Shell, main
-from unittest.mock import patch
+from unittest.mock import patch, call
 
 def test_read_valid_index(capsys):
     shell = Shell()
