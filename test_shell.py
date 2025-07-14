@@ -8,6 +8,6 @@ def test_read_valid_index(capsys):
 
 def test_read_invalid_index(capsys):
     shell = Shell()
-    result = shell.read(99)
+    result = shell.read(100)
     captured = capsys.readouterr()
     assert captured.out.strip() == "[Read] ERROR"
