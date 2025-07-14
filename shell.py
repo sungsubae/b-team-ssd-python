@@ -83,3 +83,6 @@ def main(shell: Shell):
             print("INVALID COMMAND")
 
 
+if __name__ == "__main__":
+    shell = Shell()
+    main(shell)
