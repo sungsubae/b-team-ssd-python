@@ -71,7 +71,8 @@ def main(shell: Shell):
         elif cmd_type == "help":
             shell.help()
         elif cmd_type == "fullwrite":
-            shell.full_write()
+            value = user_input_list[1]
+            shell.full_write(value)
         elif cmd_type == "fullread":
             shell.fullread()
         elif cmd_type == "1_" or cmd_type == "1_FullWriteAndReadCompare":
