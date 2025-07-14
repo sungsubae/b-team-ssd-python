@@ -17,18 +17,20 @@ def reset_ssd():
 def test_ssd_write(reset_ssd):
     ssd = SSD()
 
+    ssd.write(-1, '0x00113456')
+    output = ssd.read_output()
+    assert output == "ERROR"
+
     ssd.write(2, '0x00113456')
     contents = ssd.read_all()
-    assert contents[2] == f"02 0x00113456\n"
+    output = ssd.read_output()
+    assert contents[2] == f"02 0x00113456\n" and output == ""
+
+    ssd.write(987, '0x00113456')
+    output = ssd.read_output()
+    assert output == "ERROR"
 
     ssd.write(99, '0xFF34FF33')
     contents = ssd.read_all()
-    assert contents[99] == f"99 0xFF34FF33\n"
-
-    ssd.write(-1, '0x00113456')
-    content = ssd.read_output()
-    assert content == "ERROR"
-
-    ssd.write(987, '0x00113456')
-    contents = ssd.read_output()
-    assert content == "ERROR"
+    output = ssd.read_output()
+    assert contents[99] == f"99 0xFF34FF33\n" and output == ""
