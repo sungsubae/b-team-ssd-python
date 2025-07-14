@@ -27,4 +27,3 @@ class SSD:
             f.write('ERROR')
             f.close()
 
-
