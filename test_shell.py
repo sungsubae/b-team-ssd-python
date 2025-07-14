@@ -11,3 +11,9 @@ def test_read_invalid_index(capsys):
     result = shell.read(100)
     captured = capsys.readouterr()
     assert captured.out.strip() == "[Read] ERROR"
+
+def test_help_call():
+    pass
+
+def test_help_text_valid():
+    pass
