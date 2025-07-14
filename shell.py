@@ -8,7 +8,9 @@ class Shell:
 
     def read(self, index: int):
         if 0 <= index <= 99:
-            print(f"[Read] LBA {index:02d} : 0xAAAABBBB")
+            self.ssd.read(index)
+            value = self.ssd.read_output()
+            print(f"[Read] LBA {index:02d} : {value}")
         else:
             print("[Read] ERROR")
 
