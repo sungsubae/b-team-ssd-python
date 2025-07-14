@@ -1,5 +1,4 @@
 import pytest
-from pytest_mock import MockerFixture
 from ssd import SSD
 
 
@@ -33,3 +32,22 @@ def test_ssd_write(reset_ssd):
     contents = ssd.read_all()
     output = ssd.read_output()
     assert contents[99] == f"99 0xFF34FF33\n" and output == ""
+
+def test_read_same_with_output():
+    nand = 'ssd_nand.txt'
+    output = 'ssd_output.txt'
+    lba = 10
+    ssd = SSD(nand, output)
+    ssd.read(lba)
+
+    with open(nand, 'r', encoding='utf-8') as file:
+        lines = file.readlines()
+    value = ''
+    for line in lines:
+        if int(line.split(' ')[0]) == lba:
+            value = line.split(' ')[-1]
+
+    with open(output, 'r', encoding='utf-8') as file:
+        line = file.readline()
+
+    assert value == line
