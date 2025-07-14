@@ -33,31 +33,31 @@ def test_ssd_write(reset_ssd):
     output = ssd.read_output()
     assert contents[99] == f"99 0xFF34FF33\n" and output == ""
 
+
 def test_read_same_with_output():
-    nand = 'ssd_nand.txt'
-    output = 'ssd_output.txt'
     lba = 10
-    ssd = SSD(nand, output)
+    ssd = SSD()
     ssd.read(lba)
 
-    with open(nand, 'r', encoding='utf-8') as file:
-        lines = file.readlines()
-    value = ''
-    for line in lines:
-        if int(line.split(' ')[0]) == lba:
-            value = line.split(' ')[-1]
+    with open(ssd.ssd_nand, 'r', encoding='utf-8') as file:
+        nand_lines = file.readlines()
+    nand_value = ''
+    for nand_line in nand_lines:
+        if int(nand_line.split(' ')[0]) == lba:
+            nand_value = nand_line.split(' ')[-1]
 
-    with open(output, 'r', encoding='utf-8') as file:
-        line = file.readline()
+    with open(ssd.ssd_output, 'r', encoding='utf-8') as file:
+        output = file.readline()
 
-    assert value.strip() == line.strip()
+    assert nand_value.strip() == output.strip()
+
 
 def test_read_invalid_lba_access():
-    nand = 'ssd_nand.txt'
-    output = 'ssd_output.txt'
     lba = 100
-    ssd = SSD(nand, output)
+    ssd = SSD()
     ssd.read(lba)
-    with open(output, 'r', encoding='utf-8') as file:
-        line = file.readline()
-    assert line.strip() == "ERROR"
+
+    with open(ssd.ssd_output, 'r', encoding='utf-8') as file:
+        output = file.readline()
+
+    assert output.strip() == "ERROR"
