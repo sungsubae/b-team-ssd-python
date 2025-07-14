@@ -19,6 +19,13 @@ def test_read_invalid_index(capsys):
     assert captured.out.strip() == "[Read] ERROR"
 
 
+def test_write_command():
+    shell = Shell()
+    output = shell.write("write 3 0xAAAABBBB")
+    assert "[Write] Done" in output
+    # 내부 data 값이 올바르게 바뀌었는지 직접 체크
+    assert shell.data[3] == int("0xAAAABBBB", 16)
+
 def test_write_all_success(mocker: MockerFixture, capsys):
     value = 0xAAAABBBB
     shell = Shell()
