@@ -1,7 +1,9 @@
+import pytest, pytest_mock
 from pytest_mock import MockerFixture
+from unittest.mock import call
 
 from shell import Shell
-import pytest, pytest_mock
+
 
 def test_read_valid_index(capsys):
     shell = Shell()
@@ -9,17 +11,29 @@ def test_read_valid_index(capsys):
     captured = capsys.readouterr()
     assert captured.out.strip() == "[Read] LBA 03 : 0xAAAABBBB"
 
+
 def test_read_invalid_index(capsys):
     shell = Shell()
     result = shell.read(100)
     captured = capsys.readouterr()
     assert captured.out.strip() == "[Read] ERROR"
 
-def test_help_call(mocker:MockerFixture):
+
+def test_write_all_success(mocker: MockerFixture, capsys):
+    value = 0xAAAABBBB
+    shell = Shell()
+    ssd_write_mock = mocker.patch('ssd.SSD.write')
+    full_call_list = [call(idx, value) for idx in range(100)]
+    shell.full_write(value)
+    ssd_write_mock.assert_has_calls(full_call_list)
+
+
+def test_help_call(mocker: MockerFixture):
     mk = mocker.Mock(spec=Shell)
     mk.help()
 
     mk.help.assert_called_once()
+
 
 def test_help_text_valid(capsys):
     shell = Shell()
