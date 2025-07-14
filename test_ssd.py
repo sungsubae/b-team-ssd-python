@@ -3,7 +3,18 @@ from pytest_mock import MockerFixture
 from ssd import SSD
 
 
-def test_ssd_write(mocker: MockerFixture):
+@pytest.fixture
+def reset_ssd():
+    with open('ssd_nand.txt', 'w', encoding='utf-8') as f:
+        for i in range(100):
+            f.write(f'{i:02d} 0x00000000\n')
+
+    with open('ssd_output.txt', 'w', encoding='utf-8') as f:
+        f.write('')
+
+
+
+def test_ssd_write(reset_ssd):
     ssd = SSD()
 
     ssd.write(2, '0x00113456')
@@ -19,5 +30,5 @@ def test_ssd_write(mocker: MockerFixture):
     assert content == "ERROR"
 
     ssd.write(987, '0x00113456')
-    contents = ssd.read_all()
+    contents = ssd.read_output()
     assert content == "ERROR"
