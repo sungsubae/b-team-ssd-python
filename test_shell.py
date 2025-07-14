@@ -70,15 +70,13 @@ def test_cmd_write(mocker:MockerFixture):
     mk = mocker.Mock(spec=Shell)
     with patch("builtins.input", side_effect=["write 3 0xAAAABBBB", "exit"]):
         main(mk)
-
     mk.write.assert_called_with("write 3 0xAAAABBBB")
 
 def test_cmd_fullwrite(mocker:MockerFixture):
     mk = mocker.Mock(spec=Shell)
-    with patch("builtins.input", side_effect=["fullwrite", "exit"]):
+    with patch("builtins.input", side_effect=["fullwrite 0xAAAABBBB", "exit"]):
         main(mk)
-
-    mk.full_write.assert_called()
+    mk.full_write.assert_called_with("0xAAAABBBB")
 
 def test_cmd_fullread(mocker:MockerFixture):
     mk = mocker.Mock(spec=Shell)
