@@ -211,9 +211,10 @@ def test_write_read_aging_calls_read_400_times(mocker: MockerFixture):
 
     assert mk.read.call_count == 400
 
-
-def test_write_read_aging_return_true():
-    assert Shell().WriteReadAging() == True
+def test_write_read_aging_pass(capsys):
+    Shell().WriteReadAging()
+    captured = capsys.readouterr()
+    assert captured.out.strip() == "PASS"
 
 
 def test_PartialLBAWrite(mocker: MockerFixture):

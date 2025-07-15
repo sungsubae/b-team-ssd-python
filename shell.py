@@ -75,16 +75,15 @@ class Shell:
 
 
     def WriteReadAging(self):
-        for i in range(200):
-            rand_value = random.random()
-            self.ssd.write(0, rand_value)
-            self.ssd.write(99, rand_value)
+        for _ in range(200):
+            write_value = hex(random.randint(0x00000000, 0xFFFFFFFF))
+            self.ssd.write(0, write_value)
+            self.ssd.write(99, write_value)
             if self.ssd.read(0) != self.ssd.read(99):
                 print("FAIL")
-                return False
-
+                return
         print("PASS")
-        return True
+        return
 
     def help(self):
         print('제작자: 배성수 팀장, 연진혁, 이정은, 이찬욱, 임창근, 정구환, 이근우')
