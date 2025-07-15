@@ -1,3 +1,6 @@
+import os
+import subprocess
+
 import pytest
 from ssd import SSD
 
@@ -61,3 +64,22 @@ def test_read_invalid_lba_access(reset_ssd):
         output = file.readline()
 
     assert output.strip() == "ERROR"
+
+
+def test_write_and_read_command_line():
+    result = subprocess.run(
+        ["python", "ssd.py", "W", "3", "0x1298CDEF"],
+        capture_output=True,
+        text=True
+    )
+
+    result = subprocess.run(
+        ["python", "ssd.py", "R", "3"],
+        capture_output=True,
+        text=True
+    )
+
+    output = 'ssd_output.txt'
+    with open(output, 'r', encoding='utf-8') as file:
+        line = file.readline()
+    assert  line.strip() == f"0x1298CDEF"
