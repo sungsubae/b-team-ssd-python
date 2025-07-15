@@ -69,12 +69,11 @@ def test_write_error_case(mocker):
     shell = Shell()
     # 올바른 hex로 통과
     mocker.patch.object(shell, 'is_hex_string', return_value=True)
-    # subprocess.run mock (동작만 가로채기)
     mocker.patch('subprocess.run')
     # open mock: ssd_output.txt에 "ERROR"만 반환
     m = mock_open(read_data="ERROR")
     mocker.patch("builtins.open", m)
-    print_spy = mocker.spy(__builtins__, 'print')
+    print_spy = mocker.spy(builtins, 'print')
     shell.write(3, "0xAAAABBBB")
     print_spy.assert_called_with("[Write] ERROR")
 
@@ -85,7 +84,7 @@ def test_write_success(mocker):
     # open mock: ssd_output.txt에 ""(빈 문자열) 반환
     m = mock_open(read_data="")
     mocker.patch("builtins.open", m)
-    print_spy = mocker.spy(__builtins__, 'print')
+    print_spy = mocker.spy(builtins, 'print')
     shell.write(4, "0xAABBAABB")
     print_spy.assert_called_with("[Write] Done")
 
