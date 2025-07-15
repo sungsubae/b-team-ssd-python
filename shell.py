@@ -104,7 +104,7 @@ def main(shell: Shell):
             print ("INVALID COMMAND")
             continue
 
-        cmd_type = user_input_list[0].lower()
+        cmd_type = user_input_list[0]
 
         invalid_cmd = False
         if cmd_type == "read":
