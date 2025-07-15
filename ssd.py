@@ -29,6 +29,8 @@ class SSD:
         with open(self.ssd_output, 'w', encoding='utf-8') as file:
             file.write(value)
 
+        return value
+
     def write(self, address: int, value):
         if 0 <= address <= 99:
             contents = self.read_all()
