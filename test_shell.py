@@ -143,8 +143,8 @@ def test_full_write_and_read_compare_success(mocker:MockerFixture, capsys):
     for i in range(ssd_length // block_length):
         random_val = random.randint(0x00000001, 0xFFFFFFFF)
         for j in range(block_length):
-            random_values.append(f'{random_val:#08X}')
-            write_calls.append(call(i * block_length + j, f'{random_val:#08X}'))
+            random_values.append(f'{random_val:#010X}')
+            write_calls.append(call(i * block_length + j, f'{random_val:#010X}'))
             read_calls.append(call(i * block_length + j))
     shell_read_mock.side_effect = random_values
     random.seed(seed)
@@ -168,8 +168,8 @@ def test_full_write_and_read_compare_fail(mocker:MockerFixture, capsys):
     for i in range(ssd_length // block_length):
         random_val = random.randint(0x00000001, 0xFFFFFFFF)
         for j in range(block_length):
-            random_values.append(f'{random_val:#08X}')
-            write_calls.append(call(i * block_length + j, f'{random_val:#08X}'))
+            random_values.append(f'{random_val:#010X}')
+            write_calls.append(call(i * block_length + j, f'{random_val:#010X}'))
             read_calls.append(call(i * block_length + j))
     shell_read_mock.side_effect = random_values
     random.seed(seed+1)
