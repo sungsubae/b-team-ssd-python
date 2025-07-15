@@ -1,6 +1,5 @@
 import random
 import subprocess
-import random
 
 class Shell:
     MIN_INDEX = 0
