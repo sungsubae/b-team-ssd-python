@@ -1,3 +1,6 @@
+import argparse
+
+
 class SSD:
     def __init__(self, ssd_nand=None, ssd_output=None):
         self.ssd_nand = ssd_nand if ssd_output is not None else "ssd_nand.txt"
@@ -42,3 +45,26 @@ class SSD:
             f = open(self.ssd_output, 'w', encoding='utf-8')
             f.write('ERROR')
             f.close()
+
+def main():
+    parser = argparse.ArgumentParser(description="SSD Read/Write")
+    subparsers = parser.add_subparsers(dest='command', required=True)
+
+    read_parser = subparsers.add_parser('R', help='Read from SSD')
+    read_parser.add_argument('address', type=int, help='LBA address to read (0~99)')
+
+    # Write 명령
+    write_parser = subparsers.add_parser('W', help='Write to SSD')
+    write_parser.add_argument('address', type=int, help='LBA address to write (0~99)')
+    write_parser.add_argument('value', type=str, help='Hex value to write (e.g., 0x1234ABCD)')
+
+    args = parser.parse_args()
+    ssd = SSD()
+
+    if args.command == 'R':
+        ssd.read(args.address)
+    elif args.command == 'W':
+        ssd.write(args.address, args.value)
+
+if __name__ == "__main__":
+    main()
