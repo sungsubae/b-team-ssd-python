@@ -9,16 +9,19 @@ import random
 
 def test_read_valid_index(capsys):
     shell = Shell()
-    result = shell.read(3)
+    shell._ssd_reset()
+    shell.read(3)
     captured = capsys.readouterr()
     assert captured.out.strip() == "[Read] LBA 03 : 0x00000000"
 
 
 def test_read_invalid_index(capsys):
     shell = Shell()
-    result = shell.read(100)
+    shell._ssd_reset()
+    shell.read(100)
     captured = capsys.readouterr()
     assert captured.out.strip() == "[Read] ERROR"
+
 
 def test_write(mocker :MockerFixture):
     value = "0xAAAABBBB"
@@ -30,9 +33,11 @@ def test_write(mocker :MockerFixture):
     assert "[Write] Done" in result
     mock_write.assert_called_once_with(3, value)
 
+
 def test_write_all_success(mocker: MockerFixture, capsys):
     value = 0xAAAABBBB
     shell = Shell()
+    shell._ssd_reset()
     ssd_write_mock = mocker.patch('ssd.SSD.write')
     full_call_list = [call(idx, value) for idx in range(100)]
     shell.full_write(value)
@@ -48,6 +53,7 @@ def test_help_call(mocker: MockerFixture):
 
 def test_help_text_valid(capsys):
     shell = Shell()
+    shell._ssd_reset()
     ret = shell.help()
     captured = capsys.readouterr()
 
