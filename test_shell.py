@@ -185,8 +185,9 @@ def test_full_read_call(mocker:MockerFixture):
 
 
 def test_full_read_valid(mocker:MockerFixture, capsys):
+    mk_full_read = mocker.patch('shell.Shell._read')
+    mk_full_read.return_value = '0x00000000'
     shell = Shell()
-
     shell.full_read()
     captured = capsys.readouterr()
     assert captured.out.strip() == '[Full Read]\n' + '\n'.join([f"LBA {i:02d} : 0x00000000" for i in range(100)])
