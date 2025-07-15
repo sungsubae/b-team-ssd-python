@@ -34,7 +34,7 @@ def test_ssd_write(reset_ssd):
     assert contents[99] == f"99 0xFF34FF33\n" and output == ""
 
 
-def test_read_same_with_output():
+def test_read_same_with_output(reset_ssd):
     lba = 10
     ssd = SSD()
     ssd.read(lba)
@@ -52,7 +52,7 @@ def test_read_same_with_output():
     assert nand_value.strip() == output.strip()
 
 
-def test_read_invalid_lba_access():
+def test_read_invalid_lba_access(reset_ssd):
     lba = 100
     ssd = SSD()
     ssd.read(lba)
