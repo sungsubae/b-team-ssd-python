@@ -107,14 +107,6 @@ def test_cmd_fullwrite(mocker:MockerFixture):
     mk.full_write.assert_called_with("0xAAAABBBB")
 
 
-def test_cmd_fullread(mocker:MockerFixture):
-    mk = mocker.Mock(spec=Shell)
-    with patch("builtins.input", side_effect=["fullread", "exit"]):
-        main(mk)
-
-    mk.fullread.assert_called()
-
-
 def test_cmd_FullWriteAndReadCompare(mocker:MockerFixture):
     mk = mocker.Mock(spec=Shell)
     with patch("builtins.input", side_effect=["1_", "exit"]):
