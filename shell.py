@@ -1,16 +1,24 @@
 import random
 import subprocess
 
+from logger import Logger
+
+
 class Shell:
     MIN_INDEX = 0
-    MAX_INDEX = 100 # 99번까지
+    MAX_INDEX = 100  # 99번까지
+
+    def __init__(self):
+        self.logger = Logger()
 
     def read(self, lba: int):
         line = self._read(lba)
 
         if  line == f"ERROR":
+            self.logger.print("[Read] ERROR")
             print("[Read] ERROR")
         else:
+            self.logger.print(f"[Read] LBA {lba:02d} : {line}")
             print(f"[Read] LBA {lba:02d} : {line}")
 
     def _read(self, lba):
@@ -34,6 +42,7 @@ class Shell:
     def write(self, lba, value):
         try:
             if not self.is_hex_string(value):
+                self.logger.print("[Write] ERROR")
                 print("[Write] ERROR")
                 return
             output_msg = self._write(lba, value)
@@ -42,6 +51,7 @@ class Shell:
             else:
                 print("[Write] Done")
         except Exception:
+            self.logger.print(f"Usage: write <LBA> <VALUE>")
             print(f"Usage: write <LBA> <VALUE>")
 
     def _write(self, lba, value):
@@ -55,15 +65,18 @@ class Shell:
                 output_msg = f.read().strip()
             return output_msg
         except Exception:
+            self.logger.print(f"Usage: write <LBA> <VALUE>")
             print(f"Usage: write <LBA> <VALUE>")
 
     def full_write(self, value):
         for lba in range(self.MAX_INDEX):
             self._write(lba, value)
+        self.logger.print(f"[Full Write] Done")
         print(f"[Full Write] Done")
 
     def full_read(self):
-        print('[Full Read]')
+        self.logger.print("[Full Read]")
+        print("[Full Read]")
         for lba in range(self.MAX_INDEX):
             print(f'LBA {lba:02d} : {self._read(lba)}')
 
@@ -81,8 +94,10 @@ class Shell:
                 remove_duplicates.add(result)
             if len(remove_duplicates) == 1 and random_val in remove_duplicates:
                 continue
+            self.logger.print("FAIL")
             print("FAIL")
             return
+        self.logger.print("PASS")
         print("PASS")
 
 
@@ -96,8 +111,10 @@ class Shell:
             read_value = self._read(0)
             for lba in range(1, 5):
                 if read_value != self._read(lba):
+                    self.logger.print("FAIL")
                     print("FAIL")
                     return
+        self.logger.print("PASS")
         print("PASS")
         return
 
@@ -109,8 +126,10 @@ class Shell:
             self._write(0, write_value)
             self._write(99, write_value)
             if self._read(0).strip() != self._read(99).strip():
+                self.logger.print("FAIL")
                 print("FAIL")
                 return
+        self.logger.print("PASS")
         print("PASS")
         return
 
