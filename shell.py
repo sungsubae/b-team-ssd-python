@@ -1,6 +1,7 @@
 import random
 
 from ssd import SSD
+import random
 
 
 class Shell:
@@ -36,7 +37,24 @@ class Shell:
             print(self.ssd.read(lba))
 
     def FullWriteAndReadCompare(self):
-        pass
+        ssd_length = 100
+        block_length = 5
+        for block_idx in range(ssd_length // block_length):
+            random_val = random.randint(0x00000001, 0xFFFFFFFF)
+            random_val = f"{random_val:#08X}"
+            remove_duplicates = set()
+            for inner_idx in range(block_length):
+                idx = block_idx * block_length + inner_idx
+                self.ssd.write(idx, random_val)
+                self.ssd.read(idx)
+                result = self.ssd.read_output()
+                remove_duplicates.add(result)
+            if len(remove_duplicates) == 1 and random_val in remove_duplicates:
+                continue
+            print("FAIL")
+            return
+        print("PASS")
+
 
     def PartialLBAWrite(self):
         pass

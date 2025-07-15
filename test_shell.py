@@ -115,7 +115,7 @@ def test_cmd_WriteReadAging(mocker:MockerFixture):
 
     assert mk.WriteReadAging.call_count == 2
 
-def test_full_write_and_read_compare(mocker:MockerFixture, capsys):
+def test_full_write_and_read_compare_success(mocker:MockerFixture, capsys):
     seed = 42
     ssd = mocker.Mock(spec=SSD)
     shell = Shell()
@@ -132,11 +132,34 @@ def test_full_write_and_read_compare(mocker:MockerFixture, capsys):
             random_values.append(f'{random_val:#08X}')
             write_calls.append(call(i * block_length + j, f'{random_val:#08X}'))
             read_calls.append(call(i * block_length + j))
-
+    ssd.read_output.side_effect = random_values
     random.seed(seed)
     shell.FullWriteAndReadCompare()
-    ssd.write.assert_called_with(write_calls)
-    ssd.read.assert_called_with(read_calls)
+    ssd.write.assert_has_calls(write_calls)
+    ssd.read.assert_has_calls(read_calls)
+    assert capsys.readouterr().out == "PASS\n"
+
+def test_full_write_and_read_compare_fail(mocker:MockerFixture, capsys):
+    seed = 42
+    ssd = mocker.Mock(spec=SSD)
+    shell = Shell()
+    shell.ssd = ssd
+    ssd_length = 100
+    block_length = 5
+    random_values = []
+    write_calls = []
+    read_calls = []
+    random.seed(seed)
+    for i in range(ssd_length // block_length):
+        random_val = random.randint(0x00000001, 0xFFFFFFFF)
+        for j in range(block_length):
+            random_values.append(f'{random_val:#08X}')
+            write_calls.append(call(i * block_length + j, f'{random_val:#08X}'))
+            read_calls.append(call(i * block_length + j))
+    ssd.read_output.side_effect = random_values
+    shell.FullWriteAndReadCompare()
+
+    assert capsys.readouterr().out == "FAIL\n"
 
 def test_fullread_call(mocker:MockerFixture):
     mk = mocker.Mock(spec=Shell)
