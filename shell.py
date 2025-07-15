@@ -47,8 +47,10 @@ class Shell:
             self.ssd.write(0, rand_value)
             self.ssd.write(99, rand_value)
             if self.ssd.read(0) != self.ssd.read(99):
+                print("FAIL")
                 return False
 
+        print("PASS")
         return True
 
     def help(self):
