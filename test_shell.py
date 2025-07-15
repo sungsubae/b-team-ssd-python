@@ -1,11 +1,11 @@
 import pytest, pytest_mock
 from pytest_mock import MockerFixture
-from unittest.mock import call, patch
+from unittest.mock import call, patch, mock_open
 
 from shell import Shell, main
 from ssd import SSD
 import random
-
+import builtins
 
 def test_read_valid_index(capsys, mocker:MockerFixture):
     mock_run = mocker.patch("shell.subprocess.run")
@@ -46,6 +46,19 @@ def test_write(capsys, mocker :MockerFixture):
     assert captured.out.strip() == "[Write] Done"
     mock_write.assert_called_once_with(3, value)
 
+def test_write_invalid_hex_false(mocker):
+    shell = Shell()
+    mocker.patch.object(shell, 'is_hex_string', return_value=False)
+    print_spy = mocker.spy(builtins, 'print')
+    shell.write(3, "INVALID")
+    print_spy.assert_called_with("[Write] ERROR")
+
+def test_write_invalid_hex_true(mocker):
+    shell = Shell()
+    mocker.patch.object(shell, 'is_hex_string', return_value=True)
+    print_spy = mocker.spy(builtins, 'print')
+    shell.write(4, "0x5d65a441")
+    print_spy.assert_called_with("[Write] Done")
 
 def test_full_write_success(mocker: MockerFixture):
     ssd_write_mock = mocker.patch('shell.Shell._write')
