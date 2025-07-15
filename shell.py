@@ -17,14 +17,8 @@ class Shell:
         else:
             print("[Read] ERROR")
 
-    def write(self, user_input):
+    def write(self, lba, address):
         try:
-            user_input_list = user_input.strip().split()
-            lba = int(user_input_list[1])
-            address = user_input_list[2]
-            if not (0 <= lba < 100):
-                print ("[Write] ERROR: LBA out of range (0~99)")
-                return
             self.ssd.write(lba, address)
             return "[Write] Done"
         except Exception:
@@ -103,7 +97,12 @@ def main(shell: Shell):
             if len(user_input_list) != 3:
                 print("Usage: write <LBA> <VALUE>")
                 continue
-            shell.write(user_input)
+            lba = int(user_input_list[1])
+            address = user_input_list[2]
+            if not (0 <= lba < 100):
+                print ("[Write] ERROR: LBA out of range (0~99)")
+                return
+            shell.write(lba, address)
         elif cmd_type == "exit":
             break
         elif cmd_type == "help":
