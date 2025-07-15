@@ -81,11 +81,11 @@ class Shell:
         for _ in range(repeat):
             write_value = hex(random.randint(0x00000000, 0xFFFFFFFF))
             for lba in [4, 0, 3, 1, 2]:
-                self.ssd.write(lba, write_value)
+                self._write(lba, write_value)
 
-            read_value = self.ssd.read(0)
+            read_value = self._read(0)
             for lba in range(1, 5):
-                if read_value != self.ssd.read(lba):
+                if read_value != self._read(lba):
                     print("FAIL")
                     return
         print("PASS")
