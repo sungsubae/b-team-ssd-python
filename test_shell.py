@@ -7,19 +7,33 @@ from ssd import SSD
 import random
 
 
-def test_read_valid_index(capsys):
+def test_read_valid_index(capsys, mocker:MockerFixture):
+    mock_run = mocker.patch("shell.subprocess.run")
+
+    mocked_file = mocker.mock_open(read_data="0x00000000")
+    mocker.patch("builtins.open", mocked_file)
+
     shell = Shell()
-    shell._ssd_reset()
     shell.read(3)
     captured = capsys.readouterr()
+
+    mock_run.assert_called_once_with(['python', 'ssd.py', 'R', '3'], capture_output=True, text=True)
+
     assert captured.out.strip() == "[Read] LBA 03 : 0x00000000"
 
 
-def test_read_invalid_index(capsys):
+def test_read_invalid_index(capsys, mocker:MockerFixture):
+    mock_run = mocker.patch("shell.subprocess.run")
+
+    mocked_file = mocker.mock_open(read_data="ERROR")
+    mocker.patch("builtins.open", mocked_file)
+
     shell = Shell()
-    shell._ssd_reset()
     shell.read(100)
     captured = capsys.readouterr()
+
+    mock_run.assert_called_once_with(['python', 'ssd.py', 'R', '100'], capture_output=True, text=True)
+
     assert captured.out.strip() == "[Read] ERROR"
 
 
