@@ -35,11 +35,11 @@ def test_write(capsys, mocker :MockerFixture):
     mock_write.assert_called_once_with(3, value)
 
 
-def test_write_all_success(mocker: MockerFixture):
-    value = 0xAAAABBBB
+def test_full_write_success(mocker: MockerFixture):
+    ssd_write_mock = mocker.patch('shell.Shell._write')
+    value = hex(0xAAAABBBB)
     shell = Shell()
     shell._ssd_reset()
-    ssd_write_mock = mocker.patch('ssd.SSD.write')
     full_call_list = [call(idx, value) for idx in range(100)]
     shell.full_write(value)
     ssd_write_mock.assert_has_calls(full_call_list)
