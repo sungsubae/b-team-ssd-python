@@ -1,4 +1,5 @@
 import random
+import subprocess
 
 from ssd import SSD
 import random
@@ -14,12 +15,23 @@ class Shell:
         self.ssd.reset_ssd()
 
     def read(self, lba: int):
-        if self.MIN_INDEX <= lba < self.MAX_INDEX:
-            self.ssd.read(lba)
-            value = self.ssd.read_output()
-            print(f"[Read] LBA {lba:02d} : {value}")
-        else:
+        line = self._read(lba)
+
+        if  line == f"ERROR":
             print("[Read] ERROR")
+        else:
+            print(f"[Read] LBA {lba:02d} : {line}")
+
+    def _read(self, lba):
+        subprocess.run(
+            ["python", "ssd.py", "R", str(lba)],
+            capture_output=True,
+            text=True
+        )
+        output = 'ssd_output.txt'
+        with open(output, 'r', encoding='utf-8') as file:
+            line = file.readline()
+        return line
 
     def write(self, lba, address):
         try:
