@@ -39,6 +39,7 @@ class Shell:
             self._write(lba, value)
         except Exception:
             print(f"Usage: write <LBA> <VALUE>")
+
     def _write(self, lba, value):
         try:
             subprocess.run(
