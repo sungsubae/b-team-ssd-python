@@ -70,7 +70,7 @@ class Shell:
         block_length = 5
         for block_idx in range(ssd_length // block_length):
             random_val = random.randint(0x00000001, 0xFFFFFFFF)
-            random_val = f"{random_val:#08X}"
+            random_val = f"{random_val:#010X}"
             remove_duplicates = set()
             for inner_idx in range(block_length):
                 idx = block_idx * block_length + inner_idx
@@ -103,7 +103,7 @@ class Shell:
     def WriteReadAging(self):
         for _ in range(200):
             random_val = random.randint(0x00000000, 0xFFFFFFFF)
-            write_value = f"{random_val:#08X}"
+            write_value = f"{random_val:#010X}"
             self._write(0, write_value)
             self._write(99, write_value)
             if self._read(0).strip() != self._read(99).strip():
