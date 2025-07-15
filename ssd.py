@@ -1,10 +1,22 @@
 import argparse
+import os
 
 
 class SSD:
-    def __init__(self, ssd_nand=None, ssd_output=None):
-        self.ssd_nand = ssd_nand if ssd_output is not None else "ssd_nand.txt"
-        self.ssd_output = ssd_output if ssd_output is not None else "ssd_output.txt"
+    def __init__(self):
+        self.ssd_nand = "ssd_nand.txt"
+        self.ssd_output = "ssd_output.txt"
+
+        if not os.path.exists("ssd_nand.txt"):
+            self.reset_ssd()
+
+    def reset_ssd(self):
+        with open('ssd_nand.txt', 'w', encoding='utf-8') as f:
+            for lba in range(100):
+                f.write(f'{lba:02d} 0x00000000\n')
+
+        with open('ssd_output.txt', 'w', encoding='utf-8') as f:
+            f.write('')
 
     def read_all(self):
         with open(self.ssd_nand, 'r', encoding='utf-8') as f:
@@ -32,7 +44,7 @@ class SSD:
         return value
 
     def write(self, lba: int, value):
-        if 0 <= lba <= 99:
+        if self.is_valid_address(lba) and self.is_valid_value(value):
             contents = self.read_all()
             contents[lba] = f"{lba:02d} {value}\n"
 
@@ -45,6 +57,27 @@ class SSD:
         else:
             with open(self.ssd_output, 'w', encoding='utf-8') as f:
                 f.write('ERROR')
+
+    def is_valid_address(self, address):
+        try:
+            if 0 <= address <= 99:
+                return True
+            else:
+                return False
+        except Exception as e:
+            return False
+
+    def is_valid_value(self, hex_input):
+        try:
+            value = int(hex_input, 16)
+
+            if 0 <= value <= 0xFFFFFFFF:
+                return True
+            else:
+                return False
+        except Exception as e:
+            return False
+
 
 def main():
     parser = argparse.ArgumentParser(description="SSD Read/Write")
@@ -65,6 +98,7 @@ def main():
         ssd.read(args.address)
     elif args.command == 'W':
         ssd.write(args.address, args.value)
+
 
 if __name__ == "__main__":
     main()

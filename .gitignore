@@ -1,3 +1,6 @@
+ssd_nand.txt
+ssd_output.txt
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

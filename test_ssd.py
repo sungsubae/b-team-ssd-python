@@ -5,41 +5,66 @@ import pytest
 from ssd import SSD
 
 
-@pytest.fixture
-def reset_ssd():
-    with open('ssd_nand.txt', 'w', encoding='utf-8') as f:
-        for lba in range(100):
-            f.write(f'{lba:02d} 0x00000000\n')
-
-    with open('ssd_output.txt', 'w', encoding='utf-8') as f:
-        f.write('')
-
-
-def test_ssd_write(reset_ssd):
+def test_ssd_write_error_1():
     ssd = SSD()
-
+    ssd.reset_ssd()
     ssd.write(-1, '0x00113456')
     output = ssd.read_output()
     assert output == "ERROR"
 
+
+def test_ssd_write_error_2():
+    ssd = SSD()
+    ssd.reset_ssd()
+    ssd.write(987, '0x00113456')
+    output = ssd.read_output()
+    assert output == "ERROR"
+
+
+def test_ssd_write_pass_1():
+    ssd = SSD()
+    ssd.reset_ssd()
     ssd.write(2, '0x00113456')
     contents = ssd.read_all()
     output = ssd.read_output()
     assert contents[2] == f"02 0x00113456\n" and output == ""
 
-    ssd.write(987, '0x00113456')
-    output = ssd.read_output()
-    assert output == "ERROR"
 
+def test_ssd_write_pass_2():
+    ssd = SSD()
+    ssd.reset_ssd()
     ssd.write(99, '0xFF34FF33')
     contents = ssd.read_all()
     output = ssd.read_output()
     assert contents[99] == f"99 0xFF34FF33\n" and output == ""
 
 
-def test_read_same_with_output(reset_ssd):
+def test_ssd_write_address_validation():
+    ssd = SSD()
+    ssd.reset_ssd()
+
+    assert ssd.is_valid_address(-1) is False
+    assert ssd.is_valid_address(0) is True
+    assert ssd.is_valid_address(99) is True
+    assert ssd.is_valid_address(100) is False
+    assert ssd.is_valid_address('asd') is False
+
+
+def test_ssd_write_data_validation():
+    ssd = SSD()
+    ssd.reset_ssd()
+
+    assert ssd.is_valid_value('ass') is False
+    assert ssd.is_valid_value('-123') is False
+    assert ssd.is_valid_value('0xAabB1234') is True
+    assert ssd.is_valid_value('4F') is True
+    assert ssd.is_valid_value('0x01230123') is True
+
+
+def test_read_same_with_output():
     lba = 10
     ssd = SSD()
+    ssd.reset_ssd()
     ssd.read(lba)
 
     with open(ssd.ssd_nand, 'r', encoding='utf-8') as file:
@@ -55,9 +80,10 @@ def test_read_same_with_output(reset_ssd):
     assert nand_value.strip() == output.strip()
 
 
-def test_read_invalid_lba_access(reset_ssd):
+def test_read_invalid_lba_access():
     lba = 100
     ssd = SSD()
+    ssd.reset_ssd()
     ssd.read(lba)
 
     with open(ssd.ssd_output, 'r', encoding='utf-8') as file:
