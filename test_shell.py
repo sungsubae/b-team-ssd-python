@@ -80,7 +80,7 @@ def test_cmd_write(mocker:MockerFixture):
     mk = mocker.Mock(spec=Shell)
     with patch("builtins.input", side_effect=["write 3 0xAAAABBBB", "exit"]):
         main(mk)
-    mk.write.assert_called_with("write 3 0xAAAABBBB")
+    mk.write.assert_called_with(3, "0xAAAABBBB")
 
 def test_cmd_fullwrite(mocker:MockerFixture):
     mk = mocker.Mock(spec=Shell)
@@ -107,18 +107,14 @@ def test_cmd_FullWriteAndReadCompare(mocker:MockerFixture):
 
 def test_cmd_PartialLBAWrite(mocker:MockerFixture):
     mk = mocker.Mock(spec=Shell)
-    with patch("builtins.input", side_effect=["2_", "exit"]):
-        main(mk)
-    with patch("builtins.input", side_effect=["2_PartialLBAWrite", "exit"]):
+    with patch("builtins.input", side_effect=["2_", "2_PartialLBAWrite", "exit"]):
         main(mk)
 
     assert mk.PartialLBAWrite.call_count == 2
 
 def test_cmd_WriteReadAging(mocker:MockerFixture):
     mk = mocker.Mock(spec=Shell)
-    with patch("builtins.input", side_effect=["3_", "exit"]):
-        main(mk)
-    with patch("builtins.input", side_effect=["3_WriteReadAging", "exit"]):
+    with patch("builtins.input", side_effect=["3_", "3_WriteReadAging", "exit"]):
         main(mk)
 
     assert mk.WriteReadAging.call_count == 2
