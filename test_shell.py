@@ -51,7 +51,6 @@ def test_full_write_success(mocker: MockerFixture):
     ssd_write_mock = mocker.patch('shell.Shell._write')
     value = hex(0xAAAABBBB)
     shell = Shell()
-    shell._ssd_reset()
     full_call_list = [call(idx, value) for idx in range(100)]
     shell.full_write(value)
     ssd_write_mock.assert_has_calls(full_call_list)
@@ -66,7 +65,6 @@ def test_help_call(mocker: MockerFixture):
 
 def test_help_text_valid(capsys):
     shell = Shell()
-    shell._ssd_reset()
     ret = shell.help()
     captured = capsys.readouterr()
 
