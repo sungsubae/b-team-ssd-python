@@ -93,10 +93,11 @@ class Shell:
 
     def WriteReadAging(self):
         for _ in range(200):
-            write_value = hex(random.randint(0x00000000, 0xFFFFFFFF))
+            random_val = random.randint(0x00000000, 0xFFFFFFFF)
+            write_value = f"{random_val:#08X}"
             self._write(0, write_value)
             self._write(99, write_value)
-            if self._read(0) != self._read(99):
+            if self._read(0).strip() != self._read(99).strip():
                 print("FAIL")
                 return
         print("PASS")
