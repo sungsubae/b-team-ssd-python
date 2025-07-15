@@ -50,7 +50,7 @@ class SSD:
 
         return value
 
-    def write(self, lba: int, value):
+    def write(self, lba: int, value: str):
         if self.is_valid_address(lba) and self.is_valid_value(value):
             contents = self.read_all()
             contents[lba] = f"{lba:02d} {value}\n"
