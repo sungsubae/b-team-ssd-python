@@ -20,6 +20,26 @@ class SSD:
         with open(self.ssd_output, 'w', encoding='utf-8') as file:
             file.write(value)
 
+    def is_valid_address(self, address):
+        try:
+            if 0 <= address <= 99:
+                return True
+            else:
+                return False
+        except Exception as e:
+            return False
+
+    def is_valid_data(self, hex_input):
+        try:
+            value = int(hex_input, 16)
+
+            if 0 <= value <= 0xFFFFFFFF:
+                return True
+            else:
+                return False
+        except Exception as e:
+            return False
+
     def read_all(self):
         with open("ssd_nand.txt", 'r', encoding='utf-8') as f:
             return f.readlines()
@@ -28,10 +48,10 @@ class SSD:
         with open("ssd_output.txt", 'r', encoding='utf-8') as f:
             return f.read()
 
-    def write(self, address: int, value):
-        if 0 <= address <= 99:
+    def write(self, address: int, data):
+        if self.is_valid_address(address) and self.is_valid_data(data):
             contents = self.read_all()
-            contents[address] = f"{address:02d} {value}\n"
+            contents[address] = f"{address:02d} {data}\n"
 
             f = open("ssd_nand.txt", 'w', encoding='utf-8')
             f.writelines(contents)
