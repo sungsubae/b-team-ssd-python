@@ -144,9 +144,9 @@ def test_cmd_WriteReadAging(mocker:MockerFixture):
 
 def test_full_write_and_read_compare_success(mocker:MockerFixture, capsys):
     seed = 42
-    ssd = mocker.Mock(spec=SSD)
+    shell_write_mock = mocker.patch('shell.Shell._write')
+    shell_read_mock = mocker.patch('shell.Shell._read')
     shell = Shell()
-    shell.ssd = ssd
     ssd_length = 100
     block_length = 5
     random_values = []
@@ -159,19 +159,19 @@ def test_full_write_and_read_compare_success(mocker:MockerFixture, capsys):
             random_values.append(f'{random_val:#08X}')
             write_calls.append(call(i * block_length + j, f'{random_val:#08X}'))
             read_calls.append(call(i * block_length + j))
-    ssd.read_output.side_effect = random_values
+    shell_read_mock.side_effect = random_values
     random.seed(seed)
     shell.FullWriteAndReadCompare()
-    ssd.write.assert_has_calls(write_calls)
-    ssd.read.assert_has_calls(read_calls)
-    assert capsys.readouterr().out == "PASS\n"
+    shell_write_mock.assert_has_calls(write_calls)
+    shell_read_mock.assert_has_calls(read_calls)
+    assert capsys.readouterr().out.strip() == "PASS"
 
 
 def test_full_write_and_read_compare_fail(mocker:MockerFixture, capsys):
     seed = 42
-    ssd = mocker.Mock(spec=SSD)
+    shell_write_mock = mocker.patch('shell.Shell._write')
+    shell_read_mock = mocker.patch('shell.Shell._read')
     shell = Shell()
-    shell.ssd = ssd
     ssd_length = 100
     block_length = 5
     random_values = []
@@ -184,10 +184,10 @@ def test_full_write_and_read_compare_fail(mocker:MockerFixture, capsys):
             random_values.append(f'{random_val:#08X}')
             write_calls.append(call(i * block_length + j, f'{random_val:#08X}'))
             read_calls.append(call(i * block_length + j))
-    ssd.read_output.side_effect = random_values
+    shell_read_mock.side_effect = random_values
+    random.seed(seed+1)
     shell.FullWriteAndReadCompare()
-
-    assert capsys.readouterr().out == "FAIL\n"
+    assert capsys.readouterr().out.strip() == "FAIL"
 
 
 def test_full_read_call(mocker:MockerFixture):
