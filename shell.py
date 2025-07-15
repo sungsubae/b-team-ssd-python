@@ -22,9 +22,9 @@ class Shell:
     def write(self, lba, address):
         try:
             self.ssd.write(lba, address)
-            return "[Write] Done"
+            print (f"[Write] Done")
         except Exception:
-            return "Usage: write <LBA> <VALUE>"
+            print (f"Usage: write <LBA> <VALUE>")
 
     def full_write(self, value):
         for lba in range(100):
