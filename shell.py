@@ -30,15 +30,20 @@ class Shell:
         )
         output = 'ssd_output.txt'
         with open(output, 'r', encoding='utf-8') as file:
-            line = file.readline()
+            line = file.readline().strip()
         return line
 
-    def write(self, lba, address):
-        try:
-            self.ssd.write(lba, address)
-            print (f"[Write] Done")
-        except Exception:
-            print (f"Usage: write <LBA> <VALUE>")
+    def write(self, lba, value):
+        self._write(lba, value)
+
+        print (f"[Write] Done")
+
+    def _write(self, lba, value):
+        subprocess.run(
+            ["python", "ssd.py", "W", str(lba), str(value)],
+            capture_output=True,
+            text=True
+        )
 
     def full_write(self, value):
         for lba in range(self.MAX_INDEX):
