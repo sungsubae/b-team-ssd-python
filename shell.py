@@ -1,19 +1,10 @@
 import random
 import subprocess
-
-from ssd import SSD
 import random
 
 class Shell:
     MIN_INDEX = 0
     MAX_INDEX = 100 # 99번까지
-
-    def __init__(self):
-        self.ssd = SSD()
-
-    def _ssd_reset(self, reset_val=f"{0:#08X}"):
-        for idx in range(self.MIN_INDEX, self.MAX_INDEX):
-            self._write(idx, reset_val)
 
     def read(self, lba: int):
         line = self._read(lba)
