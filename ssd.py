@@ -63,6 +63,9 @@ class SSD:
         self.write_nand(contents)
         self.write_output('')
 
+    def erase(self, lba: int, size: int):
+        pass
+
     def is_valid_address(self, address: int):
         try:
             if 0 <= address <= 99:
@@ -96,6 +99,10 @@ def main():
     write_parser.add_argument('address', type=int, help='LBA address to write (0~99)')
     write_parser.add_argument('value', type=str, help='Hex value to write (e.g., 0x1234ABCD)')
 
+    erase_parser = subparsers.add_parser('E', help='Erase to SSD')
+    erase_parser.add_argument('address', type=int, help='LBA address to write (0~99)')
+    erase_parser.add_argument('size', type=str, help='1 <= SIZE <= 10')
+
     args = parser.parse_args()
     ssd = SSD()
 
@@ -103,6 +110,8 @@ def main():
         ssd.read(args.address)
     elif args.command == 'W':
         ssd.write(args.address, args.value)
+    elif args.command == 'E':
+        ssd.erase(args.address, args.size)
 
 
 if __name__ == "__main__":
