@@ -30,8 +30,9 @@ class Shell:
         print(f"[Full Write] Done")
 
     def fullread(self):
-        for lba in range(100):
-            print(self.ssd.read(lba))
+        print('[Full Read]')
+        for idx in range(100):
+            print(self.ssd.read(idx))
 
     def FullWriteAndReadCompare(self):
         pass

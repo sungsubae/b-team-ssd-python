@@ -119,7 +119,6 @@ def test_fullread_call(mocker:MockerFixture):
 
     mk.fullread.assert_called_once()
 
-
 def test_fullread_valid(mocker:MockerFixture, capsys):
     shell = Shell()
     mock_read = mocker.patch('ssd.SSD.read')
@@ -128,7 +127,8 @@ def test_fullread_valid(mocker:MockerFixture, capsys):
     mock_read.side_effect = sideeffect
     shell.fullread()
     captured = capsys.readouterr()
-    assert captured.out.strip() == '''LBA 00 : 0xFFFFFFFF
+    assert captured.out.strip() == '''[Full Read]
+LBA 00 : 0xFFFFFFFF
 LBA 01 : 0xFFFFFFFF
 LBA 02 : 0xFFFFFFFF
 LBA 03 : 0xFFFFFFFF
