@@ -174,6 +174,8 @@ def test_fullread_call(mocker:MockerFixture):
 
 def test_fullread_valid(mocker:MockerFixture, capsys):
     shell = Shell()
+    shell._ssd_reset()
+
     shell.fullread()
     captured = capsys.readouterr()
     assert captured.out.strip() == '''[Full Read]
