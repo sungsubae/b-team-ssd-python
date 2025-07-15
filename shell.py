@@ -1,3 +1,4 @@
+import re
 import random
 import subprocess
 
@@ -34,17 +35,33 @@ class Shell:
             line = file.readline().strip()
         return line
 
+    def is_hex_string(self, s):
+        try:
+            int(s, 16)
+            return True
+        except ValueError:
+            return False
+
     def write(self, lba, value):
-        self._write(lba, value)
+        try:
+            if not self.is_hex_string(value):
+                print("[Write] ERROR")
+                return
 
-        print (f"[Write] Done")
+            subprocess.run(
+                ["python", "ssd.py", "W", str(lba), value],
+                capture_output=True,
+                text=True
+            )
 
-    def _write(self, lba, value):
-        subprocess.run(
-            ["python", "ssd.py", "W", str(lba), str(value)],
-            capture_output=True,
-            text=True
-        )
+            with open("ssd_output.txt", "r", encoding="utf-8") as f:
+                output_msg = f.read().strip()
+            if output_msg == "ERROR":
+                print("[Write] ERROR")
+            else:
+                print("[Write] Done")
+        except Exception:
+            print(f"Usage: write <LBA> <VALUE>")
 
     def full_write(self, value):
         for lba in range(self.MAX_INDEX):
