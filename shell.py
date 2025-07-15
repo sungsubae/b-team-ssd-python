@@ -65,9 +65,8 @@ class Shell:
             remove_duplicates = set()
             for inner_idx in range(block_length):
                 idx = block_idx * block_length + inner_idx
-                self.ssd.write(idx, random_val)
-                self.ssd.read(idx)
-                result = self.ssd.read_output()
+                self._write(idx, random_val)
+                result = self._read(idx).strip()
                 remove_duplicates.add(result)
             if len(remove_duplicates) == 1 and random_val in remove_duplicates:
                 continue
