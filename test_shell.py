@@ -195,28 +195,26 @@ def test_full_read_valid(mocker:MockerFixture, capsys):
     assert captured.out.strip() == '[Full Read]\n' + '\n'.join([f"LBA {i:02d} : 0x00000000" for i in range(100)])
 
 
-def test_write_read_aging_calls_write_400_times(mocker: MockerFixture):
+def test_write_read_aging_calls_write_read_400_times(mocker: MockerFixture):
+    mock_write = mocker.patch('shell.Shell._write')
+    mock_read = mocker.patch('shell.Shell._read')
+    mock_read.return_value = hex(1)
     shell = Shell()
-    mk = mocker.Mock(spec=SSD)
 
-    shell.ssd = mk
     shell.WriteReadAging()
+    assert mock_write.call_count == 400
+    assert mock_read.call_count == 400
 
-    assert mk.write.call_count == 400
 
-
-def test_write_read_aging_calls_read_400_times(mocker: MockerFixture):
+def test_write_read_aging_pass(mocker: MockerFixture, capsys):
+    mock_write = mocker.patch('shell.Shell._write')
+    mock_read = mocker.patch('shell.Shell._read')
+    mock_read.return_value = hex(1)
     shell = Shell()
-    mk = mocker.Mock(spec=SSD)
 
-    shell.ssd = mk
     shell.WriteReadAging()
-
-    assert mk.read.call_count == 400
-
-
-def test_write_read_aging_return_true():
-    assert Shell().WriteReadAging() == True
+    captured = capsys.readouterr()
+    assert captured.out.strip() == "PASS"
 
 
 def test_PartialLBAWrite(mocker: MockerFixture):
