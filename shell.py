@@ -3,7 +3,6 @@ import random
 from ssd import SSD
 import random
 
-
 class Shell:
 
     def __init__(self):
@@ -56,8 +55,19 @@ class Shell:
         print("PASS")
 
 
-    def PartialLBAWrite(self):
-        pass
+    def PartialLBAWrite(self, repeat=30, seed=42):
+        random.seed(seed)
+        for _ in range(repeat):
+            write_value = random.randint(0x00000000, 0xFFFFFFFF)
+            for lba in [4, 0, 3, 1, 2]:
+                self.write(f"write {lba} {write_value}")
+
+            read_value = self.read(0)
+            for lba in range(1, 5):
+                if read_value != self.read(lba):
+                    return False
+        return True
+
 
     def WriteReadAging(self):
         for i in range(200):
