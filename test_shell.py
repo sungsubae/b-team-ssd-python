@@ -194,7 +194,7 @@ def test_full_read_call(mocker:MockerFixture):
     mk = mocker.Mock(spec=Shell)
     mk.full_read()
 
-    mk.fullread.assert_called_once()
+    mk.full_read.assert_called_once()
 
 
 def test_full_read_valid(mocker:MockerFixture, capsys):
