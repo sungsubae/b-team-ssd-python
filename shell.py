@@ -6,11 +6,11 @@ class Shell:
         self.ssd = SSD()
         self.data = [0] * size  # 내부 스토리지
 
-    def read(self, index: int):
-        if 0 <= index <= 99:
-            self.ssd.read(index)
+    def read(self, lba: int):
+        if 0 <= lba <= 99:
+            self.ssd.read(lba)
             value = self.ssd.read_output()
-            print(f"[Read] LBA {index:02d} : {value}")
+            print(f"[Read] LBA {lba:02d} : {value}")
         else:
             print("[Read] ERROR")
 
@@ -25,13 +25,13 @@ class Shell:
             return "Usage: write <LBA> <VALUE>"
 
     def full_write(self, value):
-        for idx in range(100):
-            self.ssd.write(idx, value)
+        for lba in range(100):
+            self.ssd.write(lba, value)
         print(f"[Full Write] Done")
 
     def fullread(self):
-        for idx in range(100):
-            print(self.ssd.read(idx))
+        for lba in range(100):
+            print(self.ssd.read(lba))
 
     def FullWriteAndReadCompare(self):
         pass
