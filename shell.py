@@ -17,12 +17,15 @@ class Shell:
         else:
             print("[Read] ERROR")
 
-    def write(self, line):
-        tokens = line.strip().split()
+    def write(self, user_input):
         try:
-            lba = int(tokens[1])
-            value = int(tokens[2], 16) # 16진수
-            self.data[lba] = value
+            user_input_list = user_input.strip().split()
+            lba = int(user_input_list[1])
+            address = user_input_list[2]
+            if not (0 <= lba < 100):
+                print ("[Write] ERROR: LBA out of range (0~99)")
+                return
+            self.ssd.write(lba, address)
             return "[Write] Done"
         except Exception:
             return "Usage: write <LBA> <VALUE>"
@@ -85,14 +88,21 @@ class Shell:
 def main(shell: Shell):
     while True:
         user_input = input("Shell> ")
-        user_input_list = user_input.split(" ")
+        user_input_list = user_input.strip().split()
+        if not user_input_list:
+            print ("INVALID COMMAND")
+            continue
 
-        cmd_type = user_input_list[0]
+        cmd_type = user_input_list[0].lower()
+
         invalid_cmd = False
         if cmd_type == "read":
             lba = int(user_input_list[1])
             shell.read(lba)
         elif cmd_type == "write":
+            if len(user_input_list) != 3:
+                print("Usage: write <LBA> <VALUE>")
+                continue
             shell.write(user_input)
         elif cmd_type == "exit":
             break
