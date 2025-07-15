@@ -4,6 +4,8 @@ from ssd import SSD
 import random
 
 class Shell:
+    MIN_INDEX = 0
+    MAX_INDEX = 100 # 99번까지
 
     def __init__(self):
         self.ssd = SSD()
@@ -12,7 +14,7 @@ class Shell:
         self.ssd.reset_ssd()
 
     def read(self, lba: int):
-        if 0 <= lba <= 99:
+        if self.MIN_INDEX <= lba < self.MAX_INDEX:
             self.ssd.read(lba)
             value = self.ssd.read_output()
             print(f"[Read] LBA {lba:02d} : {value}")
@@ -27,17 +29,17 @@ class Shell:
             return "Usage: write <LBA> <VALUE>"
 
     def full_write(self, value):
-        for lba in range(100):
+        for lba in range(self.MAX_INDEX):
             self.ssd.write(lba, value)
         print(f"[Full Write] Done")
 
     def fullread(self):
         print('[Full Read]')
-        for lba in range(100):
+        for lba in range(self.MAX_INDEX):
             print(f'LBA {lba:02d} : {self.ssd.read(lba)}', end='')
 
     def FullWriteAndReadCompare(self):
-        ssd_length = 100
+        ssd_length = self.MAX_INDEX
         block_length = 5
         for block_idx in range(ssd_length // block_length):
             random_val = random.randint(0x00000001, 0xFFFFFFFF)
