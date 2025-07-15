@@ -35,7 +35,7 @@ class Shell:
     def fullread(self):
         print("[Full Read]")
         for lba in range(100):
-            print(self.ssd.read(lba))
+            print(f'LBA {lba:02d} : {self.ssd.read(lba)}', end="")
 
     def FullWriteAndReadCompare(self):
         ssd_length = 100
