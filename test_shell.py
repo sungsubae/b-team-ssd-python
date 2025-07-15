@@ -185,8 +185,8 @@ def test_full_write_and_read_compare_success(mocker:MockerFixture, capsys):
     for i in range(ssd_length // block_length):
         random_val = random.randint(0x00000001, 0xFFFFFFFF)
         for j in range(block_length):
-            random_values.append(f'{random_val:#010X}')
-            write_calls.append(call(i * block_length + j, f'{random_val:#010X}'))
+            random_values.append(f'{random_val:#010x}')
+            write_calls.append(call(i * block_length + j, f'{random_val:#010x}'))
             read_calls.append(call(i * block_length + j))
     shell_read_mock.side_effect = random_values
     random.seed(seed)
@@ -210,8 +210,8 @@ def test_full_write_and_read_compare_fail(mocker:MockerFixture, capsys):
     for i in range(ssd_length // block_length):
         random_val = random.randint(0x00000001, 0xFFFFFFFF)
         for j in range(block_length):
-            random_values.append(f'{random_val:#010X}')
-            write_calls.append(call(i * block_length + j, f'{random_val:#010X}'))
+            random_values.append(f'{random_val:#010x}')
+            write_calls.append(call(i * block_length + j, f'{random_val:#010x}'))
             read_calls.append(call(i * block_length + j))
     shell_read_mock.side_effect = random_values
     random.seed(seed+1)
@@ -238,7 +238,7 @@ def test_full_read_valid(mocker:MockerFixture, capsys):
 def test_write_read_aging_calls_write_read_400_times(mocker: MockerFixture):
     mock_write = mocker.patch('shell.Shell._write')
     mock_read = mocker.patch('shell.Shell._read')
-    mock_read.return_value = hex(1)
+    mock_read.return_value = '0x00000001'
     shell = Shell()
 
     shell.WriteReadAging()
@@ -249,7 +249,7 @@ def test_write_read_aging_calls_write_read_400_times(mocker: MockerFixture):
 def test_write_read_aging_pass(mocker: MockerFixture, capsys):
     mock_write = mocker.patch('shell.Shell._write')
     mock_read = mocker.patch('shell.Shell._read')
-    mock_read.return_value = hex(1)
+    mock_read.return_value = '0x00000001'
     shell = Shell()
 
     shell.WriteReadAging()
@@ -260,13 +260,14 @@ def test_write_read_aging_pass(mocker: MockerFixture, capsys):
 def test_PartialLBAWrite(mocker: MockerFixture):
     mock_write = mocker.patch('shell.Shell._write')
     mock_read = mocker.patch('shell.Shell._read')
-    mock_read.return_value = hex(1)
+    mock_read.return_value = '0x00000001'
 
     shell = Shell()
     shell.PartialLBAWrite(repeat=1, seed=42)
     write_calls = []
     random.seed(42)
-    write_value = hex(random.randint(0x00000000, 0xFFFFFFFF))
+    random_val = random.randint(0x00000000, 0xFFFFFFFF)
+    write_value = f"{random_val:#010x}"
     for lba in [4, 0, 3, 1, 2]:
         write_calls.append(call(lba, write_value))
     mock_write.assert_has_calls(write_calls)
@@ -280,7 +281,7 @@ def test_PartialLBAWrite(mocker: MockerFixture):
 def test_PartialLBAWrite_pass_and_fail(mocker: MockerFixture, capsys):
     mock_write = mocker.patch('shell.Shell._write')
     mock_read = mocker.patch('shell.Shell._read')
-    mock_read.return_value = hex(1)
+    mock_read.return_value = '0x00000001'
 
 
     shell = Shell()
@@ -288,7 +289,7 @@ def test_PartialLBAWrite_pass_and_fail(mocker: MockerFixture, capsys):
     captured = capsys.readouterr()
     assert captured.out.strip() == "PASS"
 
-    mock_read.side_effect = [hex(1), hex(1), hex(2), hex(1), hex(1)]
+    mock_read.side_effect = ['0x00000001', '0x00000001', '0x00000002', '0x00000001', '0x00000001']
     shell.PartialLBAWrite(repeat=1, seed=42)
     captured = capsys.readouterr()
     assert captured.out.strip() == "FAIL"
