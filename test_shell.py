@@ -3,7 +3,6 @@ from pytest_mock import MockerFixture
 from unittest.mock import call, patch
 
 from shell import Shell, main
-from ssd import SSD
 import random
 
 
