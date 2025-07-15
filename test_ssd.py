@@ -15,26 +15,54 @@ def reset_ssd():
         f.write('')
 
 
-def test_ssd_write(reset_ssd):
+def test_ssd_write_error_1(reset_ssd):
     ssd = SSD()
-
     ssd.write(-1, '0x00113456')
     output = ssd.read_output()
     assert output == "ERROR"
 
+
+def test_ssd_write_error_2(reset_ssd):
+    ssd = SSD()
+    ssd.write(987, '0x00113456')
+    output = ssd.read_output()
+    assert output == "ERROR"
+
+
+def test_ssd_write_pass_1(reset_ssd):
+    ssd = SSD()
     ssd.write(2, '0x00113456')
     contents = ssd.read_all()
     output = ssd.read_output()
     assert contents[2] == f"02 0x00113456\n" and output == ""
 
-    ssd.write(987, '0x00113456')
-    output = ssd.read_output()
-    assert output == "ERROR"
 
+def test_ssd_write_pass_2(reset_ssd):
+    ssd = SSD()
     ssd.write(99, '0xFF34FF33')
     contents = ssd.read_all()
     output = ssd.read_output()
     assert contents[99] == f"99 0xFF34FF33\n" and output == ""
+
+
+def test_ssd_write_address_validation(reset_ssd):
+    ssd = SSD()
+
+    assert ssd.is_valid_address(-1) is False
+    assert ssd.is_valid_address(0) is True
+    assert ssd.is_valid_address(99) is True
+    assert ssd.is_valid_address(100) is False
+    assert ssd.is_valid_address('asd') is False
+
+
+def test_ssd_write_data_validation(reset_ssd):
+    ssd = SSD()
+
+    assert ssd.is_valid_value('ass') is False
+    assert ssd.is_valid_value('-123') is False
+    assert ssd.is_valid_value('0xAabB1234') is True
+    assert ssd.is_valid_value('4F') is True
+    assert ssd.is_valid_value('0x01230123') is True
 
 
 def test_read_same_with_output(reset_ssd):

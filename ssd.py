@@ -32,7 +32,7 @@ class SSD:
         return value
 
     def write(self, lba: int, value):
-        if 0 <= lba <= 99:
+        if self.is_valid_address(lba) and self.is_valid_value(value):
             contents = self.read_all()
             contents[lba] = f"{lba:02d} {value}\n"
 
@@ -45,6 +45,27 @@ class SSD:
         else:
             with open(self.ssd_output, 'w', encoding='utf-8') as f:
                 f.write('ERROR')
+
+    def is_valid_address(self, address):
+        try:
+            if 0 <= address <= 99:
+                return True
+            else:
+                return False
+        except Exception as e:
+            return False
+
+    def is_valid_value(self, hex_input):
+        try:
+            value = int(hex_input, 16)
+
+            if 0 <= value <= 0xFFFFFFFF:
+                return True
+            else:
+                return False
+        except Exception as e:
+            return False
+
 
 def main():
     parser = argparse.ArgumentParser(description="SSD Read/Write")
@@ -65,6 +86,7 @@ def main():
         ssd.read(args.address)
     elif args.command == 'W':
         ssd.write(args.address, args.value)
+
 
 if __name__ == "__main__":
     main()
