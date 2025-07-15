@@ -58,7 +58,7 @@ class Shell:
     def PartialLBAWrite(self, repeat=30, seed=42):
         random.seed(seed)
         for _ in range(repeat):
-            write_value = random.randint(0x00000000, 0xFFFFFFFF)
+            write_value = hex(random.randint(0x00000000, 0xFFFFFFFF))
             for lba in [4, 0, 3, 1, 2]:
                 self.ssd.write(lba, write_value)
 
