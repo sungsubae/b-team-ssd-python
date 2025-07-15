@@ -20,13 +20,15 @@ def test_read_invalid_index(capsys):
     captured = capsys.readouterr()
     assert captured.out.strip() == "[Read] ERROR"
 
-
-def test_write_command():
-    shell = Shell()
-    output = shell.write("write 3 0xAAAABBBB")
-    assert "[Write] Done" in output
-    # 내부 data 값이 올바르게 바뀌었는지 직접 체크
-    assert shell.data[3] == int("0xAAAABBBB", 16)
+def test_write_patch_method(mocker :MockerFixture):
+    value = "0xAAAABBBB"
+    # SSD.write를 모킹(patch)
+    mock_write = mocker.patch('ssd.SSD.write')
+    shell = Shell()    # 이 시점에 Shell 내부의 SSD 인스턴스는 이미 patch된 write를 사용
+    # shell.write(7, 0xDEADBEEF)
+    result = shell.write(f"write 3 {value}")
+    assert "[Write] Done" in result
+    mock_write.assert_called_once_with(3, value)
 
 def test_write_all_success(mocker: MockerFixture, capsys):
     value = 0xAAAABBBB
