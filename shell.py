@@ -36,7 +36,11 @@ class Shell:
             if not self.is_hex_string(value):
                 print("[Write] ERROR")
                 return
-            self._write(lba, value)
+            output_msg = self._write(lba, value)
+            if output_msg == "ERROR":
+                print("[Write] ERROR")
+            else:
+                print("[Write] Done")
         except Exception:
             print(f"Usage: write <LBA> <VALUE>")
 
@@ -49,10 +53,7 @@ class Shell:
             )
             with open("ssd_output.txt", "r", encoding="utf-8") as f:
                 output_msg = f.read().strip()
-            if output_msg == "ERROR":
-                print("[Write] ERROR")
-            else:
-                print("[Write] Done")
+            return output_msg
         except Exception:
             print(f"Usage: write <LBA> <VALUE>")
 
