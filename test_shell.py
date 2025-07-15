@@ -305,3 +305,27 @@ def test_write_read_aging_calls_read_400_times(mocker: MockerFixture):
 
 def test_write_read_aging_return_true():
     assert Shell().WriteReadAging() == True
+
+def test_PartialLBAWrite(mocker: MockerFixture):
+    import random
+    shell = Shell()
+    shell.ssd = mocker.Mock(spec=SSD)
+
+    shell.PartialLBAWrite(repeat=1, seed=42)
+    write_calls = []
+    random.seed(42)
+    write_value = random.randint(0x00000000, 0xFFFFFFFF)
+    for lba in [4, 0, 3, 1, 2]:
+        write_calls.append(call(lba, write_value))
+    shell.ssd.write.assert_has_calls(write_calls)
+
+    read_calls = []
+    for lba in range(5):
+        read_calls.append(call(lba))
+    shell.ssd.read.assert_has_calls(read_calls)
+
+def test_PartialLBAWrite_pass(capsys):
+    Shell().PartialLBAWrite()
+    captured = capsys.readouterr()
+    assert captured.out.strip() == "PASS"
+

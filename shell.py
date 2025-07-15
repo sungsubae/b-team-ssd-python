@@ -60,13 +60,15 @@ class Shell:
         for _ in range(repeat):
             write_value = random.randint(0x00000000, 0xFFFFFFFF)
             for lba in [4, 0, 3, 1, 2]:
-                self.write(f"write {lba} {write_value}")
+                self.ssd.write(lba, write_value)
 
-            read_value = self.read(0)
+            read_value = self.ssd.read(0)
             for lba in range(1, 5):
-                if read_value != self.read(lba):
-                    return False
-        return True
+                if read_value != self.ssd.read(lba):
+                    print("FAIL")
+                    return
+        print("PASS")
+        return
 
 
     def WriteReadAging(self):
