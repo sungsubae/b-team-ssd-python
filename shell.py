@@ -30,7 +30,7 @@ class Shell:
         )
         output = 'ssd_output.txt'
         with open(output, 'r', encoding='utf-8') as file:
-            line = file.readline()
+            line = file.readline().strip()
         return line
 
     def write(self, lba, value):
