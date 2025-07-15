@@ -48,7 +48,7 @@ class Shell:
     def fullread(self):
         print('[Full Read]')
         for lba in range(self.MAX_INDEX):
-            print(f'LBA {lba:02d} : {self.ssd.read(lba)}', end='')
+            print(f'LBA {lba:02d} : {self._read(lba)}', end='')
 
     def FullWriteAndReadCompare(self):
         ssd_length = self.MAX_INDEX
