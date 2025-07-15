@@ -14,16 +14,12 @@ class SSD:
         self.ssd_nand = "ssd_nand.txt"
         self.ssd_output = "ssd_output.txt"
 
-        if not os.path.exists("ssd_nand.txt"):
+        if not os.path.exists(self.ssd_nand):
             self.reset_ssd()
 
     def reset_ssd(self):
-        with open('ssd_nand.txt', 'w', encoding='utf-8') as f:
-            for lba in range(100):
-                f.write(f'{lba:02d} 0x00000000\n')
-
-        with open('ssd_output.txt', 'w', encoding='utf-8') as f:
-            f.write('')
+        self.write_nand([f'{lba:02d} 0x00000000\n' for lba in range(100)])
+        self.write_output('')
 
     def read_all(self):
         with open(self.ssd_nand, 'r', encoding='utf-8') as f:
@@ -33,10 +29,17 @@ class SSD:
         with open(self.ssd_output, 'r', encoding='utf-8') as f:
             return f.read()
 
+    def write_output(self, value: str):
+        with open(self.ssd_output, 'w', encoding='utf-8') as f:
+            f.write(value)
+
+    def write_nand(self, lines: list[str]):
+        with open(self.ssd_nand, 'w', encoding='utf-8') as f:
+            f.writelines(lines)
+
     def read(self, lba: int):
         if lba < 0 or lba > 99:
-            with open(self.ssd_output, 'w', encoding='utf-8') as f:
-                f.write('ERROR')
+            self.write_output('ERROR')
             return
 
         lines = self.read_all()
@@ -45,27 +48,22 @@ class SSD:
             if int(line.split(' ')[0]) == lba:
                 value = line.split(' ')[-1]
 
-        with open(self.ssd_output, 'w', encoding='utf-8') as f:
-            f.write(value)
+        self.write_output(value)
 
         return value
 
     def write(self, lba: int, value: str):
-        if self.is_valid_address(lba) and self.is_valid_value(value):
-            contents = self.read_all()
-            contents[lba] = f"{lba:02d} {value}\n"
+        if not (self.is_valid_address(lba) and self.is_valid_value(value)):
+            self.write_output('ERROR')
+            return
 
-            with open(self.ssd_nand, 'w', encoding='utf-8') as f:
-                f.writelines(contents)
+        contents = self.read_all()
+        contents[lba] = f"{lba:02d} {value}\n"
 
-            with open(self.ssd_output, 'w', encoding='utf-8') as f:
-                f.write('')
+        self.write_nand(contents)
+        self.write_output('')
 
-        else:
-            with open(self.ssd_output, 'w', encoding='utf-8') as f:
-                f.write('ERROR')
-
-    def is_valid_address(self, address):
+    def is_valid_address(self, address: int):
         try:
             if 0 <= address <= 99:
                 return True
@@ -74,7 +72,7 @@ class SSD:
         except Exception as e:
             return False
 
-    def is_valid_value(self, hex_input):
+    def is_valid_value(self, hex_input: str):
         try:
             value = int(hex_input, 16)
 
