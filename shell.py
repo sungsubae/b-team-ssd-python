@@ -1,12 +1,13 @@
 import random
 
 from ssd import SSD
+import random
 
 
 class Shell:
-    def __init__(self, size=128):
+
+    def __init__(self):
         self.ssd = SSD()
-        self.data = [0] * size  # 내부 스토리지
 
     def read(self, lba: int):
         if 0 <= lba <= 99:
@@ -16,12 +17,9 @@ class Shell:
         else:
             print("[Read] ERROR")
 
-    def write(self, line):
-        tokens = line.strip().split()
+    def write(self, lba, address):
         try:
-            lba = int(tokens[1])
-            value = int(tokens[2], 16) # 16진수
-            self.data[lba] = value
+            self.ssd.write(lba, address)
             return "[Write] Done"
         except Exception:
             return "Usage: write <LBA> <VALUE>"
@@ -37,7 +35,24 @@ class Shell:
             print(self.ssd.read(lba))
 
     def FullWriteAndReadCompare(self):
-        pass
+        ssd_length = 100
+        block_length = 5
+        for block_idx in range(ssd_length // block_length):
+            random_val = random.randint(0x00000001, 0xFFFFFFFF)
+            random_val = f"{random_val:#08X}"
+            remove_duplicates = set()
+            for inner_idx in range(block_length):
+                idx = block_idx * block_length + inner_idx
+                self.ssd.write(idx, random_val)
+                self.ssd.read(idx)
+                result = self.ssd.read_output()
+                remove_duplicates.add(result)
+            if len(remove_duplicates) == 1 and random_val in remove_duplicates:
+                continue
+            print("FAIL")
+            return
+        print("PASS")
+
 
     def PartialLBAWrite(self):
         pass
@@ -68,15 +83,27 @@ class Shell:
 def main(shell: Shell):
     while True:
         user_input = input("Shell> ")
-        user_input_list = user_input.split(" ")
+        user_input_list = user_input.strip().split()
+        if not user_input_list:
+            print ("INVALID COMMAND")
+            continue
 
-        cmd_type = user_input_list[0]
+        cmd_type = user_input_list[0].lower()
+
         invalid_cmd = False
         if cmd_type == "read":
             lba = int(user_input_list[1])
             shell.read(lba)
         elif cmd_type == "write":
-            shell.write(user_input)
+            if len(user_input_list) != 3:
+                print("Usage: write <LBA> <VALUE>")
+                continue
+            lba = int(user_input_list[1])
+            address = user_input_list[2]
+            if not (0 <= lba < 100):
+                print ("[Write] ERROR: LBA out of range (0~99)")
+                return
+            shell.write(lba, address)
         elif cmd_type == "exit":
             break
         elif cmd_type == "help":
