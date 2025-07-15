@@ -11,8 +11,9 @@ class Shell:
     def __init__(self):
         self.ssd = SSD()
 
-    def _ssd_reset(self):
-        self.ssd.reset_ssd()
+    def _ssd_reset(self, reset_val=f"{0:#08X}"):
+        for idx in range(self.MIN_INDEX, self.MAX_INDEX):
+            self._write(idx, reset_val)
 
     def read(self, lba: int):
         line = self._read(lba)
@@ -47,7 +48,7 @@ class Shell:
 
     def full_write(self, value):
         for lba in range(self.MAX_INDEX):
-            self.ssd.write(lba, value)
+            self._write(lba, value)
         print(f"[Full Write] Done")
 
     def fullread(self):
