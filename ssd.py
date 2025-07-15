@@ -3,6 +3,13 @@ import os
 
 
 class SSD:
+    _instance = None
+
+    def __new__(cls, *args, **kwargs):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+        return cls._instance
+
     def __init__(self):
         self.ssd_nand = "ssd_nand.txt"
         self.ssd_output = "ssd_output.txt"
