@@ -1,6 +1,5 @@
 import random
 import subprocess
-import random
 
 class Shell:
     MIN_INDEX = 0
@@ -158,7 +157,7 @@ def main(shell: Shell):
             value = user_input_list[1]
             shell.full_write(value)
         elif cmd_type == "fullread":
-            shell.fullread()
+            shell.full_read()
         elif cmd_type == "1_" or cmd_type == "1_FullWriteAndReadCompare":
             shell.FullWriteAndReadCompare()
         elif cmd_type == "2_" or cmd_type == "2_PartialLBAWrite":
