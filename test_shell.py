@@ -113,3 +113,8 @@ def test_cmd_WriteReadAging(mocker:MockerFixture):
 
     assert mk.WriteReadAging.call_count == 2
 
+def test_fullread_call():
+    pass
+
+def test_fullread_valid():
+    pass
