@@ -9,6 +9,9 @@ class Shell:
     def __init__(self):
         self.ssd = SSD()
 
+    def _ssd_reset(self):
+        self.ssd.reset_ssd()
+
     def read(self, lba: int):
         if 0 <= lba <= 99:
             self.ssd.read(lba)
