@@ -16,8 +16,8 @@ class SSD:
 
     def read(self, lba: int):
         if lba < 0 or lba > 99:
-            with open(self.ssd_output, 'w', encoding='utf-8') as file:
-                file.write('ERROR')
+            with open(self.ssd_output, 'w', encoding='utf-8') as f:
+                f.write('ERROR')
             return
 
         lines = self.read_all()
@@ -26,27 +26,25 @@ class SSD:
             if int(line.split(' ')[0]) == lba:
                 value = line.split(' ')[-1]
 
-        with open(self.ssd_output, 'w', encoding='utf-8') as file:
-            file.write(value)
+        with open(self.ssd_output, 'w', encoding='utf-8') as f:
+            f.write(value)
 
         return value
 
-    def write(self, address: int, value):
-        if 0 <= address <= 99:
+    def write(self, lba: int, value):
+        if 0 <= lba <= 99:
             contents = self.read_all()
-            contents[address] = f"{address:02d} {value}\n"
+            contents[lba] = f"{lba:02d} {value}\n"
 
-            f = open(self.ssd_nand, 'w', encoding='utf-8')
-            f.writelines(contents)
-            f.close()
+            with open(self.ssd_nand, 'w', encoding='utf-8') as f:
+                f.writelines(contents)
 
-            f = open(self.ssd_output, 'w', encoding='utf-8')
-            f.write('')
-            f.close()
+            with open(self.ssd_output, 'w', encoding='utf-8') as f:
+                f.write('')
+
         else:
-            f = open(self.ssd_output, 'w', encoding='utf-8')
-            f.write('ERROR')
-            f.close()
+            with open(self.ssd_output, 'w', encoding='utf-8') as f:
+                f.write('ERROR')
 
 def main():
     parser = argparse.ArgumentParser(description="SSD Read/Write")
