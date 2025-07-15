@@ -1,10 +1,22 @@
 import argparse
+import os
 
 
 class SSD:
-    def __init__(self, ssd_nand=None, ssd_output=None):
-        self.ssd_nand = ssd_nand if ssd_output is not None else "ssd_nand.txt"
-        self.ssd_output = ssd_output if ssd_output is not None else "ssd_output.txt"
+    def __init__(self):
+        self.ssd_nand = "ssd_nand.txt"
+        self.ssd_output = "ssd_output.txt"
+
+        if not os.path.exists("ssd_nand.txt"):
+            self.reset_ssd()
+
+    def reset_ssd(self):
+        with open('ssd_nand.txt', 'w', encoding='utf-8') as f:
+            for lba in range(100):
+                f.write(f'{lba:02d} 0x00000000\n')
+
+        with open('ssd_output.txt', 'w', encoding='utf-8') as f:
+            f.write('')
 
     def read_all(self):
         with open(self.ssd_nand, 'r', encoding='utf-8') as f:
