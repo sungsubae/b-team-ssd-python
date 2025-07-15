@@ -216,25 +216,39 @@ def test_write_read_aging_return_true():
 
 
 def test_PartialLBAWrite(mocker: MockerFixture):
-    import random
-    shell = Shell()
-    shell.ssd = mocker.Mock(spec=SSD)
+    mock_write = mocker.patch('shell.Shell._write')
+    mock_read = mocker.patch('shell.Shell._read')
+    mock_read.return_value = hex(1)
 
+    shell = Shell()
     shell.PartialLBAWrite(repeat=1, seed=42)
     write_calls = []
     random.seed(42)
     write_value = hex(random.randint(0x00000000, 0xFFFFFFFF))
     for lba in [4, 0, 3, 1, 2]:
         write_calls.append(call(lba, write_value))
-    shell.ssd.write.assert_has_calls(write_calls)
+    mock_write.assert_has_calls(write_calls)
 
     read_calls = []
     for lba in range(5):
         read_calls.append(call(lba))
-    shell.ssd.read.assert_has_calls(read_calls)
+    mock_read.assert_has_calls(read_calls)
 
 
-def test_PartialLBAWrite_pass(capsys):
-    Shell().PartialLBAWrite()
+def test_PartialLBAWrite_pass_and_fail(mocker: MockerFixture, capsys):
+    mock_write = mocker.patch('shell.Shell._write')
+    mock_read = mocker.patch('shell.Shell._read')
+    mock_read.return_value = hex(1)
+
+
+    shell = Shell()
+    shell.PartialLBAWrite(repeat=1, seed=42)
     captured = capsys.readouterr()
     assert captured.out.strip() == "PASS"
+
+    mock_read.side_effect = [hex(1), hex(1), hex(2), hex(1), hex(1)]
+    shell.PartialLBAWrite(repeat=1, seed=42)
+    captured = capsys.readouterr()
+    assert captured.out.strip() == "FAIL"
+
+
