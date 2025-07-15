@@ -3,6 +3,7 @@ from pytest_mock import MockerFixture
 from unittest.mock import call, patch
 
 from shell import Shell, main
+from ssd import SSD
 
 
 def test_read_valid_index(capsys):
@@ -228,3 +229,24 @@ LBA 96 : 0xFFFFFFFF
 LBA 97 : 0xFFFFFFFF
 LBA 98 : 0xFFFFFFFF
 LBA 99 : 0xFFFFFFFF'''
+
+def test_write_read_aging_calls_write_400_times(mocker: MockerFixture):
+    shell = Shell()
+    mk = mocker.Mock(spec=SSD)
+
+    shell.ssd = mk
+    shell.WriteReadAging()
+
+    assert mk.write.call_count == 400
+
+def test_write_read_aging_calls_read_400_times(mocker: MockerFixture):
+    shell = Shell()
+    mk = mocker.Mock(spec=SSD)
+
+    shell.ssd = mk
+    shell.WriteReadAging()
+
+    assert mk.read.call_count == 400
+
+def test_write_read_aging_return_true():
+    assert Shell().WriteReadAging() == True
