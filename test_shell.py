@@ -1,6 +1,8 @@
+import builtins
+
 import pytest, pytest_mock
 from pytest_mock import MockerFixture
-from unittest.mock import call, patch
+from unittest.mock import call, patch, mock_open
 
 from shell import Shell, main
 import random
@@ -45,6 +47,47 @@ def test_write(capsys, mocker :MockerFixture):
     assert captured.out.strip() == "[Write] Done"
     mock_write.assert_called_once_with(3, value)
 
+def test_write_invalid_hex_false(mocker):
+    shell = Shell()
+    # is_hex_string이 False를 반환하도록 mock
+    mocker.patch.object(shell, 'is_hex_string', return_value=False)
+    # print를 spy로 감시
+    print_spy = mocker.spy(builtins, 'print')
+    shell.write(3, "INVALID")
+    print_spy.assert_called_with("[Write] ERROR")
+
+def test_write_invalid_hex_true(mocker):
+    shell = Shell()
+    # is_hex_string이 False를 반환하도록 mock
+    mocker.patch.object(shell, 'is_hex_string', return_value=True)
+    # print를 spy로 감시
+    print_spy = mocker.spy(builtins, 'print')
+    shell.write(3, "0xAAAABBBB")
+    print_spy.assert_called_with("[Write] Done")
+
+def test_write_error_case(mocker):
+    shell = Shell()
+    # 올바른 hex로 통과
+    mocker.patch.object(shell, 'is_hex_string', return_value=True)
+    # subprocess.run mock (동작만 가로채기)
+    mocker.patch('subprocess.run')
+    # open mock: ssd_output.txt에 "ERROR"만 반환
+    m = mock_open(read_data="ERROR")
+    mocker.patch("builtins.open", m)
+    print_spy = mocker.spy(__builtins__, 'print')
+    shell.write(3, "0xAAAABBBB")
+    print_spy.assert_called_with("[Write] ERROR")
+
+def test_write_success(mocker):
+    shell = Shell()
+    mocker.patch.object(shell, 'is_hex_string', return_value=True)
+    mocker.patch('subprocess.run')
+    # open mock: ssd_output.txt에 ""(빈 문자열) 반환
+    m = mock_open(read_data="")
+    mocker.patch("builtins.open", m)
+    print_spy = mocker.spy(__builtins__, 'print')
+    shell.write(4, "0xAABBAABB")
+    print_spy.assert_called_with("[Write] Done")
 
 def test_full_write_success(mocker: MockerFixture):
     ssd_write_mock = mocker.patch('shell.Shell._write')
