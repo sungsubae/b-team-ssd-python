@@ -4,6 +4,7 @@ from unittest.mock import call, patch
 
 from shell import Shell, main
 from ssd import SSD
+import random
 
 
 def test_read_valid_index(capsys):
@@ -113,6 +114,29 @@ def test_cmd_WriteReadAging(mocker:MockerFixture):
         main(mk)
 
     assert mk.WriteReadAging.call_count == 2
+
+def test_full_write_and_read_compare(mocker:MockerFixture, capsys):
+    seed = 42
+    ssd = mocker.Mock(spec=SSD)
+    shell = Shell()
+    shell.ssd = ssd
+    ssd_length = 100
+    block_length = 5
+    random_values = []
+    write_calls = []
+    read_calls = []
+    random.seed(seed)
+    for i in range(ssd_length // block_length):
+        random_val = random.randint(0x00000001, 0xFFFFFFFF)
+        for j in range(block_length):
+            random_values.append(f'{random_val:#08X}')
+            write_calls.append(call(i * block_length + j, f'{random_val:#08X}'))
+            read_calls.append(call(i * block_length + j))
+
+    random.seed(seed)
+    shell.FullWriteAndReadCompare()
+    ssd.write.assert_called_with(write_calls)
+    ssd.read.assert_called_with(read_calls)
 
 def test_fullread_call(mocker:MockerFixture):
     mk = mocker.Mock(spec=Shell)
