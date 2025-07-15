@@ -176,17 +176,17 @@ def test_full_write_and_read_compare_fail(mocker:MockerFixture, capsys):
     assert capsys.readouterr().out == "FAIL\n"
 
 
-def test_fullread_call(mocker:MockerFixture):
+def test_full_read_call(mocker:MockerFixture):
     mk = mocker.Mock(spec=Shell)
-    mk.fullread()
+    mk.full_read()
 
     mk.fullread.assert_called_once()
 
 
-def test_fullread_valid(mocker:MockerFixture, capsys):
+def test_full_read_valid(mocker:MockerFixture, capsys):
     shell = Shell()
 
-    shell.fullread()
+    shell.full_read()
     captured = capsys.readouterr()
     assert captured.out.strip() == '[Full Read]\n' + '\n'.join([f"LBA {i:02d} : 0x00000000" for i in range(100)])
 
