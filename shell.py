@@ -249,8 +249,11 @@ def startShell(shell: Shell):
             continue
 
 
-def startRunner(shell: Shell):
-    pass
+def startRunner(shell: Shell, file_path):
+    with open(file_path, encoding="utf-8") as f:
+        for raw_line in f:
+            line = raw_line.rstrip("\n")  # 줄 끝 개행 문자 제거
+            print(line)
 
 
 def main():
@@ -258,7 +261,7 @@ def main():
     if len(sys.argv) == 1:
         startShell(shell)
     elif len(sys.argv) == 2:
-        startRunner(shell)
+        startRunner(shell, sys.argv[1])
     else:
         print("INVALID COMMAND")
         return 1
