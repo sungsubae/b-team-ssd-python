@@ -2,8 +2,6 @@ from abc import ABC, abstractmethod
 
 from shell import Shell
 
-
-# Command 인터페이스
 class Command(ABC):
     @abstractmethod
     def execute(self, shell, *args):
@@ -23,14 +21,14 @@ class ReadCommand(Command):
 class WriteCommand(Command):
     def execute(self, shell, *args):
         if len(args) != 2:
-            print("Usage: write <LBA> <VALUE>")
+            print("[Write] ERROR")
             return
         try:
             lba = int(args[0])
             value = args[1]
             shell.write(lba, value)
         except Exception:
-            print("Usage: write <LBA> <VALUE>")
+            print("[Write] ERROR")
 
 class EraseCommand(Command):
     def execute(self, shell, *args):
@@ -65,23 +63,23 @@ class FullWriteCommand(Command):
 
 class FullReadCommand(Command):
     def execute(self, shell, *args):
-        shell.fullread()
+        shell.full_read()
 
 class FullWriteAndReadCompareCommand(Command):
     def execute(self, shell, *args):
-        shell.full_write_and_read_compare()
+        shell.logging_and_printing(shell.full_write_and_read_compare())
 
 class PartialLBAWriteCommand(Command):
     def execute(self, shell, *args):
-        shell.partial_lba_write()
+        shell.logging_and_printing(shell.partial_lba_write())
 
 class WriteReadAgingCommand(Command):
     def execute(self, shell, *args):
-        shell.write_read_aging()
+        shell.logging_and_printing(shell.write_read_aging())
 
 class EraseAndWriteAging(Command):
     def execute(self, shell, *args):
-        shell.erase_and_write_aging()
+        shell.logging_and_printing(shell.erase_and_write_aging())
 
 class HelpCommand(Command):
     def execute(self, shell, *args):
@@ -111,6 +109,11 @@ COMMANDS = {
     "exit": ExitCommand(),
 }
 
+def find_command(cmd_type):
+    if cmd_type in COMMANDS:
+        return COMMANDS[cmd_type]
+    return None
+
 def command_main(shell: Shell):
     while True:
         user_input = input("Shell> ")
@@ -120,10 +123,9 @@ def command_main(shell: Shell):
             continue
 
         cmd_type = user_input_list[0].lower()
-
         args = user_input_list[1:]
 
-        command = COMMANDS.get(cmd_type)
+        command = find_command(cmd_type)
         if command:
             command.execute(shell, *args)
         else:
