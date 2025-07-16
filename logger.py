@@ -2,15 +2,27 @@ import os
 from datetime import datetime
 import inspect
 
+FILE_MAX_SIZE = 10 * 1024  # 10KB
+
 class Logger:
     def __init__(self, logfile='latest.log'):
 
         current_dir = os.path.dirname(os.path.abspath(__file__))
+        self.log_dir = current_dir
         self.logfile = os.path.join(current_dir, logfile)
 
-    def print(self, message: str):
-        now = datetime.now().strftime("[%y.%m.%d %H:%M]")
+    def roatate_file_if_needed(self):
+        if os.path.exists(self.logfile) and os.path.getsize(self.logfile) > FILE_MAX_SIZE:
+            timestamp = datetime.now().strftime("%y%m%d_%Hh_%Mm_%Ss")
+            rotated_name = f"until_{timestamp}.log"
+            rotated_path = os.path.join(self.log_dir, rotated_name)
 
+            os.rename(self.logfile, rotated_path)
+
+    def print(self, message: str):
+        self.roatate_file_if_needed()
+
+        now = datetime.now().strftime("[%y.%m.%d %H:%M]")
 
         frame = inspect.currentframe()
         outer_frames = inspect.getouterframes(frame)
