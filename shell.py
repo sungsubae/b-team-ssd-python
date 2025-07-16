@@ -2,7 +2,6 @@ import random
 import subprocess
 
 from logger import Logger
-from buffer import Buffer
 import sys
 
 class Shell:
@@ -11,12 +10,9 @@ class Shell:
 
     def __init__(self):
         self.logger = Logger()
-        self.buffer = Buffer()
 
     def read(self, lba: int):
-        line = self.buffer.read(lba)
-        if not line:
-            line = self._read(lba)
+        line = self._read(lba)
 
         if  line == f"ERROR":
             self.logger.print("[Read] ERROR")
@@ -50,9 +46,7 @@ class Shell:
                 print("[Write] ERROR")
                 return
 
-            output_msg = self.buffer.write(lba, value)
-            if not output_msg:
-                output_msg = self._write(lba, value)
+            output_msg = self._write(lba, value)
 
             if output_msg == "ERROR":
                 print("[Write] ERROR")
@@ -102,10 +96,9 @@ class Shell:
             print("[Erase] ERROR")
             return
 
-        if not self.buffer.erase(lba, size):
-            for start in range(lba, lba + size, 10):
-                end = min(lba + size - start, 10)
-                self._erase(start, end)
+        for start in range(lba, lba + size, 10):
+            end = min(lba + size - start, 10)
+            self._erase(start, end)
         self.logger.print("[Erase] Done")
         print("[Erase] Done")
 
