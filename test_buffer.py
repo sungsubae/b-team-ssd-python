@@ -212,3 +212,27 @@ def test_buffer_erase_merge_1():
     expected_buffer_set_without_index = {'E_11_10', 'empty'}
     actual_files = set([fn[2:] for fn in os.listdir(r"./buffer")])
     assert actual_files == expected_buffer_set_without_index
+
+
+def test_buffer_erase_merge_2():
+    ssd = SSD()
+    ssd.reset_ssd()
+
+    buffer = Buffer()
+    buffer.reset()
+
+    commands = [["python", "ssd.py", "E", "11", "3"],
+                ["python", "ssd.py", "E", "18", "3"],
+                ["python", "ssd.py", "E", "14", "4"]]
+
+    for command in commands:
+        subprocess.run(
+            command,
+            capture_output=True,
+            text=True
+        )
+
+    expected_buffer_set_without_index = {'E_11_10', 'empty'}
+    actual_files = set([fn[2:] for fn in os.listdir(r"./buffer")])
+    assert actual_files == expected_buffer_set_without_index
+
