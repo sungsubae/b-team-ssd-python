@@ -255,9 +255,9 @@ def test_write_read_aging_pass(mocker: MockerFixture, capsys):
     mock_read.return_value = '0x00000001'
     shell = Shell()
 
-    shell.WriteReadAging()
-    captured = capsys.readouterr()
-    assert captured.out.strip() == "PASS"
+    assert shell.WriteReadAging() == "PASS"
+    # captured = capsys.readouterr()
+    # assert captured.out.strip() == "PASS"
 
 
 def test_PartialLBAWrite(mocker: MockerFixture):
