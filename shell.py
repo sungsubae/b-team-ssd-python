@@ -219,7 +219,7 @@ class Shell:
         self.logger.print(message)
 
 
-def checkInvalid(user_input_list):
+def check_invalid(user_input_list):
     if not user_input_list:
         return True
 
@@ -255,7 +255,7 @@ def start_shell(shell: Shell):
         user_input = input("Shell> ")
         user_input_list = user_input.strip().split()
 
-        if checkInvalid(user_input_list):
+        if check_invalid(user_input_list):
             print("INVALID COMMAND")
             continue
 
