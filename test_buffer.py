@@ -6,6 +6,7 @@ import os
 from shell import Shell, main
 from buffer import Buffer
 from ssd import SSD
+import subprocess
 
 
 @pytest.fixture
@@ -186,3 +187,28 @@ def test_write_with_same_lba():
     file_list = os.listdir(Buffer().folder_path)
 
     assert get_empty_buffer_cnt(file_list) == len(file_list) - 3
+
+
+def test_buffer_erase_merge_1():
+    ssd = SSD()
+    ssd.reset_ssd()
+
+    buffer = Buffer()
+    buffer.reset()
+
+    commands = [["python", "ssd.py", "E", "11", "6"],
+                ["python", "ssd.py", "E", "12", "6"],
+                ["python", "ssd.py", "E", "13", "6"],
+                ["python", "ssd.py", "E", "14", "6"],
+                ["python", "ssd.py", "E", "15", "6"]]
+
+    for command in commands:
+        subprocess.run(
+            command,
+            capture_output=True,
+            text=True
+        )
+
+    expected_buffer_set_without_index = {'E_11_10', 'empty'}
+    actual_files = set([fn[2:] for fn in os.listdir(r"./buffer")])
+    assert actual_files == expected_buffer_set_without_index
