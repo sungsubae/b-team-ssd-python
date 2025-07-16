@@ -148,10 +148,10 @@ class Shell:
             if len(remove_duplicates) == 1 and random_val in remove_duplicates:
                 continue
             self.logger.print("FAIL")
-            print("FAIL")
-            return
+
+            return "FAIL"
         self.logger.print("PASS")
-        print("PASS")
+        return "PASS"
 
 
     def PartialLBAWrite(self, repeat=30, seed=42):
@@ -166,11 +166,10 @@ class Shell:
             for lba in range(1, 5):
                 if read_value != self._read(lba):
                     self.logger.print("FAIL")
-                    print("FAIL")
-                    return
+                    return "FAIL"
+
         self.logger.print("PASS")
-        print("PASS")
-        return
+        return "PASS"
 
 
     def WriteReadAging(self):
@@ -181,11 +180,9 @@ class Shell:
             self._write(99, write_value)
             if self._read(0).strip() != self._read(99).strip():
                 self.logger.print("FAIL")
-                print("FAIL")
-                return
+                return "FAIL"
         self.logger.print("PASS")
-        print("PASS")
-        return
+        return "PASS"
 
     def help(self):
         message = '''제작자: 배성수 팀장, 연진혁, 이정은, 이찬욱, 임창근, 정구환, 이근우
@@ -263,11 +260,14 @@ def startShell(shell: Shell):
         elif cmd_type == "fullread":
             shell.full_read()
         elif cmd_type == "1_" or cmd_type == "1_FullWriteAndReadCompare":
-            shell.FullWriteAndReadCompare()
+            ret = shell.FullWriteAndReadCompare()
+            print(ret)
         elif cmd_type == "2_" or cmd_type == "2_PartialLBAWrite":
-            shell.PartialLBAWrite()
+            ret = shell.PartialLBAWrite()
+            print(ret)
         elif cmd_type == "3_" or cmd_type == "3_WriteReadAging":
-            shell.WriteReadAging()
+            ret = shell.WriteReadAging()
+            print(ret)
         else:
             continue
 
