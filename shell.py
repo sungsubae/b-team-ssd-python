@@ -187,25 +187,12 @@ class Shell:
         print("PASS")
         return
 
-    def erase_range(self, line):
-        # 파라미터 파싱 (예: "erase_range 0 2")
-        tokens = line.strip().split()
-        st_lba = int(tokens[1])
-        en_lba = int(tokens[2])
-
-        # 해당 구간을 0x00000000으로 초기화
-        for lba in range(st_lba, en_lba + 1):
-            init_val = "0x00000000"
-            self.write(lba, init_val)
-
-        print(f"[EraseRange] Done ({st_lba}~{en_lba})")
-
     def erase_and_write_aging(self, loop=30):
         for cnt in range(loop):
             for i in range(50):
                 st = i * 2
                 en = st + 2
-                self.erase_range(f"erase_range {st} {min(en, 99)}")
+                self.erase_range(st, min(en, 99))
                 # 마지막 LBA에 "서로 다른" 랜덤 값 2번 write
                 if en <= 99:
                     rand_val1 = random.randint(0x00000000, 0xFFFFFFFF)
@@ -215,9 +202,8 @@ class Shell:
                     while rand_val2 == rand_val1:
                         rand_val2 = random.randint(0x00000000, 0xFFFFFFFF)
                         rand_val2 = f"{rand_val2:#010x}"
-                    self.write(en, rand_val1)
-                    self.write(en, rand_val2)
-                    print(f"{en} 번 난수로 변경 ")
+                    self._write(en, rand_val1)
+                    self._write(en, rand_val2)
 
         print("[EraseAndWriteAging] Done")
 
