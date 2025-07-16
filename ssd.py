@@ -1,6 +1,6 @@
 import argparse
 import os
-
+from buffer import Buffer
 
 class SSD:
     _instance = None
@@ -13,6 +13,7 @@ class SSD:
     def __init__(self):
         self.ssd_nand = "ssd_nand.txt"
         self.ssd_output = "ssd_output.txt"
+        self.buffer = Buffer()
 
         if not os.path.exists(self.ssd_nand):
             self.reset_ssd()
@@ -20,6 +21,7 @@ class SSD:
     def reset_ssd(self):
         self.write_nand([f'{lba:02d} 0x00000000\n' for lba in range(100)])
         self.write_output('')
+        self.buffer.initialize()
 
     def read_all(self):
         with open(self.ssd_nand, 'r', encoding='utf-8') as f:
@@ -42,38 +44,60 @@ class SSD:
             self.write_output('ERROR')
             return
 
-        lines = self.read_all()
-        value = ''
-        for line in lines:
-            if int(line.split(' ')[0]) == lba:
-                value = line.split(' ')[-1]
+        value = self.buffer.read(lba)
+        if not value:
+            lines = self.read_all()
+            value = lines[lba].split(' ')[-1]
 
         self.write_output(value)
-
-        return value
+        return
 
     def write(self, lba: int, value: str):
         if not (self.is_valid_address(lba) and self.is_valid_value(value)):
             self.write_output('ERROR')
             return
 
+        if not self.buffer.write('W', lba, value):
+            self.flush()
+            self.buffer.write('W', lba, value)
+
+    def _write(self, lba: int, value: str):
         contents = self.read_all()
         contents[lba] = f"{lba:02d} {value}\n"
 
         self.write_nand(contents)
         self.write_output('')
 
+    def flush(self):
+        file_list = self.buffer.get_sorted_buffer_file_list()
+        for filename in file_list:
+            if 'empty' in filename:
+                break
+
+            idx, cmd, lba, value = filename.split('_')
+            if cmd == 'W':
+                self._write(int(lba), value)
+            else:
+                self._erase(int(lba), int(value))
+        self.buffer.initialize()
+
     def erase(self, lba: int, size: int):
         if not (self.is_valid_address(lba) and self.is_valid_size(size) and self.is_valid_address(lba + size - 1)):
             self.write_output('ERROR')
             return
 
+        if not self.buffer.write('E', lba, size=size):
+            self.flush()
+            self.buffer.write('E', lba, size=size)
+
+        self.write_output('')
+
+    def _erase(self, lba: int, size: int):
         contents = self.read_all()
-        for idx in range(lba, lba+size):
+        for idx in range(lba, lba + size):
             contents[idx] = f"{idx:02d} 0x00000000\n"
 
         self.write_nand(contents)
-        self.write_output('')
 
     def is_valid_address(self, address: int):
         try:
@@ -104,7 +128,6 @@ class SSD:
         except Exception as e:
             return False
 
-
 def main():
     parser = argparse.ArgumentParser(description="SSD Read/Write")
     subparsers = parser.add_subparsers(dest='command', required=True)
@@ -130,6 +153,8 @@ def main():
         ssd.write(args.address, args.value)
     elif args.command == 'E':
         ssd.erase(args.address, args.size)
+    elif args.command == 'F':
+        ssd.flush()
 
 
 if __name__ == "__main__":

@@ -5,7 +5,7 @@ from buffer import Buffer
 
 def test_buffer_write_and_read():
     buffer = Buffer()
-    buffer.make_init_buffer()
+    buffer.initialize()
 
     buffer.write('E', 5, size=5)
     assert buffer.read(5) == '0x00000000'
