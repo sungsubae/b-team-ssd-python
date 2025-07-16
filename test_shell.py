@@ -4,7 +4,7 @@ import pytest, pytest_mock
 from pytest_mock import MockerFixture
 from unittest.mock import call, patch, mock_open
 
-from shell import Shell, startShell
+from shell import Shell, start_shell
 import random
 
 
@@ -128,7 +128,7 @@ def test_help_text_valid(capsys):
 def test_cmd_read(mocker:MockerFixture):
     mk = mocker.Mock(spec=Shell)
     with patch("builtins.input", side_effect=["read 0", "exit"]):
-        startShell(mk)
+        start_shell(mk)
 
     mk.read.assert_called_with(0)
 
@@ -136,24 +136,24 @@ def test_cmd_read(mocker:MockerFixture):
 def test_cmd_write(mocker:MockerFixture):
     mk = mocker.Mock(spec=Shell)
     with patch("builtins.input", side_effect=["write 3 0xAAAABBBB", "exit"]):
-        startShell(mk)
+        start_shell(mk)
     mk.write.assert_called_with(3, "0xAAAABBBB")
 
 
 def test_cmd_fullwrite(mocker:MockerFixture):
     mk = mocker.Mock(spec=Shell)
     with patch("builtins.input", side_effect=["fullwrite 0xAAAABBBB", "exit"]):
-        startShell(mk)
+        start_shell(mk)
     mk.full_write.assert_called_with("0xAAAABBBB")
 
 
 def test_cmd_full_write_and_read_compare(mocker:MockerFixture):
     mk = mocker.Mock(spec=Shell)
     with patch("builtins.input", side_effect=["1_", "exit"]):
-        startShell(mk)
+        start_shell(mk)
 
     with patch("builtins.input", side_effect=["1_FullWriteAndReadCompare", "exit"]):
-        startShell(mk)
+        start_shell(mk)
 
     assert mk.full_write_and_read_compare.call_count == 2
 
@@ -161,7 +161,7 @@ def test_cmd_full_write_and_read_compare(mocker:MockerFixture):
 def test_cmd_partial_lba_write(mocker:MockerFixture):
     mk = mocker.Mock(spec=Shell)
     with patch("builtins.input", side_effect=["2_", "2_PartialLBAWrite", "exit"]):
-        startShell(mk)
+        start_shell(mk)
 
     assert mk.partial_lba_write.call_count == 2
 
@@ -169,7 +169,7 @@ def test_cmd_partial_lba_write(mocker:MockerFixture):
 def test_cmd_write_read_aging(mocker:MockerFixture):
     mk = mocker.Mock(spec=Shell)
     with patch("builtins.input", side_effect=["3_", "3_WriteReadAging", "exit"]):
-        startShell(mk)
+        start_shell(mk)
 
     assert mk.write_read_aging.call_count == 2
 

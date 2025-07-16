@@ -244,7 +244,7 @@ def checkInvalid(user_input_list):
 
     return False
 
-def startShell(shell: Shell):
+def start_shell(shell: Shell):
     logger = Logger()
 
     def loggingAndPrinting(ret:str):
@@ -330,7 +330,7 @@ def start_runner(shell: Shell, file_path):
 def main():
     shell = Shell()
     if len(sys.argv) == 1:
-        startShell(shell)
+        start_shell(shell)
     elif len(sys.argv) == 2:
         start_runner(shell, sys.argv[1])
     else:
