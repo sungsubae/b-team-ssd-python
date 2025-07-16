@@ -10,9 +10,12 @@ def log_and_print(func):
     @wraps(func)
     def wrapper(self, *args, **kwargs):
         result = func(self, *args, **kwargs)
+        method_name = func.__name__
+        class_name = self.__class__.__name__
+        location = f"{class_name}.{method_name}()"
         msg = result if isinstance(result, str) else str(result)
         for msg in self.msg:
-            self.logger.print(msg.strip())
+            self.logger.print(msg.strip(),location=location)
             print(msg.strip())
         self.msg.clear()
         return result

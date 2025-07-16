@@ -21,7 +21,7 @@ class SSD:
     def reset_ssd(self):
         self.write_nand([f'{lba:02d} 0x00000000\n' for lba in range(100)])
         self.write_output('')
-        self.buffer.initialize()
+        self.buffer.reset()
 
     def read_all(self):
         with open(self.ssd_nand, 'r', encoding='utf-8') as f:
@@ -79,7 +79,7 @@ class SSD:
                 self._write(int(lba), value)
             else:
                 self._erase(int(lba), int(value))
-        self.buffer.initialize()
+        self.buffer.reset()
 
     def erase(self, lba: int, size: int):
         if not (self.is_valid_address(lba) and self.is_valid_size(size) and self.is_valid_address(lba + size - 1)):
