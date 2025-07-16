@@ -230,6 +230,9 @@ def checkInvalid(user_input_list):
                 user_input_list[2]
                 if not (0 <= lba < 100):
                     return True
+        if cmd_type == "erase" or "erase_range":
+            int(user_input_list[1])
+            int(user_input_list[2])
         if cmd_type == "fullwrite":
             user_input_list[1]
     except (IndexError, ValueError):
