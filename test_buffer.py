@@ -130,7 +130,7 @@ def test_command_buffer_write_same_lba(mocker: MockerFixture, shell, ssd, output
 
 def test_buffer_write_and_read():
     buffer = Buffer()
-    buffer.initialize()
+    buffer.reset()
 
     buffer.write('E', 5, size=5)
     assert buffer.read(5) == '0x00000000'
@@ -150,7 +150,7 @@ def get_empty_buffer_cnt(file_list):
 
 def test_buffer_write_join_command():
     buffer = Buffer()
-    buffer.initialize()
+    buffer.reset()
 
     buffer.write('E', 5, size=5)
     buffer.write('E', 7, size=5)
@@ -163,7 +163,7 @@ def test_buffer_write_join_command():
 
 def test_buffer_write_not_join_erase_command():
     buffer = Buffer()
-    buffer.initialize()
+    buffer.reset()
 
     buffer.write('E', 5, size=5)
     buffer.write('E', 10, size=6)
@@ -172,3 +172,17 @@ def test_buffer_write_not_join_erase_command():
 
     assert get_empty_buffer_cnt(file_list) == len(file_list) - 2
 
+def test_write_with_same_lba():
+    buffer = Buffer()
+    buffer.reset()
+
+    buffer.write('W', 5, value='0x00000001')
+    buffer.write('W', 6, value='0x00000001')
+    buffer.write('W', 7, value='0x00000001')
+    buffer.write('W', 5, value='0x00000002')
+    buffer.write('W', 6, value='0x00000002')
+    buffer.write('W', 7, value='0x00000002')
+
+    file_list = os.listdir(Buffer().folder_path)
+
+    assert get_empty_buffer_cnt(file_list) == len(file_list) - 3
