@@ -47,7 +47,7 @@ class Buffer:
                 new_file_name = f'{file_name[0]}_{cmd}_{lba}_{value}'
             else:
                 if self._join_erase_command(lba, size):
-                    return
+                    return True
                 new_file_name = f'{file_name[0]}_{cmd}_{lba}_{size}'
 
             os.rename(self.folder_path/file_name, self.folder_path/new_file_name)
@@ -82,7 +82,7 @@ class Buffer:
                 new_size = end - start + 1
                 if new_size <= 10:
                     new_file_name = f'{file_name[0]}_{parts[1]}_{start}_{new_size}'
-                    os.rename(os.path.join(self.folder_path, file_name), os.path.join(self.folder_path, new_file_name))
+                    os.rename(self.folder_path/file_name, self.folder_path/new_file_name)
                     return True
 
         return False
