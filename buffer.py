@@ -51,9 +51,6 @@ class Buffer:
             os.rename(self.folder_path/file_name, self.folder_path/new_file_name)
             return
 
-    def flush(self):
-        pass
-
     def make_init_buffer(self):
         try:
             self.folder_path.mkdir(parents=True, exist_ok=True)
