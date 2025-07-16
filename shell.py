@@ -12,8 +12,8 @@ def log_and_print(func):
         result = func(self, *args, **kwargs)
         msg = result if isinstance(result, str) else str(result)
         for msg in self.msg:
-            self.logger.print(msg)
-            print(msg)
+            self.logger.print(msg.strip())
+            print(msg.strip())
         self.msg.clear()
         return result
     return wrapper
@@ -144,8 +144,9 @@ class Shell:
 
         return self.msg
 
+    @log_and_print
     def full_read(self):
-        self.logger.print("[Full Read]")
+        self.msg.append("[Full Read]")
         for lba in range(self.MAX_INDEX):
             self.msg.append(f'LBA {lba:02d} : {self._read(lba)}')
 
