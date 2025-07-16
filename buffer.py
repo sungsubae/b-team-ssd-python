@@ -1,11 +1,11 @@
 import os
 import re
-
+from pathlib import Path
 
 class Buffer:
     def __init__(self):
-        self.folder_path = './buffer'
-        if not os.path.exists(self.folder_path):
+        self.folder_path = Path('./buffer')
+        if self.folder_path.exists():
             self.make_init_buffer()
 
     def _extract_leading_number(self, filename: str):
@@ -48,26 +48,22 @@ class Buffer:
                     return
                 new_file_name = f'{file_name[0]}_{cmd}_{lba}_{size}'
 
-            os.rename(os.path.join(self.folder_path, file_name), os.path.join(self.folder_path, new_file_name))
+            os.rename(self.folder_path/file_name, self.folder_path/new_file_name)
             return
-
-    def erase(self, lba: int, size: int):
-        pass
 
     def flush(self):
         pass
 
     def make_init_buffer(self):
         try:
-            os.makedirs(self.folder_path, exist_ok=True)
+            self.folder_path.mkdir(parents=True, exist_ok=True)
             for filename in os.listdir(self.folder_path):
-                file_path = os.path.join(self.folder_path, filename)
+                file_path = self.folder_path/filename
                 os.remove(file_path)  # 파일 삭제
 
             for idx in range(1, 6):
-                file_path = os.path.join(self.folder_path, str(idx) + "_empty")
-                with open(file_path, 'w') as f:
-                    pass
+                file_path = self.folder_path/f"{idx}_empty"
+                file_path.touch()
         except OSError as e:
             print(f"오류 발생: {e}")
 
