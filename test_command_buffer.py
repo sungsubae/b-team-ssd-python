@@ -22,7 +22,7 @@ def test_command_buffer_flush():
     expected_files = {'1_empty', '2_empty', '3_empty', '4_empty', '5_empty'}
     actual_files = set(os.listdir(r"./buffer"))
 
-    assert expected_files.issubset(actual_files)
+    assert actual_files == expected_files
 
 
 def test_command_buffer_example_1(mocker: MockerFixture):
@@ -40,7 +40,7 @@ def test_command_buffer_example_1(mocker: MockerFixture):
 
     shell_write_mock.assert_not_called()
     shell_erase_mock.assert_not_called()
-    assert expected_files.issubset(actual_files)
+    assert actual_files == expected_files
 
 
 def test_command_buffer_example_2(mocker: MockerFixture):
@@ -57,7 +57,7 @@ def test_command_buffer_example_2(mocker: MockerFixture):
 
     shell_read_mock.assert_not_called()
 
-    assert expected_buffer_set_without_index == actual_files
+    assert actual_files == expected_buffer_set_without_index
     assert SSD().read_output().strip() == '0xAAAABBBB'
 
 
@@ -76,7 +76,7 @@ def test_command_buffer_example_3(mocker: MockerFixture):
 
     shell_write_mock.assert_not_called()
     shell_erase_mock.assert_not_called()
-    assert expected_buffer_set_without_index == actual_files
+    assert actual_files == expected_buffer_set_without_index
 
 
 def test_command_buffer_write_over_buffer_limit(mocker: MockerFixture):
