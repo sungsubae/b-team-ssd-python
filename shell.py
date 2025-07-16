@@ -322,7 +322,7 @@ def startRunner(shell: Shell, file_path):
                     break
             elif line == '4_' or line == '4_EraseAndWriteAging':
                 print('4_EraseAndWriteAging       ___   Run...', end='', flush=True)
-                # shell.full_write_and_read_compare()
+                # shell.erase_and_write_aging()
             else:
                 continue
 
