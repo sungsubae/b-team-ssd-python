@@ -310,3 +310,31 @@ def test_erase_range(mocker: MockerFixture, capsys):
     calls = [call(start, min(end_lba + 1 - start, 10)) for start in range(start_lba, end_lba + 1, 10)]
     mock_erase_range.assert_has_calls(calls)
     assert captured.strip() == "[Erase Range] Done"
+
+def test_erase_and_write_aging(mocker):
+    shell = Shell()
+    # erase_range, _write 메서드를 mock
+    erase_range_mock = mocker.patch.object(shell, 'erase_range')
+    write_mock = mocker.patch.object(shell, '_write')
+    shell.erase_and_write_aging(loop=1)
+
+    assert erase_range_mock.call_count == 50
+    assert write_mock.call_count == 98
+
+    first_en = min(0 + 2, 99)
+    erase_range_mock.assert_any_call(0, first_en)
+    called_args_list = [call.args for call in write_mock.call_args_list[:2]]
+    assert all(isinstance(args[0], int) for args in called_args_list)
+    assert all(isinstance(args[1], str) and args[1].startswith("0x") for args in called_args_list)
+
+    # 각 구간의 en마다 2번씩 write 됐는지 샘플로 체크 가능
+    for i in range(50):
+        if i >= 49:
+            break
+        st = i * 2
+        en = min(st + 2, 99)
+        w1_args = write_mock.call_args_list[i * 2].args
+        w2_args = write_mock.call_args_list[i * 2 + 1].args
+        assert w1_args[0] == en
+        assert w2_args[0] == en
+        assert w1_args[1].startswith("0x") and w2_args[1].startswith("0x")
