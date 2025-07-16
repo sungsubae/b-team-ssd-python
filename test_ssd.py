@@ -63,9 +63,7 @@ def test_read_same_with_output(ssd: SSD):
         if int(nand_line.split(' ')[0]) == lba:
             nand_value = nand_line.split(' ')[-1]
 
-    with open(ssd.ssd_output, 'r', encoding='utf-8') as file:
-        output = file.readline()
-
+    output = get_ssd_output()
     assert nand_value.strip() == output.strip()
 
 
@@ -73,84 +71,75 @@ def test_read_invalid_lba_access(ssd: SSD):
     lba = 100
     ssd.read(lba)
 
-    with open(ssd.ssd_output, 'r', encoding='utf-8') as file:
-        output = file.readline()
-
+    output = get_ssd_output()
     assert output.strip() == "ERROR"
 
 
+def get_ssd_output():
+    output_file_name = 'ssd_output.txt'
+    with open(output_file_name, 'r', encoding='utf-8') as file:
+        ssd_output = file.readline()
+    return ssd_output
+
+
+def run_ssd_write_on_cli(lba: int, value: str):
+    result = subprocess.run(
+        ["python", "ssd.py", "W", str(lba), value],
+        capture_output=True,
+        text=True
+    )
+    return result
+
+
+def run_ssd_read_on_cli(lba: int):
+    result = subprocess.run(
+        ["python", "ssd.py", "R", str(lba)],
+        capture_output=True,
+        text=True
+    )
+    return result
+
+
+def run_ssd_erase_on_cli(lba: int, size: int):
+    result = subprocess.run(
+        ["python", "ssd.py", "E", str(lba), str(size)],
+        capture_output=True,
+        text=True
+    )
+
+
 def test_write_and_read_command_line():
-    result = subprocess.run(
-        ["python", "ssd.py", "W", "3", "0x1298CDEF"],
-        capture_output=True,
-        text=True
-    )
+    run_ssd_write_on_cli(3, "0x1298CDEF")
+    run_ssd_read_on_cli(3)
 
-    result = subprocess.run(
-        ["python", "ssd.py", "R", "3"],
-        capture_output=True,
-        text=True
-    )
-
-    output = 'ssd_output.txt'
-    with open(output, 'r', encoding='utf-8') as file:
-        line = file.readline()
-    assert line.strip() == f"0x1298CDEF"
+    ssd_output = get_ssd_output()
+    assert ssd_output.strip() == f"0x1298CDEF"
 
 
 def test_erase_and_read_command_line(ssd):
-    result = subprocess.run(
-        ["python", "ssd.py", "E", "3", "3"],
-        capture_output=True,
-        text=True
-    )
+    run_ssd_erase_on_cli(3, 1)
+    run_ssd_read_on_cli(3)
 
-    result = subprocess.run(
-        ["python", "ssd.py", "R", "3"],
-        capture_output=True,
-        text=True
-    )
-
-    output = 'ssd_output.txt'
-    with open(output, 'r', encoding='utf-8') as file:
-        line = file.readline()
-    assert line.strip() == f"0x00000000"
+    ssd_output = get_ssd_output()
+    assert ssd_output.strip() == f"0x00000000"
 
 
 def test_erase_oversize_error():
-    result = subprocess.run(
-        ["python", "ssd.py", "E", "3", "11"],
-        capture_output=True,
-        text=True
-    )
+    run_ssd_erase_on_cli(3, 11)
 
-    output = 'ssd_output.txt'
-    with open(output, 'r', encoding='utf-8') as file:
-        line = file.readline()
-    assert line.strip() == "ERROR"
+    ssd_output = get_ssd_output()
+    assert ssd_output.strip() == "ERROR"
 
 
 def test_erase_invalid_start_lba_error():
-    result = subprocess.run(
-        ["python", "ssd.py", "E", "100", "3"],
-        capture_output=True,
-        text=True
-    )
+    run_ssd_erase_on_cli(100, 3)
 
-    output = 'ssd_output.txt'
-    with open(output, 'r', encoding='utf-8') as file:
-        line = file.readline()
-    assert line.strip() == "ERROR"
+    ssd_output = get_ssd_output()
+    assert ssd_output.strip() == "ERROR"
 
 
 def test_erase_invalid_last_lba_error():
-    result = subprocess.run(
-        ["python", "ssd.py", "E", "98", "3"],
-        capture_output=True,
-        text=True
-    )
+    run_ssd_erase_on_cli(98, 3)
 
-    output = 'ssd_output.txt'
-    with open(output, 'r', encoding='utf-8') as file:
-        line = file.readline()
-    assert line.strip() == "ERROR"
+    ssd_output = get_ssd_output()
+    assert ssd_output.strip() == "ERROR"
