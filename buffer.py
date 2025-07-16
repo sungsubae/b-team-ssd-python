@@ -46,6 +46,7 @@ class Buffer:
                     return
                 new_file_name = f'{file_name[0]}_{cmd}_{lba}_{value}'
             else:
+                self._delete_write_command(lba, size)
                 if self._join_erase_command(lba, size):
                     return True
                 new_file_name = f'{file_name[0]}_{cmd}_{lba}_{size}'
@@ -113,3 +114,22 @@ class Buffer:
             return True
 
         return False
+
+    def _delete_write_command(self, lba, size):
+        file_list = self.get_sorted_buffer_file_list()
+
+        for idx, file_name in enumerate(file_list):
+            if 'W' not in file_name:
+                continue
+            buffer_lba = int(file_name.split('_')[2])
+            if not (lba <= buffer_lba < lba + size):
+                continue
+
+            for old_file_idx, old_file_name in enumerate(file_list):
+                if old_file_idx < idx or 'empty' in old_file_name:
+                    continue
+                if old_file_idx == len(file_list) - 1:
+                    new_file_name = f'{old_file_idx + 1}_empty'
+                else:
+                    new_file_name = str(old_file_idx + 1) + file_list[old_file_idx + 1][1:]
+                os.rename(os.path.join(self.folder_path, old_file_name), os.path.join(self.folder_path, new_file_name))
