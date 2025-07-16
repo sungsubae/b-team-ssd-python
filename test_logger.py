@@ -44,3 +44,34 @@ def test_roatate_file_if_needed(mocker:MockerFixture):
     expected_log_path = os.path.join(current_dir, 'latest.log')
     expected_until_log_path = os.path.join(current_dir, fixed_now.strftime("until_%y%m%d_%Hh_%Mm_%Ss.log"))
     mock_rename.assert_called_once_with(expected_log_path, expected_until_log_path)
+
+def test_zip_file_when_until_logs_exist(mocker:MockerFixture):
+    # latest.log exist and size is 11KB
+    mocker.patch("os.path.exists", return_value=True)
+    mocker.patch("os.path.getsize", return_value=11 * 1024)
+
+    # fix datetime.now()
+    fixed_now = datetime(2025, 7, 16, 10, 10, 10)
+    mocker.patch("logger.datetime", wraps=datetime)
+    mocker.patch("logger.datetime.now", return_value=fixed_now)
+
+    mock_rename = mocker.patch("os.rename")
+    mocker.patch("os.listdir", return_value=[
+        "until_250710_09h_00m_00s.log",
+        "until_250713_09h_00m_00s.log"
+    ])
+
+    logger = Logger()
+    logger.rotate_file_if_needed()
+
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+
+    expected_log_path = os.path.join(current_dir, 'latest.log')
+    expected_until_log_path = os.path.join(current_dir, fixed_now.strftime("until_%y%m%d_%Hh_%Mm_%Ss.log"))
+
+    expected_zip_src = os.path.join(current_dir, "until_250710_09h_00m_00s.log")  # 더 오래된 파일
+    expected_zip_dst = os.path.join(current_dir, "until_250710_09h_00m_00s.zip")
+
+    assert mock_rename.call_count == 2
+    mock_rename.assert_any_call(expected_log_path, expected_until_log_path)
+    mock_rename.assert_any_call( expected_zip_src, expected_zip_dst)
