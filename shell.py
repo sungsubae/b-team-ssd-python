@@ -129,7 +129,7 @@ class Shell:
                 and end_lba < self.MAX_INDEX):
 
             self.msg.append("[Erase Range] ERROR")
-            return
+            return self.msg
         for start in range(start_lba, end_lba + 1, 10):
             end = min(end_lba + 1 - start, 10)
             self._erase(start, end)
@@ -137,6 +137,7 @@ class Shell:
 
         return self.msg
 
+    @log_and_print
     def full_write(self, value):
         for lba in range(self.MAX_INDEX):
             self._write(lba, value)
