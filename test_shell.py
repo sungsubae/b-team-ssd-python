@@ -147,7 +147,7 @@ def test_cmd_fullwrite(mocker:MockerFixture):
     mk.full_write.assert_called_with("0xAAAABBBB")
 
 
-def test_cmd_FullWriteAndReadCompare(mocker:MockerFixture):
+def test_cmd_full_write_and_read_compare(mocker:MockerFixture):
     mk = mocker.Mock(spec=Shell)
     with patch("builtins.input", side_effect=["1_", "exit"]):
         startShell(mk)
@@ -155,23 +155,23 @@ def test_cmd_FullWriteAndReadCompare(mocker:MockerFixture):
     with patch("builtins.input", side_effect=["1_FullWriteAndReadCompare", "exit"]):
         startShell(mk)
 
-    assert mk.FullWriteAndReadCompare.call_count == 2
+    assert mk.full_write_and_read_compare.call_count == 2
 
 
-def test_cmd_PartialLBAWrite(mocker:MockerFixture):
+def test_cmd_partial_lba_write(mocker:MockerFixture):
     mk = mocker.Mock(spec=Shell)
     with patch("builtins.input", side_effect=["2_", "2_PartialLBAWrite", "exit"]):
         startShell(mk)
 
-    assert mk.PartialLBAWrite.call_count == 2
+    assert mk.partial_lba_write.call_count == 2
 
 
-def test_cmd_WriteReadAging(mocker:MockerFixture):
+def test_cmd_write_read_aging(mocker:MockerFixture):
     mk = mocker.Mock(spec=Shell)
     with patch("builtins.input", side_effect=["3_", "3_WriteReadAging", "exit"]):
         startShell(mk)
 
-    assert mk.WriteReadAging.call_count == 2
+    assert mk.write_read_aging.call_count == 2
 
 
 def test_full_write_and_read_compare_success(mocker:MockerFixture, capsys):
@@ -193,7 +193,7 @@ def test_full_write_and_read_compare_success(mocker:MockerFixture, capsys):
             read_calls.append(call(i * block_length + j))
     shell_read_mock.side_effect = random_values
     random.seed(seed)
-    assert shell.FullWriteAndReadCompare() == "PASS"
+    assert shell.full_write_and_read_compare() == "PASS"
     shell_write_mock.assert_has_calls(write_calls)
     shell_read_mock.assert_has_calls(read_calls)
 
@@ -217,7 +217,7 @@ def test_full_write_and_read_compare_fail(mocker:MockerFixture, capsys):
             read_calls.append(call(i * block_length + j))
     shell_read_mock.side_effect = random_values
     random.seed(seed+1)
-    assert shell.FullWriteAndReadCompare() == 'FAIL'
+    assert shell.full_write_and_read_compare() == 'FAIL'
 
 
 def test_full_read_call(mocker:MockerFixture):
@@ -242,7 +242,7 @@ def test_write_read_aging_calls_write_read_400_times(mocker: MockerFixture):
     mock_read.return_value = '0x00000001'
     shell = Shell()
 
-    shell.WriteReadAging()
+    shell.write_read_aging()
     assert mock_write.call_count == 400
     assert mock_read.call_count == 400
 
@@ -252,16 +252,16 @@ def test_write_read_aging_pass(mocker: MockerFixture, capsys):
     mock_read.return_value = '0x00000001'
     shell = Shell()
 
-    assert shell.WriteReadAging() == "PASS"
+    assert shell.write_read_aging() == "PASS"
 
 
-def test_PartialLBAWrite(mocker: MockerFixture):
+def test_partial_lba_write(mocker: MockerFixture):
     mock_write = mocker.patch('shell.Shell._write')
     mock_read = mocker.patch('shell.Shell._read')
     mock_read.return_value = '0x00000001'
 
     shell = Shell()
-    shell.PartialLBAWrite(repeat=1, seed=42)
+    shell.partial_lba_write(repeat=1, seed=42)
     write_calls = []
     random.seed(42)
     random_val = random.randint(0x00000000, 0xFFFFFFFF)
@@ -276,15 +276,15 @@ def test_PartialLBAWrite(mocker: MockerFixture):
     mock_read.assert_has_calls(read_calls)
 
 
-def test_PartialLBAWrite_pass_and_fail(mocker: MockerFixture, capsys):
+def test_partial_lba_write_pass_and_fail(mocker: MockerFixture, capsys):
     mock_read = mocker.patch('shell.Shell._read')
     mock_read.return_value = '0x00000001'
 
     shell = Shell()
-    assert shell.PartialLBAWrite(repeat=1, seed=42) == "PASS"
+    assert shell.partial_lba_write(repeat=1, seed=42) == "PASS"
 
     mock_read.side_effect = ['0x00000001', '0x00000001', '0x00000002', '0x00000001', '0x00000001']
-    assert shell.PartialLBAWrite(repeat=1, seed=42) == "FAIL"
+    assert shell.partial_lba_write(repeat=1, seed=42) == "FAIL"
 
 
 

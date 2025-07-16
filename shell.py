@@ -129,7 +129,7 @@ class Shell:
             self.logger.print(f'LBA {lba:02d} : {self._read(lba)}')
             print(f'LBA {lba:02d} : {self._read(lba)}')
 
-    def FullWriteAndReadCompare(self):
+    def full_write_and_read_compare(self):
         ssd_length = self.MAX_INDEX
         block_length = 5
         before_random_val = "0x00000000"
@@ -151,7 +151,7 @@ class Shell:
         return "PASS"
 
 
-    def PartialLBAWrite(self, repeat=30, seed=42):
+    def partial_lba_write(self, repeat=30, seed=42):
         random.seed(seed)
         for _ in range(repeat):
             random_val = random.randint(0x00000000, 0xFFFFFFFF)
@@ -166,7 +166,7 @@ class Shell:
         return "PASS"
 
 
-    def WriteReadAging(self):
+    def write_read_aging(self):
         for _ in range(200):
             random_val = random.randint(0x00000000, 0xFFFFFFFF)
             write_value = f"{random_val:#010x}"
@@ -285,11 +285,11 @@ def startShell(shell: Shell):
         elif cmd_type == "fullread":
             shell.full_read()
         elif cmd_type == "1_" or cmd_type == "1_FullWriteAndReadCompare":
-            loggingAndPrinting(shell.FullWriteAndReadCompare())
+            loggingAndPrinting(shell.full_write_and_read_compare())
         elif cmd_type == "2_" or cmd_type == "2_PartialLBAWrite":
-            loggingAndPrinting(shell.PartialLBAWrite())
+            loggingAndPrinting(shell.partial_lba_write())
         elif cmd_type == "3_" or cmd_type == "3_WriteReadAging":
-            loggingAndPrinting(shell.WriteReadAging())
+            loggingAndPrinting(shell.write_read_aging())
         elif cmd_type == "4_" or cmd_type == "4_EraseAndWriteAging":
             loggingAndPrinting(shell.erase_and_write_aging())
         else:
@@ -310,19 +310,19 @@ def startRunner(shell: Shell, file_path):
             line = raw_line.rstrip("\n")  # 줄 끝 개행 문자 제거
             if line == '1_' or line == '1_FullWriteAndReadCompare':
                 print('1_FullWriteAndReadCompare  ___   Run...', end='', flush=True)
-                if not testRunAndPassCheck(shell.FullWriteAndReadCompare):
+                if not testRunAndPassCheck(shell.full_write_and_read_compare):
                     break
             elif line == '2_' or line == '2_PartialLBAWrite':
                 print('2_PartialLBAWrite          ___   Run...', end='', flush=True)
-                if not testRunAndPassCheck(shell.PartialLBAWrite):
+                if not testRunAndPassCheck(shell.partial_lba_write):
                     break
             elif line == '3_' or line == '3_WriteReadAging':
                 print('3_WriteReadAging           ___   Run...', end='', flush=True)
-                if not testRunAndPassCheck(shell.WriteReadAging):
+                if not testRunAndPassCheck(shell.write_read_aging):
                     break
             elif line == '4_' or line == '4_EraseAndWriteAging':
                 print('4_EraseAndWriteAging       ___   Run...', end='', flush=True)
-                # shell.FullWriteAndReadCompare()
+                # shell.full_write_and_read_compare()
             else:
                 continue
 
