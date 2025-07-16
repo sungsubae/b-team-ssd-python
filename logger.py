@@ -19,6 +19,23 @@ class Logger:
 
             os.rename(self.logfile, rotated_path)
 
+            self.change_file_extension_with_zip()
+
+    def change_file_extension_with_zip(self):
+        files=[]
+        for file in os.listdir(self.log_dir):
+            if file.startswith("until_") and file.endswith(".log"):
+                files.append(file)
+
+        if len(files) >= 2:
+            files.sort(key=lambda filename: datetime.strptime(
+                filename[len("until_"):-len(".log")], "%y%m%d_%Hh_%Mm_%Ss"))
+
+            oldest_log = files[0]
+            old_path = os.path.join(self.log_dir, oldest_log)
+            new_path = old_path.replace(".log", ".zip")
+            os.rename(old_path, new_path)
+
     def print(self, message: str):
         self.roatate_file_if_needed()
 
