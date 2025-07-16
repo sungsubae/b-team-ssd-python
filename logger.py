@@ -11,7 +11,7 @@ class Logger:
         self.log_dir = current_dir
         self.logfile = os.path.join(current_dir, logfile)
 
-    def roatate_file_if_needed(self):
+    def rotate_file_if_needed(self):
         if os.path.exists(self.logfile) and os.path.getsize(self.logfile) > FILE_MAX_SIZE:
             timestamp = datetime.now().strftime("%y%m%d_%Hh_%Mm_%Ss")
             rotated_name = f"until_{timestamp}.log"
@@ -37,7 +37,7 @@ class Logger:
             os.rename(old_path, new_path)
 
     def print(self, message: str):
-        self.roatate_file_if_needed()
+        self.rotate_file_if_needed()
 
         now = datetime.now().strftime("[%y.%m.%d %H:%M]")
 
