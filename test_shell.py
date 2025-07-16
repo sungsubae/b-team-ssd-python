@@ -308,3 +308,15 @@ def test_erase(mocker: MockerFixture, capsys):
     calls = [call(start, min(lba + size - start, 10)) for start in range(lba, lba + size, 10)]
     mock_erase.assert_has_calls(calls)
     assert captured.strip() == "[Erase] Done"
+
+
+def test_erase_range(mocker: MockerFixture, capsys):
+    mock_erase_range = mocker.patch('shell.Shell._erase')
+    shell = Shell()
+    start_lba = 0
+    end_lba = 98
+    shell.erase_range(start_lba, end_lba)
+    captured = capsys.readouterr().out
+    calls = [call(start, min(end_lba + 1 - start, 10)) for start in range(start_lba, end_lba + 1, 10)]
+    mock_erase_range.assert_has_calls(calls)
+    assert captured.strip() == "[Erase Range] Done"
