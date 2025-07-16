@@ -14,9 +14,14 @@ class Buffer:
             return int(match.group(1))
         return float('inf')
 
-    def read(self, lba: int):
+    def _get_sorted_buffer_file_list(self, reverse=False):
         file_list = os.listdir(self.folder_path)
-        file_list.sort(key=self._extract_leading_number, reverse=True)
+        file_list.sort(key=self._extract_leading_number, reverse=reverse)
+
+        return file_list
+
+    def read(self, lba: int):
+        file_list = self._get_sorted_buffer_file_list(reverse=True)
 
         for filename in file_list:
             if 'empty' in filename:
@@ -31,8 +36,7 @@ class Buffer:
         return ''
 
     def write(self, cmd: str, lba: int, value: str = '', size: int = 1):
-        file_list = os.listdir(self.folder_path)
-        file_list.sort(key=self._extract_leading_number)
+        file_list = self._get_sorted_buffer_file_list()
 
         for file_name in file_list:
             if 'empty' not in file_name:
@@ -40,6 +44,8 @@ class Buffer:
             if cmd == 'W':
                 new_file_name = f'{file_name[0]}_{cmd}_{lba}_{value}'
             else:
+                if self._join_erase_command(lba, size):
+                    return
                 new_file_name = f'{file_name[0]}_{cmd}_{lba}_{size}'
 
             os.rename(os.path.join(self.folder_path, file_name), os.path.join(self.folder_path, new_file_name))
@@ -64,3 +70,24 @@ class Buffer:
                     pass
         except OSError as e:
             print(f"오류 발생: {e}")
+
+    def _join_erase_command(self, lba: int, size: int):
+        file_list = self._get_sorted_buffer_file_list()
+
+        for file_name in file_list:
+            if 'E' not in file_name:
+                continue
+            parts = file_name.split('_')
+            buffer_lba = int(parts[2])
+            buffer_size = int(parts[3])
+            if buffer_lba <= lba <= buffer_lba + buffer_size or lba <= buffer_lba <= lba + size:
+                start = min(buffer_lba, lba)
+                end = max(buffer_lba + size - 1, lba + size - 1)
+                new_size = end - start + 1
+                if new_size <= 10:
+                    new_file_name = f'{file_name[0]}_{parts[1]}_{start}_{new_size}'
+                    os.rename(os.path.join(self.folder_path, file_name), os.path.join(self.folder_path, new_file_name))
+                    return True
+
+        return False
+
