@@ -261,8 +261,8 @@ def main():
         startRunner(shell)
     else:
         print("INVALID COMMAND")
-        sys.exit(1)
+        return 1
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
