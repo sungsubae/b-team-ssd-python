@@ -219,6 +219,11 @@ def checkInvalid(user_input_list):
 
 def startShell(shell: Shell):
     logger = Logger()
+
+    def loggingAndPrinting(ret:str):
+        logger.print(ret)
+        print(ret)
+
     while True:
         user_input = input("Shell> ")
         user_input_list = user_input.strip().split()
@@ -253,19 +258,14 @@ def startShell(shell: Shell):
         elif cmd_type == "fullread":
             shell.full_read()
         elif cmd_type == "1_" or cmd_type == "1_FullWriteAndReadCompare":
-            ret = shell.FullWriteAndReadCompare()
-            logger.print(ret)
-            print(ret)
+            loggingAndPrinting(shell.FullWriteAndReadCompare())
         elif cmd_type == "2_" or cmd_type == "2_PartialLBAWrite":
-            ret = shell.PartialLBAWrite()
-            logger.print(ret)
-            print(ret)
+            loggingAndPrinting(shell.PartialLBAWrite())
         elif cmd_type == "3_" or cmd_type == "3_WriteReadAging":
-            ret = shell.WriteReadAging()
-            logger.print(ret)
-            print(ret)
+            loggingAndPrinting(shell.WriteReadAging())
         else:
             continue
+
 
 
 def startRunner(shell: Shell, file_path):
