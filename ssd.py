@@ -97,7 +97,7 @@ class SSD:
 
     def is_valid_size(self, size):
         try:
-            if 0 <= size <= 10:
+            if 1 <= size <= 10:
                 return True
             else:
                 return False
