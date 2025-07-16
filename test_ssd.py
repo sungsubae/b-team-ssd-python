@@ -40,7 +40,6 @@ def test_ssd_write_address_validation(address, expected: bool, ssd: SSD):
     assert ssd.is_valid_address(address) is expected
 
 
-<<<<<<< HEAD
 @pytest.mark.parametrize(
     "value, expected",
     [('asif', False),
@@ -99,7 +98,7 @@ def test_write_and_read_command_line():
     assert line.strip() == f"0x1298CDEF"
 
 
-def test_erase_and_read_command_line():
+def test_erase_and_read_command_line(ssd):
     result = subprocess.run(
         ["python", "ssd.py", "E", "3", "3"],
         capture_output=True,
