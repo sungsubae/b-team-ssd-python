@@ -36,17 +36,18 @@ class Logger:
             new_path = old_path.replace(".log", ".zip")
             os.rename(old_path, new_path)
 
-    def print(self, message: str):
+    def print(self, message: str,location: str = None):
         self.create_until_file()
 
         now = datetime.now().strftime("[%y.%m.%d %H:%M]")
 
-        frame = inspect.currentframe()
-        outer_frames = inspect.getouterframes(frame)
-        function_name = outer_frames[2].function
-        class_name = self._get_caller_class_name(outer_frames)
+        if location is None:
+            frame = inspect.currentframe()
+            outer_frames = inspect.getouterframes(frame)
+            function_name = outer_frames[1].function
+            class_name = self._get_caller_class_name(outer_frames)
 
-        location = f"{class_name}.{function_name}()"
+            location = f"{class_name}.{function_name}()"
         log_line = f"{now} {location.ljust(35)}: {message}"
 
         with open(self.logfile, 'a', encoding='utf-8') as f:
