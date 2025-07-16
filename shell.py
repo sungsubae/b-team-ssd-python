@@ -78,6 +78,7 @@ class Shell:
         self.logger.print("[Full Read]")
         print("[Full Read]")
         for lba in range(self.MAX_INDEX):
+            self.logger.print(f'LBA {lba:02d} : {self._read(lba)}')
             print(f'LBA {lba:02d} : {self._read(lba)}')
 
     def FullWriteAndReadCompare(self):
@@ -139,16 +140,27 @@ class Shell:
         return
 
     def help(self):
+        self.logger.print('제작자: 배성수 팀장, 연진혁, 이정은, 이찬욱, 임창근, 정구환, 이근우')
         print('제작자: 배성수 팀장, 연진혁, 이정은, 이찬욱, 임창근, 정구환, 이근우')
+        self.logger.print('명령어 사용 법 : ')
         print('명령어 사용 법 : ')
+        self.logger.print('1. read : read + idx')
         print('1. read : read + idx')
+        self.logger.print('2. write : write + idx + contents')
         print('2. write : write + idx + contents')
+        self.logger.print('3. exit : exit')
         print('3. exit : exit')
+        self.logger.print('4. fullwrite : fullwrite + contents')
         print('4. fullwrite : fullwrite + contents')
+        self.logger.print('5. fullread : fullread')
         print('5. fullread : fullread')
+        self.logger.print("6. 1_FullWriteAndReadCompare : 1_ 혹은 1_FullWriteAndReadCompare 입력")
         print("6. 1_FullWriteAndReadCompare : 1_ 혹은 1_FullWriteAndReadCompare 입력")
+        self.logger.print("7. 2_PartialLBAWrite : 2_ 혹은 2_PartialLBAWrite 입력")
         print("7. 2_PartialLBAWrite : 2_ 혹은 2_PartialLBAWrite 입력")
+        self.logger.print("8. 3_WriteReadAging : 3_ 혹은 3_WriteReadAging 입력")
         print("8. 3_WriteReadAging : 3_ 혹은 3_WriteReadAging 입력")
+        self.logger.print("9. 그 외 명령어 입력 시, INVALID COMMAND 가 출력 됩니다.")
         print("9. 그 외 명령어 입력 시, INVALID COMMAND 가 출력 됩니다.")
 
 def main(shell: Shell):
@@ -156,6 +168,7 @@ def main(shell: Shell):
         user_input = input("Shell> ")
         user_input_list = user_input.strip().split()
         if not user_input_list:
+            self.logger.print ("INVALID COMMAND")
             print ("INVALID COMMAND")
             continue
 
@@ -167,11 +180,13 @@ def main(shell: Shell):
             shell.read(lba)
         elif cmd_type == "write":
             if len(user_input_list) != 3:
+                self.logger.print("Usage: write <LBA> <VALUE>")
                 print("Usage: write <LBA> <VALUE>")
                 continue
             lba = int(user_input_list[1])
             address = user_input_list[2]
             if not (0 <= lba < 100):
+                self.logger.print ("[Write] ERROR: LBA out of range (0~99)")
                 print ("[Write] ERROR: LBA out of range (0~99)")
                 return
             shell.write(lba, address)
@@ -194,6 +209,7 @@ def main(shell: Shell):
             invalid_cmd = True
 
         if invalid_cmd:
+            self.logger.print("INVALID COMMAND")
             print("INVALID COMMAND")
 
 if __name__ == "__main__":
