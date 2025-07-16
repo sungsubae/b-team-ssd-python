@@ -1,8 +1,23 @@
 import random
 import subprocess
+from functools import wraps
 
 from logger import Logger
 import sys
+
+
+def log_and_print(func):
+    @wraps(func)
+    def wrapper(self, *args, **kwargs):
+        result = func(self, *args, **kwargs)
+        msg = result if isinstance(result, str) else str(result)
+        for msg in self.msg:
+            self.logger.print(msg)
+            print(msg)
+        self.msg.clear()
+        return result
+    return wrapper
+
 
 class Shell:
     MIN_INDEX = 0
@@ -10,16 +25,18 @@ class Shell:
 
     def __init__(self):
         self.logger = Logger()
+        self.msg=[]
 
+    @log_and_print
     def read(self, lba: int):
         line = self._read(lba)
 
         if  line == f"ERROR":
-            self.logger.print("[Read] ERROR")
-            print("[Read] ERROR")
+            self.msg.append("[Read] ERROR")
         else:
-            self.logger.print(f"[Read] LBA {lba:02d} : {line}")
-            print(f"[Read] LBA {lba:02d} : {line}")
+            self.msg.append(f"[Read] LBA {lba:02d} : {line}")
+
+        return self.msg
 
     def _read(self, lba):
         subprocess.run(
@@ -39,23 +56,25 @@ class Shell:
         except ValueError:
             return False
 
+    @log_and_print
     def write(self, lba, value):
         try:
             if not self.is_hex_string(value):
-                self.logger.print("[Write] ERROR")
-                print("[Write] ERROR")
+                self.msg.append("[Write] ERROR")
                 return
 
             output_msg = self._write(lba, value)
 
             if output_msg == "ERROR":
-                print("[Write] ERROR")
+                self.msg.append("[Write] ERROR")
             else:
-                print("[Write] Done")
+                self.msg.append("[Write] Done")
         except Exception:
-            self.logger.print(f"Usage: write <LBA> <VALUE>")
-            print(f"Usage: write <LBA> <VALUE>")
+            self.msg.append(f"Usage: write <LBA> <VALUE>")
 
+        return self.msg
+
+    @log_and_print
     def _write(self, lba, value):
         try:
             subprocess.run(
@@ -67,8 +86,9 @@ class Shell:
                 output_msg = f.read().strip()
             return output_msg
         except Exception:
-            self.logger.print(f"Usage: write <LBA> <VALUE>")
-            print(f"Usage: write <LBA> <VALUE>")
+            self.msg.append(f"Usage: write <LBA> <VALUE>")
+
+        return self.msg
 
     def _erase(self, lba, size):
         subprocess.run(
@@ -82,52 +102,54 @@ class Shell:
             line = file.readline().strip()
         return line == "ERROR"
 
+    @log_and_print
     def erase(self, lba, size):
         if (lba < self.MIN_INDEX or lba >= self.MAX_INDEX):
-            self.logger.print("[Erase] ERROR")
-            print("[Erase] ERROR")
-            return
+            self.msg.append("[Erase] ERROR")
+            return self.msg
         if size <= self.MIN_INDEX or size > self.MAX_INDEX:
-            self.logger.print("[Erase] ERROR")
-            print("[Erase] ERROR")
-            return
+            self.msg.append("[Erase] ERROR")
+            return self.msg
         if lba + size > self.MAX_INDEX:
-            self.logger.print("[Erase] ERROR")
-            print("[Erase] ERROR")
-            return
+            self.msg.append("[Erase] ERROR")
+            return self.msg
 
         for start in range(lba, lba + size, 10):
             end = min(lba + size - start, 10)
             self._erase(start, end)
-        self.logger.print("[Erase] Done")
-        print("[Erase] Done")
 
+        self.msg.append("[Erase] Done")
 
+        return self.msg
+
+    @log_and_print
     def erase_range(self, start_lba, end_lba):
         if not (self.MIN_INDEX <= start_lba
                 and start_lba <= end_lba
                 and end_lba < self.MAX_INDEX):
-            self.logger.print("[Erase Range] ERROR")
-            print("[Erase Range] ERROR")
+
+            self.msg.append("[Erase Range] ERROR")
             return
         for start in range(start_lba, end_lba + 1, 10):
             end = min(end_lba + 1 - start, 10)
             self._erase(start, end)
-        print("[Erase Range] Done")
+        self.msg.append("[Erase Range] Done")
 
+        return self.msg
 
     def full_write(self, value):
         for lba in range(self.MAX_INDEX):
             self._write(lba, value)
-        self.logger.print(f"[Full Write] Done")
-        print(f"[Full Write] Done")
+        self.msg.append(f"[Full Write] Done")
+
+        return self.msg
 
     def full_read(self):
         self.logger.print("[Full Read]")
-        print("[Full Read]")
         for lba in range(self.MAX_INDEX):
-            self.logger.print(f'LBA {lba:02d} : {self._read(lba)}')
-            print(f'LBA {lba:02d} : {self._read(lba)}')
+            self.msg.append(f'LBA {lba:02d} : {self._read(lba)}')
+
+        return self.msg
 
     def FullWriteAndReadCompare(self):
         ssd_length = self.MAX_INDEX
@@ -200,6 +222,7 @@ class Shell:
             print(f"[EraseAndWriteAging] FAIL: {e}")
             return "FAIL"
 
+    @log_and_print
     def help(self):
         message = '''제작자: 배성수 팀장, 연진혁, 이정은, 이찬욱, 임창근, 정구환, 이근우
 명령어 사용 법 : 
@@ -215,8 +238,8 @@ class Shell:
 10. 4_EraseAndWriteAging: 4_ 혹은 4_EraseAndWriteAging 입력
 11. exit: exit
 그 외 명령어 입력 시, INVALID COMMAND 가 출력 됩니다.'''
-        print(message)
-        self.logger.print(message)
+        self.msg.append(message)
+        return self.msg
 
 
 def checkInvalid(user_input_list):
