@@ -64,7 +64,16 @@ class SSD:
         self.write_output('')
 
     def erase(self, lba: int, size: int):
-        pass
+        if not (self.is_valid_address(lba) and self.is_valid_size(size) and self.is_valid_address(lba + size - 1)):
+            self.write_output('ERROR')
+            return
+
+        contents = self.read_all()
+        for idx in range(lba, lba+size):
+            contents[idx] = f"{idx:02d} 0x00000000\n"
+
+        self.write_nand(contents)
+        self.write_output('')
 
     def is_valid_address(self, address: int):
         try:
@@ -86,6 +95,15 @@ class SSD:
         except Exception as e:
             return False
 
+    def is_valid_size(self, size):
+        try:
+            if 0 <= size <= 10:
+                return True
+            else:
+                return False
+        except Exception as e:
+            return False
+
 
 def main():
     parser = argparse.ArgumentParser(description="SSD Read/Write")
@@ -101,7 +119,7 @@ def main():
 
     erase_parser = subparsers.add_parser('E', help='Erase to SSD')
     erase_parser.add_argument('address', type=int, help='LBA address to write (0~99)')
-    erase_parser.add_argument('size', type=str, help='1 <= SIZE <= 10')
+    erase_parser.add_argument('size', type=int, help='1 <= SIZE <= 10')
 
     args = parser.parse_args()
     ssd = SSD()
