@@ -244,18 +244,9 @@ def test_write_read_aging_calls_write_read_400_times(mocker: MockerFixture):
     mock_read.return_value = '0x00000001'
     shell = Shell()
 
-    shell.write_read_aging()
+    assert shell.write_read_aging() == "PASS"
     assert mock_write.call_count == 400
     assert mock_read.call_count == 400
-
-
-def test_write_read_aging_pass(mocker: MockerFixture, capsys):
-    mock_read = mocker.patch('shell.Shell._read')
-    mock_read.return_value = '0x00000001'
-    shell = Shell()
-
-    assert shell.write_read_aging() == "PASS"
-
 
 def test_partial_lba_write(mocker: MockerFixture):
     mock_write = mocker.patch('shell.Shell._write')
