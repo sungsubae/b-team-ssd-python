@@ -276,7 +276,20 @@ def startRunner(shell: Shell, file_path):
     with open(file_path, encoding="utf-8") as f:
         for raw_line in f:
             line = raw_line.rstrip("\n")  # 줄 끝 개행 문자 제거
-            print(line)
+            if line == '1_' or line == '1_FullWriteAndReadCompare':
+                print('1_FullWriteAndReadCompare  ___   Run...', end='', flush=True)
+                shell.FullWriteAndReadCompare()
+            elif line == '2_' or line == '2_PartialLBAWrite':
+                print('2_PartialLBAWrite          ___   Run...', end='', flush=True)
+                shell.PartialLBAWrite()
+            elif line == '3_' or line == '3_WriteReadAging':
+                print('3_WriteReadAging           ___   Run...', end='', flush=True)
+                shell.WriteReadAging()
+            elif line == '4_' or line == '4_EraseAndWriteAging':
+                print('4_EraseAndWriteAging       ___   Run...', end='', flush=True)
+                # shell.FullWriteAndReadCompare()
+            else:
+                continue
 
 
 def main():
