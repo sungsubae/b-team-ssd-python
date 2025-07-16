@@ -2,7 +2,7 @@ import random
 import subprocess
 
 from logger import Logger
-
+import sys
 
 class Shell:
     MIN_INDEX = 0
@@ -215,9 +215,18 @@ def startShell(shell: Shell):
         else:
             continue
 
+def startRunner():
+    pass
 
 def main(shell: Shell):
-    startShell(shell)
+    if len(sys.argv) == 1:
+        startShell(shell)
+    elif len(sys.argv) == 2:
+        startRunner()
+    else:
+        print("INVALID COMMAND")
+        sys.exit(1)
+
 
 if __name__ == "__main__":
     shell = Shell()
