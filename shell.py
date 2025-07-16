@@ -30,6 +30,10 @@ class Shell:
         self.logger = Logger()
         self.msg=[]
 
+    def logging_and_printing(self, ret: str):
+        self.logger.print(ret)
+        print(ret)
+
     @log_and_print
     def read(self, lba: int):
         line = self._read(lba)
@@ -62,12 +66,14 @@ class Shell:
     @log_and_print
     def write(self, lba, value):
         try:
+            if not (0 <= lba < self.MAX_INDEX):
+                print("[Write] ERROR")
+                return
             if not self.is_hex_string(value):
                 self.msg.append("[Write] ERROR")
                 return self.msg
 
             output_msg = self._write(lba, value)
-
             if output_msg == "ERROR":
                 self.msg.append("[Write] ERROR")
             else:
@@ -99,7 +105,6 @@ class Shell:
             capture_output=True,
             text=True
         )
-
         output = 'ssd_output.txt'
         with open(output, 'r', encoding='utf-8') as file:
             line = file.readline().strip()
@@ -188,7 +193,6 @@ class Shell:
             return "FAIL"
         return "PASS"
 
-
     def partial_lba_write(self, repeat=30, seed=42):
         random.seed(seed)
         for _ in range(repeat):
@@ -202,7 +206,6 @@ class Shell:
                 if read_value != self._read(lba):
                     return "FAIL"
         return "PASS"
-
 
     def write_read_aging(self):
         for _ in range(200):
@@ -257,9 +260,6 @@ class Shell:
 그 외 명령어 입력 시, INVALID COMMAND 가 출력 됩니다.'''
         self.msg.append(message)
         return self.msg
-
-
-
 
 def check_invalid(user_input_list):
     if not user_input_list:
@@ -338,8 +338,6 @@ def start_shell(shell: Shell):
             logging_and_printing(shell.erase_and_write_aging())
         else:
             continue
-
-
 
 def start_runner(shell: Shell, file_path):
     def test_run_and_pass_check(func):
