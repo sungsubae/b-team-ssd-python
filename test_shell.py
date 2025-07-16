@@ -4,7 +4,7 @@ import pytest, pytest_mock
 from pytest_mock import MockerFixture
 from unittest.mock import call, patch, mock_open
 
-from shell import Shell, main
+from shell import Shell, startShell
 import random
 
 
@@ -128,7 +128,7 @@ def test_help_text_valid(capsys):
 def test_cmd_read(mocker:MockerFixture):
     mk = mocker.Mock(spec=Shell)
     with patch("builtins.input", side_effect=["read 0", "exit"]):
-        main(mk)
+        startShell(mk)
 
     mk.read.assert_called_with(0)
 
@@ -136,24 +136,24 @@ def test_cmd_read(mocker:MockerFixture):
 def test_cmd_write(mocker:MockerFixture):
     mk = mocker.Mock(spec=Shell)
     with patch("builtins.input", side_effect=["write 3 0xAAAABBBB", "exit"]):
-        main(mk)
+        startShell(mk)
     mk.write.assert_called_with(3, "0xAAAABBBB")
 
 
 def test_cmd_fullwrite(mocker:MockerFixture):
     mk = mocker.Mock(spec=Shell)
     with patch("builtins.input", side_effect=["fullwrite 0xAAAABBBB", "exit"]):
-        main(mk)
+        startShell(mk)
     mk.full_write.assert_called_with("0xAAAABBBB")
 
 
 def test_cmd_FullWriteAndReadCompare(mocker:MockerFixture):
     mk = mocker.Mock(spec=Shell)
     with patch("builtins.input", side_effect=["1_", "exit"]):
-        main(mk)
+        startShell(mk)
 
     with patch("builtins.input", side_effect=["1_FullWriteAndReadCompare", "exit"]):
-        main(mk)
+        startShell(mk)
 
     assert mk.FullWriteAndReadCompare.call_count == 2
 
@@ -161,7 +161,7 @@ def test_cmd_FullWriteAndReadCompare(mocker:MockerFixture):
 def test_cmd_PartialLBAWrite(mocker:MockerFixture):
     mk = mocker.Mock(spec=Shell)
     with patch("builtins.input", side_effect=["2_", "2_PartialLBAWrite", "exit"]):
-        main(mk)
+        startShell(mk)
 
     assert mk.PartialLBAWrite.call_count == 2
 
@@ -169,7 +169,7 @@ def test_cmd_PartialLBAWrite(mocker:MockerFixture):
 def test_cmd_WriteReadAging(mocker:MockerFixture):
     mk = mocker.Mock(spec=Shell)
     with patch("builtins.input", side_effect=["3_", "3_WriteReadAging", "exit"]):
-        main(mk)
+        startShell(mk)
 
     assert mk.WriteReadAging.call_count == 2
 

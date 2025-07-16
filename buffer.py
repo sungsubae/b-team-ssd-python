@@ -8,5 +8,8 @@ class Buffer:
     def write(self, lba: int, value: str):
         pass
 
+    def erase(self, lba: int, size: int):
+        pass
+
     def flush(self):
         pass
