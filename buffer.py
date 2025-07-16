@@ -18,7 +18,7 @@ class Buffer:
                 if parts[1] == 'W':
                     result = parts[-1]
                 elif parts[1] == 'E':
-                    result = '0x0x00000000'
+                    result = '0x00000000'
 
         return result
 
