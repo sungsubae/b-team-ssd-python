@@ -163,7 +163,7 @@ def checkInvalid(user_input_list):
         return True
 
     cmd_type = user_input_list[0]
-    if cmd_type not in ['read', 'write', 'exit', 'help', 'fullwrite', 'fullread', '1_', '1_FullWriteAndReadCompare', '2_', '2_PartialLBAWrite', '3_', '3_WriteReadAging']:
+    if cmd_type not in ['read', 'write', 'exit', 'help', 'fullwrite', 'fullread', '1_', '1_FullWriteAndReadCompare', '2_', '2_PartialLBAWrite', '3_', '3_WriteReadAging', '4_', '4_EraseAndWriteAging']:
         return True
 
     try:
