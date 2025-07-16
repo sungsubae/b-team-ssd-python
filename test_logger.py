@@ -1,3 +1,5 @@
+import os
+
 from pytest_mock import MockerFixture
 from logger import Logger
 from datetime import datetime
@@ -17,7 +19,28 @@ def test_print_writes_to_latest_log(mocker:MockerFixture):
     handle = mocked_file()
     handle.write.assert_called_once()
 
-    # 6. 로그 내용 확인 (시간은 제외하고 메시지 포함 여부만 확인)
     written_log = handle.write.call_args[0][0]
+
     assert "Test log message" in written_log
     assert "latest.log" in logger.logfile
+
+
+def test_roatate_file_if_needed(mocker:MockerFixture):
+    # latest.log exist and size is 11KB
+    mocker.patch("os.path.exists", return_value=True)
+    mocker.patch("os.path.getsize", return_value=11 * 1024)
+
+    fixed_now = datetime(2025, 7, 16, 10, 10, 10)
+    mocker.patch("logger.datetime", wraps=datetime)
+    mocker.patch("logger.datetime.now", return_value=fixed_now)
+
+    mock_rename = mocker.patch("os.rename")
+    mocker.patch.object(Logger, "change_file_extension_with_zip")
+
+    logger = Logger()
+    logger.rotate_file_if_needed()
+
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    expected_log_path = os.path.join(current_dir, 'latest.log')
+    expected_until_log_path = os.path.join(current_dir, fixed_now.strftime("until_%y%m%d_%Hh_%Mm_%Ss.log"))
+    mock_rename.assert_called_once_with(expected_log_path, expected_until_log_path)
