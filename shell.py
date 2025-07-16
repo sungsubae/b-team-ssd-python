@@ -83,9 +83,13 @@ class Shell:
     def FullWriteAndReadCompare(self):
         ssd_length = self.MAX_INDEX
         block_length = 5
+        before_random_val = "0x00000000"
+        random_val = "0x00000000"
         for block_idx in range(ssd_length // block_length):
-            random_val = random.randint(0x00000001, 0xFFFFFFFF)
-            random_val = f"{random_val:#010x}"
+            while before_random_val == random_val:
+                random_val = random.randint(0X00000001, 0XFFFFFFFF)
+                random_val = f"{random_val:#010x}"
+            before_random_val = random_val
             remove_duplicates = set()
             for inner_idx in range(block_length):
                 idx = block_idx * block_length + inner_idx
