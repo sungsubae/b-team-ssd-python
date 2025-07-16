@@ -1,4 +1,5 @@
 import os
+import re
 
 
 class Buffer:
@@ -7,33 +8,41 @@ class Buffer:
         if not os.path.exists(self.folder_path):
             self.make_init_buffer()
 
-    def read(self, lba: int):
-        result = ''
+    def _extract_leading_number(self, filename: str):
+        match = re.match(r'^(\d+)_', filename)
+        if match:
+            return int(match.group(1))
+        return float('inf')
 
-        for filename in os.listdir(self.folder_path):
+    def read(self, lba: int):
+        file_list = os.listdir(self.folder_path)
+        file_list.sort(key=self._extract_leading_number, reverse=True)
+
+        for filename in file_list:
             if 'empty' in filename:
                 continue
             parts = filename.split('_')
             if int(parts[2]) == lba:
                 if parts[1] == 'W':
-                    result = parts[-1]
+                    return parts[-1]
                 elif parts[1] == 'E':
-                    result = '0x00000000'
+                    return '0x00000000'
 
-        return result
+        return ''
 
     def write(self, cmd: str, lba: int, value: str = '', size: int = 1):
         file_list = os.listdir(self.folder_path)
-        for idx in range(1, 6):
-            buffer_name = str(idx) + '_empty'
-            if buffer_name not in file_list:
+        file_list.sort(key=self._extract_leading_number)
+
+        for file_name in file_list:
+            if 'empty' not in file_name:
                 continue
             if cmd == 'W':
-                new_file_name = f'{idx}_{cmd}_{lba}_{value}'
+                new_file_name = f'{file_name[0]}_{cmd}_{lba}_{value}'
             else:
-                new_file_name = f'{idx}_{cmd}_{lba}_{size}'
+                new_file_name = f'{file_name[0]}_{cmd}_{lba}_{size}'
 
-            os.rename(os.path.join(self.folder_path, buffer_name), os.path.join(self.folder_path, new_file_name))
+            os.rename(os.path.join(self.folder_path, file_name), os.path.join(self.folder_path, new_file_name))
             return
 
     def erase(self, lba: int, size: int):
