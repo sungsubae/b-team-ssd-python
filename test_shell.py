@@ -193,10 +193,10 @@ def test_full_write_and_read_compare_success(mocker:MockerFixture, capsys):
             read_calls.append(call(i * block_length + j))
     shell_read_mock.side_effect = random_values
     random.seed(seed)
-    shell.FullWriteAndReadCompare()
+    assert shell.FullWriteAndReadCompare() == "PASS"
     shell_write_mock.assert_has_calls(write_calls)
     shell_read_mock.assert_has_calls(read_calls)
-    assert capsys.readouterr().out.strip() == "PASS"
+    # assert capsys.readouterr().out.strip() == "PASS"
 
 
 def test_full_write_and_read_compare_fail(mocker:MockerFixture, capsys):
@@ -218,8 +218,8 @@ def test_full_write_and_read_compare_fail(mocker:MockerFixture, capsys):
             read_calls.append(call(i * block_length + j))
     shell_read_mock.side_effect = random_values
     random.seed(seed+1)
-    shell.FullWriteAndReadCompare()
-    assert capsys.readouterr().out.strip() == "FAIL"
+    assert shell.FullWriteAndReadCompare() == 'FAIL'
+    # assert capsys.readouterr().out.strip() == "FAIL"
 
 
 def test_full_read_call(mocker:MockerFixture):
