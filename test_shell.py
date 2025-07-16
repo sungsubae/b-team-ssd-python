@@ -327,14 +327,11 @@ def test_erase_and_write_aging(mocker):
     assert all(isinstance(args[0], int) for args in called_args_list)
     assert all(isinstance(args[1], str) and args[1].startswith("0x") for args in called_args_list)
 
-    # 각 구간의 en마다 2번씩 write 됐는지 샘플로 체크 가능
-    for i in range(50):
-        if i >= 49:
-            break
-        st = i * 2
+    for lba in range(49):
+        st = lba * 2
         en = min(st + 2, 99)
-        w1_args = write_mock.call_args_list[i * 2].args
-        w2_args = write_mock.call_args_list[i * 2 + 1].args
+        w1_args = write_mock.call_args_list[lba * 2].args
+        w2_args = write_mock.call_args_list[lba * 2 + 1].args
         assert w1_args[0] == en
         assert w2_args[0] == en
         assert w1_args[1].startswith("0x") and w2_args[1].startswith("0x")
