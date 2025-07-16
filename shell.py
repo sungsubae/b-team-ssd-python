@@ -81,14 +81,19 @@ class Shell:
         return line == "ERROR"
 
     def erase(self, lba, size):
-        if (lba < self.MIN_INDEX or lba > self.MAX_INDEX):
+        if (lba < self.MIN_INDEX or lba >= self.MAX_INDEX):
             self.logger.print("[Erase] ERROR")
             print("[Erase] ERROR")
             return
-        if size < 1 or lba + size > 100:
+        if size <= self.MIN_INDEX or size > self.MAX_INDEX:
             self.logger.print("[Erase] ERROR")
             print("[Erase] ERROR")
             return
+        if lba + size > self.MAX_INDEX:
+            self.logger.print("[Erase] ERROR")
+            print("[Erase] ERROR")
+            return
+
         for start in range(lba, lba + size, 10):
             end = min(lba + size - start, 10)
             self._erase(start, end)
