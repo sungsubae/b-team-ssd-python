@@ -158,32 +158,44 @@ class Shell:
         self.logger.print(message)
 
 
+def checkInvalid(user_input_list):
+    if not user_input_list:
+        return True
+
+    cmd_type = user_input_list[0]
+    if cmd_type not in ['read', 'write', 'exit', 'help', 'fullwrite', 'fullread', '1_', '1_FullWriteAndReadCompare', '2_', '2_PartialLBAWrite', '3_', '3_WriteReadAging']:
+        return True
+
+    try:
+        if cmd_type == "read" or "write":
+            lba = int(user_input_list[1])
+            if cmd_type == "write":
+                user_input_list[2]
+                if not (0 <= lba < 100):
+                    return True
+        if cmd_type == "fullwrite":
+            user_input_list[1]
+    except (IndexError, ValueError):
+        return True
+
+    return False
+
 def startShell(shell: Shell):
     while True:
         user_input = input("Shell> ")
         user_input_list = user_input.strip().split()
-        if not user_input_list:
-            self.logger.print ("INVALID COMMAND")
-            print ("INVALID COMMAND")
+
+        if checkInvalid(user_input_list):
+            print("INVALID COMMAND")
             continue
 
         cmd_type = user_input_list[0]
-
-        invalid_cmd = False
         if cmd_type == "read":
             lba = int(user_input_list[1])
             shell.read(lba)
         elif cmd_type == "write":
-            if len(user_input_list) != 3:
-                self.logger.print("Usage: write <LBA> <VALUE>")
-                print("Usage: write <LBA> <VALUE>")
-                continue
             lba = int(user_input_list[1])
             address = user_input_list[2]
-            if not (0 <= lba < 100):
-                self.logger.print ("[Write] ERROR: LBA out of range (0~99)")
-                print ("[Write] ERROR: LBA out of range (0~99)")
-                return
             shell.write(lba, address)
         elif cmd_type == "exit":
             break
@@ -201,11 +213,7 @@ def startShell(shell: Shell):
         elif cmd_type == "3_" or cmd_type == "3_WriteReadAging":
             shell.WriteReadAging()
         else:
-            invalid_cmd = True
-
-        if invalid_cmd:
-            self.logger.print("INVALID COMMAND")
-            print("INVALID COMMAND")
+            continue
 
 
 def main(shell: Shell):
