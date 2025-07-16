@@ -101,6 +101,19 @@ class Shell:
         print("[Erase] Done")
 
 
+    def erase_range(self, start_lba, end_lba):
+        if not (self.MIN_INDEX <= start_lba
+                and start_lba <= end_lba
+                and end_lba < self.MAX_INDEX):
+            self.logger.print("[Erase Range] ERROR")
+            print("[Erase Range] ERROR")
+            return
+        for start in range(start_lba, end_lba + 1, 10):
+            end = min(end_lba + 1 - start, 10)
+            self._erase(start, end)
+        print("[Erase Range] Done")
+
+
     def full_write(self, value):
         for lba in range(self.MAX_INDEX):
             self._write(lba, value)
@@ -196,7 +209,7 @@ def checkInvalid(user_input_list):
         return True
 
     cmd_type = user_input_list[0]
-    if cmd_type not in ['read', 'write', 'exit', 'help', 'fullwrite', 'fullread', '1_', '1_FullWriteAndReadCompare', '2_', '2_PartialLBAWrite', '3_', '3_WriteReadAging', '4_', '4_EraseAndWriteAging']:
+    if cmd_type not in ['read', 'write', 'erase', 'erase_range', 'exit', 'help', 'fullwrite', 'fullread', '1_', '1_FullWriteAndReadCompare', '2_', '2_PartialLBAWrite', '3_', '3_WriteReadAging', '4_', '4_EraseAndWriteAging']:
         return True
 
     try:
@@ -230,6 +243,14 @@ def startShell(shell: Shell):
             lba = int(user_input_list[1])
             address = user_input_list[2]
             shell.write(lba, address)
+        elif cmd_type == "erase":
+            start_lba = int(user_input_list[1])
+            size = int(user_input_list[2])
+            shell.erase(start_lba, size)
+        elif cmd_type == "erase_range":
+            start_lba = int(user_input_list[1])
+            end_lba = int(user_input_list[2])
+            shell.erase_range(start_lba, end_lba)
         elif cmd_type == "exit":
             break
         elif cmd_type == "help":
