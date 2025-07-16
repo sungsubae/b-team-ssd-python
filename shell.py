@@ -176,6 +176,40 @@ class Shell:
                 return "FAIL"
         return "PASS"
 
+    def erase_range(self, line):
+        # 파라미터 파싱 (예: "erase_range 0 2")
+        tokens = line.strip().split()
+        st_lba = int(tokens[1])
+        en_lba = int(tokens[2])
+
+        # 해당 구간을 0x00000000으로 초기화
+        for lba in range(st_lba, en_lba + 1):
+            init_val = "0x00000000"
+            self.write(lba, init_val)
+
+        print(f"[EraseRange] Done ({st_lba}~{en_lba})")
+
+    def erase_and_write_aging(self, loop=30):
+        for cnt in range(loop):
+            for i in range(50):
+                st = i * 2
+                en = st + 2
+                self.erase_range(f"erase_range {st} {min(en, 99)}")
+                # 마지막 LBA에 "서로 다른" 랜덤 값 2번 write
+                if en <= 99:
+                    rand_val1 = random.randint(0x00000000, 0xFFFFFFFF)
+                    rand_val1 = f"{rand_val1:#010x}"
+                    rand_val2 = rand_val1
+                    # rand_val2가 rand_val1과 다를 때까지 뽑기
+                    while rand_val2 == rand_val1:
+                        rand_val2 = random.randint(0x00000000, 0xFFFFFFFF)
+                        rand_val2 = f"{rand_val2:#010x}"
+                    self.write(en, rand_val1)
+                    self.write(en, rand_val2)
+                    print(f"{en} 번 난수로 변경 ")
+
+        print("[EraseAndWriteAging] Done")
+
     def help(self):
         message = '''제작자: 배성수 팀장, 연진혁, 이정은, 이찬욱, 임창근, 정구환, 이근우
 명령어 사용 법 : 

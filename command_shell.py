@@ -55,6 +55,10 @@ class WriteReadAgingCommand(Command):
     def execute(self, shell, *args):
         shell.WriteReadAging()
 
+class EraseAndWriteAging(Command):
+    def execute(self, shell, *args):
+        shell.erase_and_write_aging()
+
 class HelpCommand(Command):
     def execute(self, shell, *args):
         shell.help()
@@ -62,6 +66,7 @@ class HelpCommand(Command):
 class ExitCommand(Command):
     def execute(self, shell, *args):
         exit()
+
 
 COMMANDS = {
     "read": ReadCommand(),
@@ -74,6 +79,8 @@ COMMANDS = {
     "2_partiallbawrite": PartialLBAWriteCommand(),
     "3_": WriteReadAgingCommand(),
     "3_writereadaging": WriteReadAgingCommand(),
+    "4_": EraseAndWriteAging(),
+    "4_EraseAndWriteAging": EraseAndWriteAging(),
     "help": HelpCommand(),
     "exit": ExitCommand(),
 }
