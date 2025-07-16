@@ -17,7 +17,8 @@ class Logger:
         function_name = outer_frames[1].function
         class_name = self._get_caller_class_name(outer_frames)
 
-        log_line = f"{now} {class_name}.{function_name}()".ljust(40) + f": {message}"
+        location = f"{class_name}.{function_name}()"
+        log_line = f"{now} {location.ljust(35)}: {message}"
 
         with open(self.logfile, 'a', encoding='utf-8') as f:
             f.write(log_line + '\n')
