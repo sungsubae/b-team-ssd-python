@@ -68,6 +68,34 @@ class Shell:
             self.logger.print(f"Usage: write <LBA> <VALUE>")
             print(f"Usage: write <LBA> <VALUE>")
 
+    def _erase(self, lba, size):
+        subprocess.run(
+            ["python", "ssd.py", "E", str(lba), str(size)],
+            capture_output=True,
+            text=True
+        )
+
+        output = 'ssd_output.txt'
+        with open(output, 'r', encoding='utf-8') as file:
+            line = file.readline().strip()
+        return line == "ERROR"
+
+    def erase(self, lba, size):
+        if (lba < self.MIN_INDEX or lba > self.MAX_INDEX):
+            self.logger.print("[Erase] ERROR")
+            print("[Erase] ERROR")
+            return
+        if size < 1 or lba + size > 100:
+            self.logger.print("[Erase] ERROR")
+            print("[Erase] ERROR")
+            return
+        for start in range(lba, lba + size, 10):
+            end = min(lba + size - start, 10)
+            self._erase(start, end)
+        self.logger.print("[Erase] Done")
+        print("[Erase] Done")
+
+
     def full_write(self, value):
         for lba in range(self.MAX_INDEX):
             self._write(lba, value)
