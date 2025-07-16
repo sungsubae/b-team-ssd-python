@@ -196,7 +196,6 @@ def test_full_write_and_read_compare_success(mocker:MockerFixture, capsys):
     assert shell.FullWriteAndReadCompare() == "PASS"
     shell_write_mock.assert_has_calls(write_calls)
     shell_read_mock.assert_has_calls(read_calls)
-    # assert capsys.readouterr().out.strip() == "PASS"
 
 
 def test_full_write_and_read_compare_fail(mocker:MockerFixture, capsys):
@@ -219,7 +218,6 @@ def test_full_write_and_read_compare_fail(mocker:MockerFixture, capsys):
     shell_read_mock.side_effect = random_values
     random.seed(seed+1)
     assert shell.FullWriteAndReadCompare() == 'FAIL'
-    # assert capsys.readouterr().out.strip() == "FAIL"
 
 
 def test_full_read_call(mocker:MockerFixture):
@@ -250,14 +248,11 @@ def test_write_read_aging_calls_write_read_400_times(mocker: MockerFixture):
 
 
 def test_write_read_aging_pass(mocker: MockerFixture, capsys):
-    mock_write = mocker.patch('shell.Shell._write')
     mock_read = mocker.patch('shell.Shell._read')
     mock_read.return_value = '0x00000001'
     shell = Shell()
 
     assert shell.WriteReadAging() == "PASS"
-    # captured = capsys.readouterr()
-    # assert captured.out.strip() == "PASS"
 
 
 def test_PartialLBAWrite(mocker: MockerFixture):
@@ -282,21 +277,15 @@ def test_PartialLBAWrite(mocker: MockerFixture):
 
 
 def test_PartialLBAWrite_pass_and_fail(mocker: MockerFixture, capsys):
-    mock_write = mocker.patch('shell.Shell._write')
     mock_read = mocker.patch('shell.Shell._read')
     mock_read.return_value = '0x00000001'
 
     shell = Shell()
     assert shell.PartialLBAWrite(repeat=1, seed=42) == "PASS"
-    # shell.PartialLBAWrite(repeat=1, seed=42)
-    # captured = capsys.readouterr()
-    # assert captured.out.strip() == "PASS"
 
     mock_read.side_effect = ['0x00000001', '0x00000001', '0x00000002', '0x00000001', '0x00000001']
     assert shell.PartialLBAWrite(repeat=1, seed=42) == "FAIL"
-    # shell.PartialLBAWrite(repeat=1, seed=42)
-    # captured = capsys.readouterr()
-    # assert captured.out.strip() == "FAIL"
+
 
 
 def test_erase(mocker: MockerFixture, capsys):
