@@ -1,9 +1,11 @@
 import builtins
+import sys
 
 import pytest, pytest_mock
 from pytest_mock import MockerFixture
 from unittest.mock import call, patch, mock_open
 
+import shell
 from shell import Shell, start_shell
 import random
 
@@ -335,3 +337,14 @@ def test_erase_and_write_aging(mocker):
         assert w1_args[0] == en
         assert w2_args[0] == en
         assert w1_args[1].startswith("0x") and w2_args[1].startswith("0x")
+
+
+def test_runner_call(mocker: MockerFixture):
+    mk_startrunner = mocker.patch('shell.start_runner')
+    mk_startrunner.side_effect = None
+
+    test_args = ['shell.py', r'.\path\to\shell_script.txt']
+    with mk_startrunner.patch.object(sys, 'argv', test_args):
+        shell.main()
+
+    mk_startrunner.assert_called_once()
