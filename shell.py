@@ -289,6 +289,13 @@ def startShell(shell: Shell):
 
 
 def startRunner(shell: Shell, file_path):
+    def runAndCheckFail(func):
+        ret = func()
+        print(ret)
+        if ret == "FAIL":
+            return False
+        return True
+
     with open(file_path, encoding="utf-8") as f:
         for raw_line in f:
             line = raw_line.rstrip("\n")  # 줄 끝 개행 문자 제거
