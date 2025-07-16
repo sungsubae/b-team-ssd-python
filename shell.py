@@ -200,7 +200,7 @@ def checkInvalid(user_input_list):
         return True
 
     try:
-        if cmd_type == "read" or "write":
+        if cmd_type == "read" or cmd_type == "write":
             lba = int(user_input_list[1])
             if cmd_type == "write":
                 user_input_list[2]
