@@ -298,7 +298,7 @@ def start_shell(shell: Shell):
 
 
 def start_runner(shell: Shell, file_path):
-    def testRunAndPassCheck(func):
+    def test_run_and_pass_check(func):
         ret = func()
         print(ret)
         if ret == "FAIL":
@@ -310,15 +310,15 @@ def start_runner(shell: Shell, file_path):
             line = raw_line.rstrip("\n")  # 줄 끝 개행 문자 제거
             if line == '1_' or line == '1_FullWriteAndReadCompare':
                 print('1_FullWriteAndReadCompare  ___   Run...', end='', flush=True)
-                if not testRunAndPassCheck(shell.full_write_and_read_compare):
+                if not test_run_and_pass_check(shell.full_write_and_read_compare):
                     break
             elif line == '2_' or line == '2_PartialLBAWrite':
                 print('2_PartialLBAWrite          ___   Run...', end='', flush=True)
-                if not testRunAndPassCheck(shell.partial_lba_write):
+                if not test_run_and_pass_check(shell.partial_lba_write):
                     break
             elif line == '3_' or line == '3_WriteReadAging':
                 print('3_WriteReadAging           ___   Run...', end='', flush=True)
-                if not testRunAndPassCheck(shell.write_read_aging):
+                if not test_run_and_pass_check(shell.write_read_aging):
                     break
             elif line == '4_' or line == '4_EraseAndWriteAging':
                 print('4_EraseAndWriteAging       ___   Run...', end='', flush=True)
