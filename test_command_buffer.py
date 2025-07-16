@@ -105,3 +105,26 @@ def test_command_buffer_write_over_buffer_limit(mocker: MockerFixture):
     assert ssd.read(5).strip() == "0x00000005"
     assert ssd.read(6).strip() != "0x00000006"
     assert actual_files == expected_buffer_set_without_index
+
+
+def test_command_buffer_write_same_lba(mocker: MockerFixture):
+    ssd = SSD()
+    ssd.reset_ssd()
+
+    shell_write_mock = mocker.patch('shell.Shell._write')
+
+    buffer = Buffer()
+    buffer.make_init_buffer()
+    buffer.write('W', 13, "0x00000001")
+    buffer.write('W', 13, "0x00000002")
+    buffer.write('W', 13, "0x00000003")
+    buffer.write('W', 13, "0x00000004")
+    buffer.write('W', 13, "0x00000005")
+    buffer.write('W', 13, "0x00000006")
+
+    expected_buffer_set_without_index = {'W_13_0x00000006', 'empty'}
+    actual_files = set([fn[2:] for fn in os.listdir(r"./buffer")])
+
+    shell_write_mock.assert_not_called()
+    assert ssd.read(13).strip() == "0x00000000"
+    assert actual_files == expected_buffer_set_without_index
