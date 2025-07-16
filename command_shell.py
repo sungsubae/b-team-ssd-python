@@ -45,15 +45,15 @@ class FullReadCommand(Command):
 
 class FullWriteAndReadCompareCommand(Command):
     def execute(self, shell, *args):
-        shell.FullWriteAndReadCompare()
+        shell.full_write_and_read_compare()
 
 class PartialLBAWriteCommand(Command):
     def execute(self, shell, *args):
-        shell.PartialLBAWrite()
+        shell.partial_lba_write()
 
 class WriteReadAgingCommand(Command):
     def execute(self, shell, *args):
-        shell.WriteReadAging()
+        shell.write_read_aging()
 
 class EraseAndWriteAging(Command):
     def execute(self, shell, *args):
