@@ -297,7 +297,7 @@ def startShell(shell: Shell):
 
 
 
-def startRunner(shell: Shell, file_path):
+def start_runner(shell: Shell, file_path):
     def testRunAndPassCheck(func):
         ret = func()
         print(ret)
@@ -332,7 +332,7 @@ def main():
     if len(sys.argv) == 1:
         startShell(shell)
     elif len(sys.argv) == 2:
-        startRunner(shell, sys.argv[1])
+        start_runner(shell, sys.argv[1])
     else:
         print("INVALID COMMAND")
         return 1
