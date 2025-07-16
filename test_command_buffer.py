@@ -25,7 +25,6 @@ def test_command_buffer_flush():
     assert expected_files.issubset(actual_files)
 
 
-# 1_W_20_0xABCDABCD , 2_W_20_0x12341234 , 3_E_20_1
 def test_command_buffer_example_1(mocker: MockerFixture):
     shell_write_mock = mocker.patch('shell.Shell._write')
     shell_erase_mock = mocker.patch('shell.Shell._erase')
