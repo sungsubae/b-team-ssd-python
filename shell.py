@@ -247,7 +247,7 @@ def check_invalid(user_input_list):
 def start_shell(shell: Shell):
     logger = Logger()
 
-    def loggingAndPrinting(ret:str):
+    def logging_and_printing(ret:str):
         logger.print(ret)
         print(ret)
 
@@ -285,13 +285,13 @@ def start_shell(shell: Shell):
         elif cmd_type == "fullread":
             shell.full_read()
         elif cmd_type == "1_" or cmd_type == "1_FullWriteAndReadCompare":
-            loggingAndPrinting(shell.full_write_and_read_compare())
+            logging_and_printing(shell.full_write_and_read_compare())
         elif cmd_type == "2_" or cmd_type == "2_PartialLBAWrite":
-            loggingAndPrinting(shell.partial_lba_write())
+            logging_and_printing(shell.partial_lba_write())
         elif cmd_type == "3_" or cmd_type == "3_WriteReadAging":
-            loggingAndPrinting(shell.write_read_aging())
+            logging_and_printing(shell.write_read_aging())
         elif cmd_type == "4_" or cmd_type == "4_EraseAndWriteAging":
-            loggingAndPrinting(shell.erase_and_write_aging())
+            logging_and_printing(shell.erase_and_write_aging())
         else:
             continue
 
