@@ -1,7 +1,7 @@
 import pytest
 from pytest_mock import MockerFixture
 from unittest.mock import call, patch, mock_open
-import builtins
+import subprocess
 import os
 from shell import Shell, main
 from buffer import Buffer
@@ -172,3 +172,85 @@ def test_buffer_write_not_join_erase_command():
 
     assert get_empty_buffer_cnt(file_list) == len(file_list) - 2
 
+
+def test_buffer_erase_merge_1():
+    ssd = SSD()
+    ssd.reset_ssd()
+
+    buffer = Buffer()
+    buffer.initialize()
+
+    commands = [["python", "ssd.py", "E", "11", "6"],
+                ["python", "ssd.py", "E", "12", "6"],
+                ["python", "ssd.py", "E", "13", "6"],
+                ["python", "ssd.py", "E", "14", "6"],
+                ["python", "ssd.py", "E", "15", "6"]]
+
+    for command in commands:
+        subprocess.run(
+            command,
+            capture_output=True,
+            text=True
+        )
+
+    expected_buffer_set_without_index = {'E_11_10', 'empty'}
+    actual_files = set([fn[2:] for fn in os.listdir(r"./buffer")])
+    assert actual_files == expected_buffer_set_without_index
+
+
+def test_buffer_erase_merge_2():
+    ssd = SSD()
+    ssd.reset_ssd()
+
+    buffer = Buffer()
+    buffer.initialize()
+
+    commands = [["python", "ssd.py", "E", "11", "3"],
+                ["python", "ssd.py", "E", "18", "3"],
+                ["python", "ssd.py", "E", "14", "4"]]
+
+    for command in commands:
+        subprocess.run(
+            command,
+            capture_output=True,
+            text=True
+        )
+
+    expected_buffer_set_without_index = {'E_11_10', 'empty'}
+    actual_files = set([fn[2:] for fn in os.listdir(r"./buffer")])
+    assert actual_files == expected_buffer_set_without_index
+
+
+def test_buffer_erase_merge_3():
+    ssd = SSD()
+    ssd.reset_ssd()
+
+    buffer = Buffer()
+    # buffer.make_init_buffer()
+
+    commands = [["python", "ssd.py", "E", "0", "3"],
+                ["python", "ssd.py", "E", "12", "3"],
+                ["python", "ssd.py", "E", "6", "3"],
+                ["python", "ssd.py", "E", "3", "3"],
+                ["python", "ssd.py", "E", "9", "3"]]
+
+    for command in commands:
+        subprocess.run(
+            command,
+            capture_output=True,
+            text=True
+        )
+
+    # 아래 조건을 만족시키며 두 개로 Merge 되어야 한다.
+    # A + B = 15, B <= 10 를 만족하는 자연수
+    # E_0_A, E_A_B
+    expected_buffer_set_without_index = {'E_0_A', 'E_A_B'}
+    actual_files = [fn[2:] for fn in os.listdir(r"./buffer") if "empty" not in fn]
+    actual_files.sort()
+
+    A = int(actual_files[0][-1:])
+    B = int(actual_files[1][-1:])
+
+    assert A + B == 15
+    assert A <= 10 and B <= 10
+    assert len(expected_buffer_set_without_index) == 2
