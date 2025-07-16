@@ -77,3 +77,31 @@ def test_command_buffer_example_3(mocker: MockerFixture):
     shell_write_mock.assert_not_called()
     shell_erase_mock.assert_not_called()
     assert expected_buffer_set_without_index == actual_files
+
+
+def test_command_buffer_write_over_buffer_limit(mocker: MockerFixture):
+    ssd = SSD()
+    ssd.reset_ssd()
+
+    shell_write_mock = mocker.patch('shell.Shell._write')
+
+    buffer = Buffer()
+    buffer.make_init_buffer()
+    buffer.write('W', 1, "0x00000001")
+    buffer.write('W', 2, "0x00000002")
+    buffer.write('W', 3, "0x00000003")
+    buffer.write('W', 4, "0x00000004")
+    buffer.write('W', 5, "0x00000005")
+    buffer.write('W', 6, "0x00000006")
+
+    expected_buffer_set_without_index = {'W_6_0x00000006', 'empty'}
+    actual_files = set([fn[2:] for fn in os.listdir(r"./buffer")])
+
+    assert shell_write_mock.call_count == 5
+    assert ssd.read(1).strip() == "0x00000001"
+    assert ssd.read(2).strip() == "0x00000002"
+    assert ssd.read(3).strip() == "0x00000003"
+    assert ssd.read(4).strip() == "0x00000004"
+    assert ssd.read(5).strip() == "0x00000005"
+    assert ssd.read(6).strip() != "0x00000006"
+    assert actual_files == expected_buffer_set_without_index
