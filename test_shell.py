@@ -298,3 +298,13 @@ def test_PartialLBAWrite_pass_and_fail(mocker: MockerFixture, capsys):
     assert captured.out.strip() == "FAIL"
 
 
+def test_erase(mocker: MockerFixture, capsys):
+    mock_erase = mocker.patch('shell.Shell._erase')
+    shell = Shell()
+    lba = 0
+    size = 99
+    shell.erase(lba, size)
+    captured = capsys.readouterr().out
+    calls = [call(start, min(lba + size - start, 10)) for start in range(lba, lba + size, 10)]
+    mock_erase.assert_has_calls(calls)
+    assert captured.strip() == "[Erase] Done"
