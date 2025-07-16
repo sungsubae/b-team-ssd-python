@@ -43,7 +43,7 @@ class Logger:
 
         frame = inspect.currentframe()
         outer_frames = inspect.getouterframes(frame)
-        function_name = outer_frames[1].function
+        function_name = outer_frames[2].function
         class_name = self._get_caller_class_name(outer_frames)
 
         location = f"{class_name}.{function_name}()"
