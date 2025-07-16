@@ -4,6 +4,8 @@ import os
 class Buffer:
     def __init__(self):
         self.folder_path = './buffer'
+        if not os.path.exists(self.folder_path):
+            self.make_init_buffer()
 
     def read(self, lba: int):
         result = ''
