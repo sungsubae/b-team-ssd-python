@@ -40,6 +40,7 @@ def test_ssd_write_address_validation(address, expected: bool, ssd: SSD):
     assert ssd.is_valid_address(address) is expected
 
 
+<<<<<<< HEAD
 @pytest.mark.parametrize(
     "value, expected",
     [('asif', False),
