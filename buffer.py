@@ -29,9 +29,9 @@ class Buffer:
             if buffer_name not in file_list:
                 continue
             if cmd == 'W':
-                new_file_name = str(idx) + '_' + cmd + '_' + str(lba) + '_' + value
+                new_file_name = f'{idx}_{cmd}_{lba}_{value}'
             else:
-                new_file_name = str(idx) + '_' + cmd + '_' + str(lba) + '_' + str(size)
+                new_file_name = f'{idx}_{cmd}_{lba}_{size}'
 
             os.rename(os.path.join(self.folder_path, buffer_name), os.path.join(self.folder_path, new_file_name))
             return
