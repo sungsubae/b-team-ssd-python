@@ -5,8 +5,8 @@ from pathlib import Path
 class Buffer:
     def __init__(self):
         self.folder_path = Path('./buffer')
-        if self.folder_path.exists():
-            self.make_init_buffer()
+        if not self.folder_path.exists():
+            self.initialize()
 
     def _extract_leading_number(self, filename: str):
         match = re.match(r'^(\d+)_', filename)
@@ -14,14 +14,14 @@ class Buffer:
             return int(match.group(1))
         return float('inf')
 
-    def _get_sorted_buffer_file_list(self, reverse=False):
+    def get_sorted_buffer_file_list(self, reverse=False):
         file_list = os.listdir(self.folder_path)
         file_list.sort(key=self._extract_leading_number, reverse=reverse)
 
         return file_list
 
     def read(self, lba: int):
-        file_list = self._get_sorted_buffer_file_list(reverse=True)
+        file_list = self.get_sorted_buffer_file_list(reverse=True)
 
         for filename in file_list:
             if 'empty' in filename:
@@ -36,7 +36,7 @@ class Buffer:
         return ''
 
     def write(self, cmd: str, lba: int, value: str = '', size: int = 1):
-        file_list = self._get_sorted_buffer_file_list()
+        file_list = self.get_sorted_buffer_file_list()
 
         for file_name in file_list:
             if 'empty' not in file_name:
@@ -49,9 +49,10 @@ class Buffer:
                 new_file_name = f'{file_name[0]}_{cmd}_{lba}_{size}'
 
             os.rename(self.folder_path/file_name, self.folder_path/new_file_name)
-            return
+            return True
+        return False
 
-    def make_init_buffer(self):
+    def initialize(self):
         try:
             self.folder_path.mkdir(parents=True, exist_ok=True)
             for filename in os.listdir(self.folder_path):
@@ -65,7 +66,7 @@ class Buffer:
             print(f"오류 발생: {e}")
 
     def _join_erase_command(self, lba: int, size: int):
-        file_list = self._get_sorted_buffer_file_list()
+        file_list = self.get_sorted_buffer_file_list()
 
         for file_name in file_list:
             if 'E' not in file_name:
