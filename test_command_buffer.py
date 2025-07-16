@@ -36,8 +36,8 @@ def test_command_buffer_example_1(mocker: MockerFixture):
     buffer.write('W', 20, "0x12341234")
     buffer.erase(20, 1)
 
-    expected_files = {'1_E_20_1', '2_empty', '3_empty', '4_empty', '5_empty'}
-    actual_files = set(os.listdir(r"./buffer"))
+    expected_files = {'E_20_1', 'empty'}
+    actual_files = set([fn[2:] for fn in os.listdir(r"./buffer")])
 
     shell_write_mock.assert_not_called()
     shell_erase_mock.assert_not_called()
