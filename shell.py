@@ -157,7 +157,8 @@ class Shell:
         print(message)
         self.logger.print(message)
 
-def main(shell: Shell):
+
+def startShell(shell:Shell):
     while True:
         user_input = input("Shell> ")
         user_input_list = user_input.strip().split()
@@ -205,6 +206,9 @@ def main(shell: Shell):
         if invalid_cmd:
             self.logger.print("INVALID COMMAND")
             print("INVALID COMMAND")
+
+def main(shell: Shell):
+    startShell(shell)
 
 if __name__ == "__main__":
     shell = Shell()
