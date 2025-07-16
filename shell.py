@@ -248,19 +248,21 @@ def startShell(shell: Shell):
         else:
             continue
 
-def startRunner():
+
+def startRunner(shell: Shell):
     pass
 
-def main(shell: Shell):
+
+def main():
+    shell = Shell()
     if len(sys.argv) == 1:
         startShell(shell)
     elif len(sys.argv) == 2:
-        startRunner()
+        startRunner(shell)
     else:
         print("INVALID COMMAND")
         sys.exit(1)
 
 
 if __name__ == "__main__":
-    shell = Shell()
-    main(shell)
+    main()
