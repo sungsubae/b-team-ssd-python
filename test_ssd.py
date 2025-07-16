@@ -109,3 +109,61 @@ def test_write_and_read_command_line():
     with open(output, 'r', encoding='utf-8') as file:
         line = file.readline()
     assert  line.strip() == f"0x1298CDEF"
+
+
+def test_erase_and_read_command_line():
+    result = subprocess.run(
+        ["python", "ssd.py", "E", "3", "3"],
+        capture_output=True,
+        text=True
+    )
+
+    result = subprocess.run(
+        ["python", "ssd.py", "R", "3"],
+        capture_output=True,
+        text=True
+    )
+
+    output = 'ssd_output.txt'
+    with open(output, 'r', encoding='utf-8') as file:
+        line = file.readline()
+    assert  line.strip() == f"0x00000000"
+
+
+def test_erase_oversize_error():
+    result = subprocess.run(
+        ["python", "ssd.py", "E", "3", "11"],
+        capture_output=True,
+        text=True
+    )
+
+    output = 'ssd_output.txt'
+    with open(output, 'r', encoding='utf-8') as file:
+        line = file.readline()
+    assert  line.strip() == "ERROR"
+
+
+def test_erase_invalid_start_lba_error():
+    result = subprocess.run(
+        ["python", "ssd.py", "E", "100", "3"],
+        capture_output=True,
+        text=True
+    )
+
+    output = 'ssd_output.txt'
+    with open(output, 'r', encoding='utf-8') as file:
+        line = file.readline()
+    assert  line.strip() == "ERROR"
+
+
+def test_erase_invalid_last_lba_error():
+    result = subprocess.run(
+        ["python", "ssd.py", "E", "98", "3"],
+        capture_output=True,
+        text=True
+    )
+
+    output = 'ssd_output.txt'
+    with open(output, 'r', encoding='utf-8') as file:
+        line = file.readline()
+    assert  line.strip() == "ERROR"
