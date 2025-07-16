@@ -33,7 +33,6 @@ class Buffer:
             else:
                 new_file_name = str(idx) + '_' + cmd + '_' + str(lba) + '_' + str(size)
 
-            print(buffer_name, new_file_name)
             os.rename(os.path.join(self.folder_path, buffer_name), os.path.join(self.folder_path, new_file_name))
             return
 
