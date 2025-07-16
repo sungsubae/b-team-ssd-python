@@ -1,6 +1,6 @@
 import argparse
 import os
-
+from buffer import Buffer
 
 class SSD:
     _instance = None
@@ -13,6 +13,7 @@ class SSD:
     def __init__(self):
         self.ssd_nand = "ssd_nand.txt"
         self.ssd_output = "ssd_output.txt"
+        self.buffer = Buffer()
 
         if not os.path.exists(self.ssd_nand):
             self.reset_ssd()
@@ -42,15 +43,14 @@ class SSD:
             self.write_output('ERROR')
             return
 
-        lines = self.read_all()
-        value = ''
-        for line in lines:
-            if int(line.split(' ')[0]) == lba:
-                value = line.split(' ')[-1]
+        value = self.buffer.read(lba)
+        if not value:
+            lines = self.read_all()
+            value = lines[lba].split(' ')[-1]
 
         self.write_output(value)
+        return
 
-        return value
 
     def write(self, lba: int, value: str):
         if not (self.is_valid_address(lba) and self.is_valid_value(value)):
