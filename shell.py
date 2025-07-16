@@ -147,10 +147,7 @@ class Shell:
                 remove_duplicates.add(result)
             if len(remove_duplicates) == 1 and random_val in remove_duplicates:
                 continue
-            self.logger.print("FAIL")
-
             return "FAIL"
-        self.logger.print("PASS")
         return "PASS"
 
 
@@ -165,10 +162,7 @@ class Shell:
             read_value = self._read(0)
             for lba in range(1, 5):
                 if read_value != self._read(lba):
-                    self.logger.print("FAIL")
                     return "FAIL"
-
-        self.logger.print("PASS")
         return "PASS"
 
 
@@ -179,9 +173,7 @@ class Shell:
             self._write(0, write_value)
             self._write(99, write_value)
             if self._read(0).strip() != self._read(99).strip():
-                self.logger.print("FAIL")
                 return "FAIL"
-        self.logger.print("PASS")
         return "PASS"
 
     def help(self):
@@ -226,6 +218,7 @@ def checkInvalid(user_input_list):
     return False
 
 def startShell(shell: Shell):
+    logger = Logger()
     while True:
         user_input = input("Shell> ")
         user_input_list = user_input.strip().split()
@@ -261,12 +254,15 @@ def startShell(shell: Shell):
             shell.full_read()
         elif cmd_type == "1_" or cmd_type == "1_FullWriteAndReadCompare":
             ret = shell.FullWriteAndReadCompare()
+            logger.print(ret)
             print(ret)
         elif cmd_type == "2_" or cmd_type == "2_PartialLBAWrite":
             ret = shell.PartialLBAWrite()
+            logger.print(ret)
             print(ret)
         elif cmd_type == "3_" or cmd_type == "3_WriteReadAging":
             ret = shell.WriteReadAging()
+            logger.print(ret)
             print(ret)
         else:
             continue
