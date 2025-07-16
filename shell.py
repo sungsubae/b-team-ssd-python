@@ -177,24 +177,28 @@ class Shell:
         return "PASS"
 
     def erase_and_write_aging(self, loop=30):
-        for cnt in range(loop):
-            for i in range(50):
-                st = i * 2
-                en = st + 2
-                self.erase_range(st, min(en, 99))
-                # 마지막 LBA에 "서로 다른" 랜덤 값 2번 write
-                if en <= 99:
-                    rand_val1 = random.randint(0x00000000, 0xFFFFFFFF)
-                    rand_val1 = f"{rand_val1:#010x}"
-                    rand_val2 = rand_val1
-                    # rand_val2가 rand_val1과 다를 때까지 뽑기
-                    while rand_val2 == rand_val1:
-                        rand_val2 = random.randint(0x00000000, 0xFFFFFFFF)
-                        rand_val2 = f"{rand_val2:#010x}"
-                    self._write(en, rand_val1)
-                    self._write(en, rand_val2)
-
-        print("[EraseAndWriteAging] Done")
+        try:
+            for cnt in range(loop):
+                for i in range(50):
+                    st = i * 2
+                    en = st + 2
+                    self.erase_range(st, min(en, 99))
+                    # 마지막 LBA에 "서로 다른" 랜덤 값 2번 write
+                    if en <= 99:
+                        rand_val1 = random.randint(0x00000000, 0xFFFFFFFF)
+                        rand_val1 = f"{rand_val1:#010x}"
+                        rand_val2 = rand_val1
+                        # rand_val2가 rand_val1과 다를 때까지 뽑기
+                        while rand_val2 == rand_val1:
+                            rand_val2 = random.randint(0x00000000, 0xFFFFFFFF)
+                            rand_val2 = f"{rand_val2:#010x}"
+                        self._write(en, rand_val1)
+                        self._write(en, rand_val2)
+            print("[EraseAndWriteAging] Done")
+            return "PASS"
+        except Exception as e:
+            print(f"[EraseAndWriteAging] FAIL: {e}")
+            return "FAIL"
 
     def help(self):
         message = '''제작자: 배성수 팀장, 연진혁, 이정은, 이찬욱, 임창근, 정구환, 이근우
@@ -286,6 +290,8 @@ def startShell(shell: Shell):
             loggingAndPrinting(shell.PartialLBAWrite())
         elif cmd_type == "3_" or cmd_type == "3_WriteReadAging":
             loggingAndPrinting(shell.WriteReadAging())
+        elif cmd_type == "4_" or cmd_type == "4_EraseAndWriteAging":
+            loggingAndPrinting(shell.erase_and_write_aging())
         else:
             continue
 
