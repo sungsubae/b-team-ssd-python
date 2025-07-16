@@ -286,16 +286,17 @@ def test_PartialLBAWrite_pass_and_fail(mocker: MockerFixture, capsys):
     mock_read = mocker.patch('shell.Shell._read')
     mock_read.return_value = '0x00000001'
 
-
     shell = Shell()
-    shell.PartialLBAWrite(repeat=1, seed=42)
-    captured = capsys.readouterr()
-    assert captured.out.strip() == "PASS"
+    assert shell.PartialLBAWrite(repeat=1, seed=42) == "PASS"
+    # shell.PartialLBAWrite(repeat=1, seed=42)
+    # captured = capsys.readouterr()
+    # assert captured.out.strip() == "PASS"
 
     mock_read.side_effect = ['0x00000001', '0x00000001', '0x00000002', '0x00000001', '0x00000001']
-    shell.PartialLBAWrite(repeat=1, seed=42)
-    captured = capsys.readouterr()
-    assert captured.out.strip() == "FAIL"
+    assert shell.PartialLBAWrite(repeat=1, seed=42) == "FAIL"
+    # shell.PartialLBAWrite(repeat=1, seed=42)
+    # captured = capsys.readouterr()
+    # assert captured.out.strip() == "FAIL"
 
 
 def test_erase(mocker: MockerFixture, capsys):
