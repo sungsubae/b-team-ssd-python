@@ -4,7 +4,7 @@ from pytest_mock import MockerFixture
 from unittest.mock import call, patch, mock_open
 
 import shell
-from shell import Shell, start_shell
+from shell import Shell, start_command_shell
 import random
 
 
@@ -109,7 +109,10 @@ def test_help_call(mocker: MockerFixture):
     '''
     mk = mocker.Mock(spec=Shell)
     with patch("builtins.input", side_effect=["help", "exit"]):
-        start_shell(mk)
+        try:
+            start_command_shell(mk)
+        except SystemExit:
+            pass
     mk.help.assert_called_once()
 
 
@@ -119,7 +122,10 @@ def test_help_text_valid(capsys):
     출력되는 내용이 정상인지 확인 하는 테스트
     '''
     with patch("builtins.input", side_effect=["help", "exit"]):
-        start_shell(Shell())
+        try:
+            start_command_shell(Shell())
+        except SystemExit:
+            pass
     captured = capsys.readouterr()
 
     assert captured.out.strip() == '''제작자: 배성수 팀장, 연진혁, 이정은, 이찬욱, 임창근, 정구환, 이근우
@@ -142,7 +148,10 @@ def test_help_text_valid(capsys):
 def test_cmd_read(mocker: MockerFixture):
     mk = mocker.Mock(spec=Shell)
     with patch("builtins.input", side_effect=["read 0", "exit"]):
-        start_shell(mk)
+        try:
+            start_command_shell(mk)
+        except SystemExit:
+            pass
 
     mk.read.assert_called_with(0)
 
@@ -150,24 +159,36 @@ def test_cmd_read(mocker: MockerFixture):
 def test_cmd_write(mocker: MockerFixture):
     mk = mocker.Mock(spec=Shell)
     with patch("builtins.input", side_effect=["write 3 0xAAAABBBB", "exit"]):
-        start_shell(mk)
+        try:
+            start_command_shell(mk)
+        except SystemExit:
+            pass
     mk.write.assert_called_with(3, "0xAAAABBBB")
 
 
 def test_cmd_fullwrite(mocker: MockerFixture):
     mk = mocker.Mock(spec=Shell)
     with patch("builtins.input", side_effect=["fullwrite 0xAAAABBBB", "exit"]):
-        start_shell(mk)
+        try:
+            start_command_shell(mk)
+        except SystemExit:
+            pass
     mk.full_write.assert_called_with("0xAAAABBBB")
 
 
 def test_cmd_full_write_and_read_compare(mocker: MockerFixture):
     mk = mocker.Mock(spec=Shell)
     with patch("builtins.input", side_effect=["1_", "exit"]):
-        start_shell(mk)
+        try:
+            start_command_shell(mk)
+        except SystemExit:
+            pass
 
     with patch("builtins.input", side_effect=["1_FullWriteAndReadCompare", "exit"]):
-        start_shell(mk)
+        try:
+            start_command_shell(mk)
+        except SystemExit:
+            pass
 
     assert mk.full_write_and_read_compare.call_count == 2
 
@@ -175,7 +196,10 @@ def test_cmd_full_write_and_read_compare(mocker: MockerFixture):
 def test_cmd_partial_lba_write(mocker: MockerFixture):
     mk = mocker.Mock(spec=Shell)
     with patch("builtins.input", side_effect=["2_", "2_PartialLBAWrite", "exit"]):
-        start_shell(mk)
+        try:
+            start_command_shell(mk)
+        except SystemExit:
+            pass
 
     assert mk.partial_lba_write.call_count == 2
 
@@ -183,7 +207,10 @@ def test_cmd_partial_lba_write(mocker: MockerFixture):
 def test_cmd_write_read_aging(mocker: MockerFixture):
     mk = mocker.Mock(spec=Shell)
     with patch("builtins.input", side_effect=["3_", "3_WriteReadAging", "exit"]):
-        start_shell(mk)
+        try:
+            start_command_shell(mk)
+        except SystemExit:
+            pass
 
     assert mk.write_read_aging.call_count == 2
 
@@ -245,7 +272,10 @@ def test_full_read_call(mocker: MockerFixture):
     '''
     mk = mocker.Mock(spec=Shell)
     with patch("builtins.input", side_effect=["fullread", "exit"]):
-        start_shell(mk)
+        try:
+            start_command_shell(mk)
+        except SystemExit:
+            pass
 
     mk.full_read.assert_called_once()
 
@@ -260,7 +290,10 @@ def test_full_read_valid(mocker: MockerFixture, capsys):
     mk_full_read.return_value = '0x00000000'
 
     with patch("builtins.input", side_effect=["fullread", "exit"]):
-        start_shell(Shell())
+        try:
+            start_command_shell(Shell())
+        except SystemExit:
+            pass
 
     captured = capsys.readouterr()
     assert mk_full_read.call_count == 100
