@@ -384,10 +384,45 @@ def test_runner_incorrect_path(mocker: MockerFixture, capsys):
 
 def test_runner_fail(mocker:MockerFixture, capsys):
     mk_test_1 = mocker.patch('shell.Shell.full_write_and_read_compare')
+    mk_test_2 = mocker.patch('shell.Shell.partial_lba_write')
+    mk_test_3 = mocker.patch('shell.Shell.write_read_aging')
+    mk_test_4 = mocker.patch('shell.Shell.erase_and_write_aging')
 
-    mk_test_1.return_value = 'FAIL'
+    mk_test_1.side_effect = ['FAIL', 'PASS', 'PASS', 'PASS', 'PASS']
+    mk_test_2.side_effect = ['FAIL', 'PASS', 'PASS', 'PASS']
+    mk_test_3.side_effect = ['FAIL', 'PASS', 'PASS']
+    mk_test_4.side_effect = ['FAIL', 'PASS']
 
     expect = '''1_FullWriteAndReadCompare  ___   Run...FAIL!'''
+    shell.start_runner(Shell(), r'.\path\to\shell_script.txt')
+    captured = capsys.readouterr().out
+    assert captured.strip() == expect
+
+    expect = '''1_FullWriteAndReadCompare  ___   Run...PASS
+2_PartialLBAWrite          ___   Run...FAIL!'''
+    shell.start_runner(Shell(), r'.\path\to\shell_script.txt')
+    captured = capsys.readouterr().out
+    assert captured.strip() == expect
+
+    expect = '''1_FullWriteAndReadCompare  ___   Run...PASS
+2_PartialLBAWrite          ___   Run...PASS
+3_WriteReadAging           ___   Run...FAIL!'''
+    shell.start_runner(Shell(), r'.\path\to\shell_script.txt')
+    captured = capsys.readouterr().out
+    assert captured.strip() == expect
+
+    expect = '''1_FullWriteAndReadCompare  ___   Run...PASS
+2_PartialLBAWrite          ___   Run...PASS
+3_WriteReadAging           ___   Run...PASS
+4_EraseAndWriteAging       ___   Run...FAIL!'''
+    shell.start_runner(Shell(), r'.\path\to\shell_script.txt')
+    captured = capsys.readouterr().out
+    assert captured.strip() == expect
+
+    expect = '''1_FullWriteAndReadCompare  ___   Run...PASS
+2_PartialLBAWrite          ___   Run...PASS
+3_WriteReadAging           ___   Run...PASS
+4_EraseAndWriteAging       ___   Run...PASS'''
     shell.start_runner(Shell(), r'.\path\to\shell_script.txt')
     captured = capsys.readouterr().out
     assert captured.strip() == expect
