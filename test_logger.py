@@ -45,6 +45,7 @@ def test_create_until_file(mocker: MockerFixture):
     expected_until_log_file = os.path.join(current_dir, fixed_now.strftime("until_%y%m%d_%Hh_%Mm_%Ss.log"))
     mock_rename.assert_called_once_with(expected_log_file, expected_until_log_file)
 
+
 def test_change_file_extension_with_zip(mocker: MockerFixture):
     # latest.log exist and size is 11KB
     mocker.patch("os.path.exists", return_value=True)
