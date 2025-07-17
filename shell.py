@@ -370,7 +370,8 @@ def start_runner(shell: Shell, file_path):
                     if not test_run_and_pass_check(shell.erase_and_write_aging):
                         break
                 else:
-                    continue
+                    print('INVALID COMMAND')
+                    break
     except:
         print('INVALID COMMAND')
 
