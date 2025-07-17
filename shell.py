@@ -16,7 +16,7 @@ def log_and_print(func):
         location = f"{class_name}.{method_name}()"
         msg = result if isinstance(result, str) else str(result)
         for msg in self.msg:
-            self.logger.print(msg.strip(),location=location)
+            self.logger.print(msg.strip(), location=location)
             print(msg.strip())
         self.msg.clear()
         return result
@@ -29,13 +29,13 @@ class Shell:
 
     def __init__(self):
         self.logger = Logger()
-        self.msg=[]
+        self.msg = []
 
     @log_and_print
     def read(self, lba: int):
         line = self._read(lba)
 
-        if  line == f"ERROR":
+        if line == "ERROR":
             self.msg.append("[Read] ERROR")
         else:
             self.msg.append(f"[Read] LBA {lba:02d} : {line}")
@@ -76,7 +76,7 @@ class Shell:
             else:
                 self.msg.append("[Write] Done")
         except Exception:
-            self.msg.append(f"Usage: write <LBA> <VALUE>")
+            self.msg.append("Usage: write <LBA> <VALUE>")
 
         return self.msg
 
@@ -92,7 +92,7 @@ class Shell:
                 output_msg = f.read().strip()
             return output_msg
         except Exception:
-            self.msg.append(f"Usage: write <LBA> <VALUE>")
+            self.msg.append("Usage: write <LBA> <VALUE>")
 
         return self.msg
 
@@ -134,9 +134,7 @@ class Shell:
         return self.msg
 
     def _erase_range(self, start_lba, end_lba):
-        if not (self.MIN_INDEX <= start_lba
-                and start_lba <= end_lba
-                and end_lba < self.MAX_INDEX):
+        if not (self.MIN_INDEX <= start_lba <= end_lba < self.MAX_INDEX):
             return "ERROR"
         for start in range(start_lba, end_lba + 1, 10):
             end = min(end_lba + 1 - start, 10)
@@ -147,7 +145,8 @@ class Shell:
     def full_write(self, value):
         for lba in range(self.MAX_INDEX):
             self._write(lba, value)
-        self.msg.append(f"[Full Write] Done")
+
+        self.msg.append("[Full Write] Done")
 
         return self.msg
 
@@ -168,7 +167,6 @@ class Shell:
         )
         self.msg.append("[Flush]")
         return self.msg
-
 
     @log_and_print
     def full_write_and_read_compare(self):
@@ -254,7 +252,7 @@ class Shell:
     @log_and_print
     def help(self):
         message = '''제작자: 배성수 팀장, 연진혁, 이정은, 이찬욱, 임창근, 정구환, 이근우
-명령어 사용 법 : 
+명령어 사용 법 :
  1. read: read [LBA]
  2. write: write [LBA] [VALUE]
  3. erase: erase [LBA] [SIZE]
@@ -270,6 +268,7 @@ class Shell:
 그 외 명령어 입력 시, INVALID COMMAND 가 출력 됩니다.'''
         self.msg.append(message)
         return self.msg
+
 
 def check_invalid(user_input_list):
     if not user_input_list:
@@ -296,10 +295,11 @@ def check_invalid(user_input_list):
 
     return False
 
+
 def start_shell(shell: Shell):
     logger = Logger()
 
-    def logging_and_printing(ret:str):
+    def logging_and_printing(ret: str):
         logger.print(ret)
         print(ret)
 
@@ -349,6 +349,7 @@ def start_shell(shell: Shell):
         else:
             continue
 
+
 def start_runner(shell: Shell, file_path):
     def test_run_and_pass_check(func):
         ret = func()
@@ -381,8 +382,9 @@ def start_runner(shell: Shell, file_path):
                 else:
                     print('INVALID COMMAND')
                     break
-    except:
+    except Exception:
         print('INVALID COMMAND')
+
 
 def main():
     shell = Shell()
@@ -394,10 +396,12 @@ def main():
         print("INVALID COMMAND")
         return 1
 
+
 def find_command(cmd_type):
     if cmd_type in COMMANDS:
         return COMMANDS[cmd_type]
     return None
+
 
 def start_command_shell(shell: Shell):
     while True:
@@ -415,6 +419,7 @@ def start_command_shell(shell: Shell):
         else:
             print("INVALID COMMAND")
 
+
 def command_main():
     shell = Shell()
     # command_main(shell)
@@ -426,6 +431,6 @@ def command_main():
         print("INVALID COMMAND")
         return 1
 
+
 if __name__ == "__main__":
-    # sys.exit(main())
     sys.exit(command_main())
