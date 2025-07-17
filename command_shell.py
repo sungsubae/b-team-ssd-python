@@ -104,24 +104,3 @@ class HelpCommand(Command):
 class ExitCommand(Command):
     def execute(self, shell, *args):
         exit()
-
-
-COMMANDS = {
-    "read": ReadCommand(),
-    "write": WriteCommand(),
-    "erase": EraseCommand(),
-    "erase_range": EraseRangeCommand(),
-    "fullwrite": FullWriteCommand(),
-    "fullread": FullReadCommand(),
-    "flush": FlushCommand(),
-    "1_": FullWriteAndReadCompareCommand(),
-    "1_fullwriteandreadcompare": FullWriteAndReadCompareCommand(),
-    "2_": PartialLBAWriteCommand(),
-    "2_partiallbawrite": PartialLBAWriteCommand(),
-    "3_": WriteReadAgingCommand(),
-    "3_writereadaging": WriteReadAgingCommand(),
-    "4_": EraseAndWriteAging(),
-    "4_EraseAndWriteAging": EraseAndWriteAging(),
-    "help": HelpCommand(),
-    "exit": ExitCommand(),
-}
