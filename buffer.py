@@ -8,17 +8,8 @@ class Buffer:
         if not self.folder_path.exists():
             self.reset()
 
-    def _extract_leading_number(self, filename: str):
-        match = re.match(r'^(\d+)_', filename)
-        if match:
-            return int(match.group(1))
-        return float('inf')
-
     def get_sorted_buffer_file_list(self, reverse=False):
-        file_list = os.listdir(self.folder_path)
-        file_list.sort(key=self._extract_leading_number, reverse=reverse)
-
-        return file_list
+        return sorted(os.listdir(self.folder_path), reverse=reverse)
 
     def get_command_list(self):
         command_list = []
