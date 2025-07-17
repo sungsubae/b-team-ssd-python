@@ -1,4 +1,3 @@
-import os
 import subprocess
 
 import pytest
@@ -101,7 +100,7 @@ def run_ssd_read_on_cli(lba: int):
 
 
 def run_ssd_erase_on_cli(lba: int, size: int):
-    result = subprocess.run(
+    subprocess.run(
         ["python", "ssd.py", "E", str(lba), str(size)],
         capture_output=True,
         text=True
@@ -113,7 +112,7 @@ def test_write_and_read_command_line():
     run_ssd_read_on_cli(3)
 
     ssd_output = get_ssd_output()
-    assert ssd_output.strip() == f"0x1298CDEF"
+    assert ssd_output.strip() == "0x1298CDEF"
 
 
 def test_erase_and_read_command_line(ssd):
@@ -121,7 +120,7 @@ def test_erase_and_read_command_line(ssd):
     run_ssd_read_on_cli(3)
 
     ssd_output = get_ssd_output()
-    assert ssd_output.strip() == f"0x00000000"
+    assert ssd_output.strip() == "0x00000000"
 
 
 def test_erase_oversize_error():
