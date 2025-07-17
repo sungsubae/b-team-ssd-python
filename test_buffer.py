@@ -271,3 +271,29 @@ def test_buffer_erase_merge_3():
     assert A + B == 15
     assert A <= 10 and B <= 10
 
+
+def test_buffer_erase_merge_4():
+    buffer = Buffer()
+    buffer.reset()
+
+    ssd = SSD()
+    ssd.reset_ssd()
+
+    commands = [["python", "ssd.py", "E", "1", "6"],
+                ["python", "ssd.py", "E", "25", "6"],
+                ["python", "ssd.py", "E", "13", "6"],
+                ["python", "ssd.py", "E", "7", "6"],
+                ["python", "ssd.py", "E", "19", "6"]]
+
+    for command in commands:
+        subprocess.run(
+            command,
+            capture_output=True,
+            text=True
+        )
+
+    expected_buffer_set_without_index = {'E_1_10', 'E_11_10', 'E_21_10'}
+    actual_files = [fn[2:] for fn in os.listdir(r"./buffer") if "empty" not in fn]
+
+    assert len(actual_files) == 3
+    assert actual_files == expected_buffer_set_without_index
