@@ -4,6 +4,7 @@ import inspect
 
 FILE_MAX_SIZE = 10 * 1024  # 10KB
 
+
 class Logger:
     def __init__(self, logfile='latest.log'):
 
@@ -22,7 +23,7 @@ class Logger:
             self.change_file_extension_with_zip()
 
     def change_file_extension_with_zip(self):
-        files=[]
+        files = []
         for file in os.listdir(self.log_dir):
             if file.startswith("until_") and file.endswith(".log"):
                 files.append(file)
