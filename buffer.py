@@ -50,7 +50,7 @@ class Buffer:
                 continue
             if cmd == 'W':
                 if self._join_write_command(lba, value):
-                    return
+                    return True
                 new_file_name = f'{file_name[0]}_{cmd}_{lba}_{value}'
             else:
                 self._delete_write_command(lba, size)
@@ -75,9 +75,26 @@ class Buffer:
         except OSError as e:
             print(f"오류 발생: {e}")
 
-    def _join_erase_command(self, lba: int, size: int):
+    def _compact_buffer(self):
         file_list = self.get_sorted_buffer_file_list()
 
+        for idx, file_name in enumerate(file_list):
+            if idx == len(file_list) - 1:
+                break
+            if 'empty' in file_name:
+                candidate_idx, candidate_name =  self._getElementsAfterIndex(file_list, idx)
+                if candidate_name is None:
+                    break
+                new_file_name = file_name[0] + candidate_name[1:]
+                os.rename(os.path.join(self.folder_path, file_name), os.path.join(self.folder_path, new_file_name))
+                os.rename(os.path.join(self.folder_path, candidate_name), os.path.join(self.folder_path, f'{candidate_name[0]}_empty'))
+                file_list[candidate_idx] = f'{candidate_name[0]}_empty'
+
+    def _join_erase_command(self, lba: int, size: int):
+        file_list = self.get_sorted_buffer_file_list(reverse=True)
+
+        last_empty_file_name = ''
+        new_file_name = ''
         for file_name in file_list:
             if 'E' not in file_name:
                 continue
@@ -86,13 +103,20 @@ class Buffer:
             buffer_size = int(parts[3])
             if buffer_lba <= lba <= buffer_lba + buffer_size or lba <= buffer_lba <= lba + size:
                 start = min(buffer_lba, lba)
-                end = max(buffer_lba + size - 1, lba + size - 1)
+                end = max(buffer_lba + buffer_size - 1, lba + size - 1)
                 new_size = end - start + 1
                 if new_size <= 10:
-                    new_file_name = f'{file_name[0]}_{parts[1]}_{start}_{new_size}'
-                    os.rename(self.folder_path/file_name, self.folder_path/new_file_name)
-                    return True
+                    lba = start
+                    size = new_size
+                    new_file_name = f'{file_name[0]}_E_{start}_{new_size}'
+                    empty_file_name = f'{file_name[0]}_empty'
+                    last_empty_file_name = empty_file_name
+                    os.rename(os.path.join(self.folder_path, file_name), os.path.join(self.folder_path, empty_file_name))
 
+        if new_file_name != '':
+            os.rename(os.path.join(self.folder_path, last_empty_file_name), os.path.join(self.folder_path, new_file_name))
+            self._compact_buffer()
+            return True
         return False
 
     def _join_write_command(self, lba: int, value: str):
@@ -144,3 +168,12 @@ class Buffer:
                 else:
                     new_file_name = str(old_file_idx + 1) + file_list[old_file_idx + 1][1:]
                 os.rename(os.path.join(self.folder_path, old_file_name), os.path.join(self.folder_path, new_file_name))
+
+    def _getElementsAfterIndex(self, file_list, s_idx):
+        for idx, file_name in enumerate(file_list):
+            if idx < s_idx:
+                continue
+            if 'empty' not in file_name:
+                return idx, file_name
+        return None, None
+
