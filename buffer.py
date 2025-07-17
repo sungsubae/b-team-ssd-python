@@ -35,11 +35,10 @@ class Buffer:
             if 'empty' in filename:
                 continue
             parts = filename.split('_')
-            if int(parts[2]) == lba:
-                if parts[1] == 'W':
-                    return parts[-1]
-                elif parts[1] == 'E':
-                    return '0x00000000'
+            if parts[1] == 'W' and int(parts[2]) == lba:
+                return parts[-1]
+            elif parts[1] == 'E' and int(parts[2]) <= lba <= int(parts[2]) + int(parts[3]) - 1:
+                return '0x00000000'
 
         return ''
 
