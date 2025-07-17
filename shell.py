@@ -176,8 +176,8 @@ class Shell:
                 remove_duplicates.add(result)
             if len(remove_duplicates) == 1 and random_val in remove_duplicates:
                 continue
-            self.msg.append("FAIL")
-            return "FAIL"
+            self.msg.append("FAIL!")
+            return "FAIL!"
         self.msg.append("PASS")
         return "PASS"
 
@@ -193,8 +193,8 @@ class Shell:
             read_value = self._read(0)
             for lba in range(1, 5):
                 if read_value != self._read(lba):
-                    self.msg.append("FAIL")
-                    return "FAIL"
+                    self.msg.append("FAIL!")
+                    return "FAIL!"
 
         self.msg.append("PASS")
         return "PASS"
@@ -207,8 +207,8 @@ class Shell:
             self._write(0, write_value)
             self._write(99, write_value)
             if self._read(0).strip() != self._read(99).strip():
-                self.msg.append("FAIL")
-                return "FAIL"
+                self.msg.append("FAIL!")
+                return "FAIL!"
 
         self.msg.append("PASS")
         return "PASS"
@@ -232,11 +232,11 @@ class Shell:
                             rand_val2 = f"{rand_val2:#010x}"
                         self._write(en, rand_val1)
                         self._write(en, rand_val2)
-            self.msg.append("[EraseAndWriteAging] Done")
-            return
+            self.msg.append("PASS")
+            return "PASS"
         except Exception as e:
-            self.msg.append(f"[EraseAndWriteAging] FAIL: {e}")
-            return
+            self.msg.append("FAIL!")
+            return "FAIL!"
 
     @log_and_print
     def help(self):
