@@ -3,6 +3,7 @@ import subprocess
 from functools import wraps
 
 from logger import Logger
+from command_shell import COMMANDS
 import sys
 
 
@@ -385,6 +386,38 @@ def main():
         print("INVALID COMMAND")
         return 1
 
+def find_command(cmd_type):
+    if cmd_type in COMMANDS:
+        return COMMANDS[cmd_type]
+    return None
+
+def start_command_shell(shell: Shell):
+    while True:
+        user_input = input("Shell> ")
+        user_input_list = user_input.strip().split()
+        if not user_input_list:
+            print("INVALID COMMAND")
+            continue
+
+        cmd_type = user_input_list[0].lower()
+        args = user_input_list[1:]
+        command = find_command(cmd_type)
+        if command:
+            command.execute(shell, *args)
+        else:
+            print("INVALID COMMAND")
+
+def command_main():
+    shell = Shell()
+    # command_main(shell)
+    if len(sys.argv) == 1:
+        start_command_shell(shell)
+    elif len(sys.argv) == 2:
+        start_runner(shell, sys.argv[1])
+    else:
+        print("INVALID COMMAND")
+        return 1
 
 if __name__ == "__main__":
-    sys.exit(main())
+    # sys.exit(main())
+    sys.exit(command_main())
