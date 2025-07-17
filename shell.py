@@ -14,11 +14,11 @@ def log_and_print(func):
         method_name = func.__name__
         class_name = self.__class__.__name__
         location = f"{class_name}.{method_name}()"
-        msg = result if isinstance(result, str) else str(result)
-        for msg in self.msg:
-            self.logger.print(msg.strip(), location=location)
-            print(msg.strip())
-        self.msg.clear()
+        if hasattr(self, "msg") and isinstance(self.msg, list):
+            for msg in self.msg:
+                self.logger.print(msg.strip(), location=location)
+                print(msg.strip())
+            self.msg.clear()
         return result
     return wrapper
 
@@ -40,7 +40,6 @@ class Shell:
         else:
             self.msg.append(f"[Read] LBA {lba:02d} : {line}")
 
-        return self.msg
 
     def _read(self, lba):
         subprocess.run(
@@ -68,7 +67,7 @@ class Shell:
                 return
             if not self.is_hex_string(value):
                 self.msg.append("[Write] ERROR")
-                return self.msg
+                return
 
             output_msg = self._write(lba, value)
             if output_msg == "ERROR":
@@ -78,7 +77,6 @@ class Shell:
         except Exception:
             self.msg.append("Usage: write <LBA> <VALUE>")
 
-        return self.msg
 
     @log_and_print
     def _write(self, lba, value):
@@ -94,7 +92,6 @@ class Shell:
         except Exception:
             self.msg.append("Usage: write <LBA> <VALUE>")
 
-        return self.msg
 
     def _erase(self, lba, size):
         subprocess.run(
@@ -111,13 +108,10 @@ class Shell:
     def erase(self, lba, size):
         if (lba < self.MIN_INDEX or lba >= self.MAX_INDEX):
             self.msg.append("[Erase] ERROR")
-            return self.msg
         if size <= self.MIN_INDEX or size > self.MAX_INDEX:
             self.msg.append("[Erase] ERROR")
-            return self.msg
         if lba + size > self.MAX_INDEX:
             self.msg.append("[Erase] ERROR")
-            return self.msg
 
         for start in range(lba, lba + size, 10):
             end = min(lba + size - start, 10)
@@ -125,13 +119,12 @@ class Shell:
 
         self.msg.append("[Erase] Done")
 
-        return self.msg
 
     @log_and_print
     def erase_range(self, start_lba, end_lba):
         result = "[Erase Range] " + self._erase_range(start_lba, end_lba)
         self.msg.append(result)
-        return self.msg
+
 
     def _erase_range(self, start_lba, end_lba):
         if not (self.MIN_INDEX <= start_lba <= end_lba < self.MAX_INDEX):
@@ -148,7 +141,6 @@ class Shell:
 
         self.msg.append("[Full Write] Done")
 
-        return self.msg
 
     @log_and_print
     def full_read(self):
@@ -156,7 +148,6 @@ class Shell:
         for lba in range(self.MAX_INDEX):
             self.msg.append(f'LBA {lba:02d} : {self._read(lba)}')
 
-        return self.msg
 
     @log_and_print
     def flush(self):
@@ -166,7 +157,6 @@ class Shell:
             text=True
         )
         self.msg.append("[Flush]")
-        return self.msg
 
     @log_and_print
     def full_write_and_read_compare(self):
@@ -188,9 +178,9 @@ class Shell:
             if len(remove_duplicates) == 1 and random_val in remove_duplicates:
                 continue
             self.msg.append("FAIL")
-            return self.msg
+            return "FAIL"
         self.msg.append("PASS")
-        return self.msg
+        return "PASS"
 
     @log_and_print
     def partial_lba_write(self, repeat=30, seed=42):
@@ -205,10 +195,10 @@ class Shell:
             for lba in range(1, 5):
                 if read_value != self._read(lba):
                     self.msg.append("FAIL")
-                    return self.msg
+                    return "FAIL"
 
         self.msg.append("PASS")
-        return self.msg
+        return "PASS"
 
     @log_and_print
     def write_read_aging(self):
@@ -219,10 +209,10 @@ class Shell:
             self._write(99, write_value)
             if self._read(0).strip() != self._read(99).strip():
                 self.msg.append("FAIL")
-                return self.msg
+                return "FAIL"
 
         self.msg.append("PASS")
-        return self.msg
+        return "PASS"
 
     @log_and_print
     def erase_and_write_aging(self, loop=30):
@@ -244,10 +234,10 @@ class Shell:
                         self._write(en, rand_val1)
                         self._write(en, rand_val2)
             self.msg.append("[EraseAndWriteAging] Done")
-            return self.msg
+            return
         except Exception as e:
             self.msg.append(f"[EraseAndWriteAging] FAIL: {e}")
-            return self.msg
+            return
 
     @log_and_print
     def help(self):
