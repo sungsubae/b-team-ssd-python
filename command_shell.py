@@ -69,19 +69,19 @@ class FlushCommand(Command):
 
 class FullWriteAndReadCompareCommand(Command):
     def execute(self, shell, *args):
-        shell.logging_and_printing(shell.full_write_and_read_compare())
+        shell.full_write_and_read_compare()
 
 class PartialLBAWriteCommand(Command):
     def execute(self, shell, *args):
-        shell.logging_and_printing(shell.partial_lba_write())
+        shell.partial_lba_write()
 
 class WriteReadAgingCommand(Command):
     def execute(self, shell, *args):
-        shell.logging_and_printing(shell.write_read_aging())
+        shell.write_read_aging()
 
 class EraseAndWriteAging(Command):
     def execute(self, shell, *args):
-        shell.logging_and_printing(shell.erase_and_write_aging())
+        shell.erase_and_write_aging()
 
 class HelpCommand(Command):
     def execute(self, shell, *args):

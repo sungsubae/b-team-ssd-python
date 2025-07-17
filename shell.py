@@ -31,10 +31,6 @@ class Shell:
         self.logger = Logger()
         self.msg=[]
 
-    def logging_and_printing(self, ret: str):
-        self.logger.print(ret)
-        print(ret)
-
     @log_and_print
     def read(self, lba: int):
         line = self._read(lba)
