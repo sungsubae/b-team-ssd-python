@@ -4,7 +4,6 @@ from functools import wraps
 
 from command_factory import CommandFactory
 from logger import Logger
-from command_shell import COMMANDS
 import sys
 
 
