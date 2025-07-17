@@ -147,6 +147,8 @@ def main():
     erase_parser.add_argument('address', type=int, help='LBA address to write (0~99)')
     erase_parser.add_argument('size', type=int, help='1 <= SIZE <= 10')
 
+    flush_parser = subparsers.add_parser('F', help='Flush buffer')
+
     args = parser.parse_args()
     ssd = SSD()
 
