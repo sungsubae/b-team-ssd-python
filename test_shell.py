@@ -312,7 +312,7 @@ def test_erase_range(mocker: MockerFixture, capsys):
 def test_erase_and_write_aging(mocker):
     shell = Shell()
     # erase_range, _write 메서드를 mock
-    erase_range_mock = mocker.patch.object(shell, 'erase_range')
+    erase_range_mock = mocker.patch.object(shell, '_erase_range')
     write_mock = mocker.patch.object(shell, '_write')
     shell.erase_and_write_aging(loop=1)
 
