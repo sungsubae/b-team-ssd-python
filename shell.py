@@ -296,60 +296,6 @@ def check_invalid(user_input_list):
     return False
 
 
-def start_shell(shell: Shell):
-    logger = Logger()
-
-    def logging_and_printing(ret: str):
-        logger.print(ret)
-        print(ret)
-
-    while True:
-        user_input = input("Shell> ")
-        user_input_list = user_input.strip().split()
-
-        if check_invalid(user_input_list):
-            print("INVALID COMMAND")
-            continue
-
-        cmd_type = user_input_list[0]
-        if cmd_type == "read":
-            lba = int(user_input_list[1])
-            shell.read(lba)
-        elif cmd_type == "write":
-            lba = int(user_input_list[1])
-            address = user_input_list[2]
-            shell.write(lba, address)
-        elif cmd_type == "erase":
-            start_lba = int(user_input_list[1])
-            size = int(user_input_list[2])
-            shell.erase(start_lba, size)
-        elif cmd_type == "erase_range":
-            start_lba = int(user_input_list[1])
-            end_lba = int(user_input_list[2])
-            shell.erase_range(start_lba, end_lba)
-        elif cmd_type == "exit":
-            break
-        elif cmd_type == "help":
-            shell.help()
-        elif cmd_type == "fullwrite":
-            value = user_input_list[1]
-            shell.full_write(value)
-        elif cmd_type == "fullread":
-            shell.full_read()
-        elif cmd_type == "flush":
-            shell.flush()
-        elif cmd_type == "1_" or cmd_type == "1_FullWriteAndReadCompare":
-            logging_and_printing(shell.full_write_and_read_compare())
-        elif cmd_type == "2_" or cmd_type == "2_PartialLBAWrite":
-            logging_and_printing(shell.partial_lba_write())
-        elif cmd_type == "3_" or cmd_type == "3_WriteReadAging":
-            logging_and_printing(shell.write_read_aging())
-        elif cmd_type == "4_" or cmd_type == "4_EraseAndWriteAging":
-            logging_and_printing(shell.erase_and_write_aging())
-        else:
-            continue
-
-
 def start_runner(shell: Shell, file_path):
     def test_run_and_pass_check(func):
         ret = func()
@@ -384,17 +330,6 @@ def start_runner(shell: Shell, file_path):
                     break
     except Exception:
         print('INVALID COMMAND')
-
-
-def main():
-    shell = Shell()
-    if len(sys.argv) == 1:
-        start_shell(shell)
-    elif len(sys.argv) == 2:
-        start_runner(shell, sys.argv[1])
-    else:
-        print("INVALID COMMAND")
-        return 1
 
 
 def find_command(cmd_type):
