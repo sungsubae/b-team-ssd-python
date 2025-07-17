@@ -123,7 +123,7 @@ class Buffer:
                 return idx, file_name
         return None, None
 
-    def merge_intervals(self, intervals: list):
+    def _merge_intervals(self, intervals: list):
         intervals.sort(key=lambda x: x[0])
         merged = []
 
@@ -136,19 +136,20 @@ class Buffer:
         return merged
 
     def _join_erase_command(self, lba: int, size: int):
-        write_commands = []
         erase_intervals = [[lba, lba + size]]
-        for command in self.get_command_list():
-            idx, cmd, lba, value = command.split('_')
-            if cmd == 'W':
-                write_commands.append(f'{cmd}_{lba}_{value}')
-            else:
-                lba = int(lba)
-                size = int(value)
-                erase_intervals.append([lba, lba + size])
+        erase_intervals = self._get_erase_intervals(erase_intervals)
+        merged_intervals = self._merge_intervals(erase_intervals)
+        erase_commands = self._get_erase_commands(merged_intervals)
 
-        merged_intervals = self.merge_intervals(erase_intervals)
+        write_commands = self._get_write_commands()
+        self._write_buffer(erase_commands + write_commands)
 
+    def _write_buffer(self, commands):
+        self.reset()
+        for idx, command in enumerate(commands):
+            os.rename(self.folder_path / f"{idx + 1}_empty", self.folder_path / f"{idx + 1}_{command}")
+
+    def _get_erase_commands(self, merged_intervals):
         erase_commands = []
         for interval in merged_intervals:
             lba = interval[0]
@@ -159,7 +160,22 @@ class Buffer:
                 lba += 10
                 size -= 10
             erase_commands.append(f'E_{lba}_{size}')
+        return erase_commands
 
-        self.reset()
-        for idx, command in enumerate(erase_commands + write_commands):
-            os.rename(self.folder_path / f"{idx+1}_empty", self.folder_path / f"{idx+1}_{command}")
+    def _get_erase_intervals(self, erase_intervals):
+        for command in self.get_command_list():
+            idx, cmd, lba, value = command.split('_')
+            if cmd != 'E':
+                continue
+            lba = int(lba)
+            size = int(value)
+            erase_intervals.append([lba, lba + size])
+        return erase_intervals
+
+    def _get_write_commands(self):
+        write_commands = []
+        for command in self.get_command_list():
+            idx, cmd, lba, value = command.split('_')
+            if cmd == 'W':
+                write_commands.append(f'{cmd}_{lba}_{value}')
+        return write_commands
