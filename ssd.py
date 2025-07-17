@@ -11,6 +11,7 @@ MAX_LBA = 99
 MIN_SIZE = 1
 MAX_SIZE = 10
 
+
 class SSD:
     _instance = None
 
