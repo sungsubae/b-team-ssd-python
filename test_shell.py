@@ -100,6 +100,10 @@ def test_full_write_success(mocker: MockerFixture):
 
 
 def test_help_call(mocker: MockerFixture):
+    '''
+    cmd에서 help 실행 시,
+    help 함수를 정상적으로 호출하는지 확인하는 테스트
+    '''
     mk = mocker.Mock(spec=Shell)
     mk.help()
 
@@ -107,6 +111,10 @@ def test_help_call(mocker: MockerFixture):
 
 
 def test_help_text_valid(capsys):
+    '''
+    cmd에서 help 호출 시,
+    정상적인 결과를 출력하는지를 확인하는 테스트
+    '''
     shell = Shell()
     ret = shell.help()
     captured = capsys.readouterr()
