@@ -119,11 +119,12 @@ def test_help_text_valid(capsys):
  4. erase_range: erase_range [ST_LBA] [EN_LBA]
  5. fullwrite: fullwrite [VALUE]
  6. fullread: fullread
- 7. 1_FullWriteAndReadCompare: 1_ 혹은 1_FullWriteAndReadCompare 입력
- 8. 2_PartialLBAWrite: 2_ 혹은 2_PartialLBAWrite 입력
- 9. 3_WriteReadAging: 3_ 혹은 3_WriteReadAging 입력
-10. 4_EraseAndWriteAging: 4_ 혹은 4_EraseAndWriteAging 입력
-11. exit: exit
+ 7. flush: flush
+ 8. 1_FullWriteAndReadCompare: 1_ 혹은 1_FullWriteAndReadCompare 입력
+ 9. 2_PartialLBAWrite: 2_ 혹은 2_PartialLBAWrite 입력
+10. 3_WriteReadAging: 3_ 혹은 3_WriteReadAging 입력
+11. 4_EraseAndWriteAging: 4_ 혹은 4_EraseAndWriteAging 입력
+12. exit: exit
 그 외 명령어 입력 시, INVALID COMMAND 가 출력 됩니다.'''
 
 
