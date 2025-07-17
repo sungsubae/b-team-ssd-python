@@ -345,9 +345,10 @@ def start_shell(shell: Shell):
 def start_runner(shell: Shell, file_path):
     def test_run_and_pass_check(func):
         ret = func()
-        print(ret)
         if ret == "FAIL":
+            print(f'{ret}!')
             return False
+        print(ret)
         return True
 
     try:
