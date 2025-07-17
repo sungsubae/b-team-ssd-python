@@ -245,14 +245,17 @@ def test_full_read_call(mocker: MockerFixture):
 def test_full_read_valid(mocker: MockerFixture, capsys):
     '''
     fullread 호출 시,
-    _read 함수를 정상 호출 하는지 확인하고,
+    _read 함수를 100회 정상 호출 하는지 확인하고,
     _read 함수의 return 값을 제외한 나머지 부분이 정상적으로 출력되는지 확인하는 테스트 입니다.
     '''
     mk_full_read = mocker.patch('shell.Shell._read')
     mk_full_read.return_value = '0x00000000'
-    shell = Shell()
-    shell.full_read()
+
+    with patch("builtins.input", side_effect=["fullread", "exit"]):
+        start_shell(Shell())
+
     captured = capsys.readouterr()
+    assert mk_full_read.call_count == 100
     assert captured.out.strip() == '[Full Read]\n' + '\n'.join([f"LBA {i:02d} : 0x00000000" for i in range(100)])
 
 
