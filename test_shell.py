@@ -344,28 +344,37 @@ def test_runner_call(mocker: MockerFixture):
 
 
 def _mock_runner_invalid_input(file_path):
-    with open(file_path, encoding="utf-8") as f:
-        for raw_line in f:
-            line = raw_line.rstrip("\n")  # 줄 끝 개행 문자 제거
-            if line == '1_' or line == '1_FullWriteAndReadCompare':
-                print('1_PASS', end='', flush=True)
-            elif line == '2_' or line == '2_PartialLBAWrite':
-                print('2_PASS', end='', flush=True)
-            elif line == '3_' or line == '3_WriteReadAging':
-                print('3_PASS', end='', flush=True)
-            elif line == '4_' or line == '4_EraseAndWriteAging':
-                print('4_PASS', end='', flush=True)
-            else:
-                continue
+    try:
+        with open(file_path, encoding="utf-8") as f:
+            for raw_line in f:
+                line = raw_line.rstrip("\n")  # 줄 끝 개행 문자 제거
+                if line == '1_' or line == '1_FullWriteAndReadCompare':
+                    print('1_PASS', end='', flush=True)
+                elif line == '2_' or line == '2_PartialLBAWrite':
+                    print('2_PASS', end='', flush=True)
+                elif line == '3_' or line == '3_WriteReadAging':
+                    print('3_PASS', end='', flush=True)
+                elif line == '4_' or line == '4_EraseAndWriteAging':
+                    print('4_PASS', end='', flush=True)
+                else:
+                    continue
+    except:
+        print('INVALID COMMAND')
 
 def test_runner_incorrect_path(mocker: MockerFixture, capsys):
     mk_startrunner = mocker.patch('shell.start_runner')
     mk_startrunner.side_effect = _mock_runner_invalid_input
 
-    mk_startrunner(r'./incorrect_path.txt')
+    incorrect_path = r'./incorrect_path.txt'
 
+    mk_startrunner(incorrect_path)
     captured = capsys.readouterr().out
     mk_startrunner.assert_called_once()
+    assert captured.strip() == "INVALID COMMAND"
+
+    correct_path = r'.\path\to\shell_script.txt'
+    mk_startrunner(correct_path)
+    captured = capsys.readouterr().out
     assert captured.strip() == "1_PASS2_PASS3_PASS4_PASS"
 
 
