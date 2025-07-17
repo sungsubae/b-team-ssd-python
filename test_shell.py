@@ -232,7 +232,8 @@ def test_full_read_call(mocker: MockerFixture):
     fullread 함수가 정상적으로 호출되는지 확인하는 테스트 입니다.
     '''
     mk = mocker.Mock(spec=Shell)
-    mk.full_read()
+    with patch("builtins.input", side_effect=["fullread", "exit"]):
+        start_shell(mk)
 
     mk.full_read.assert_called_once()
 
