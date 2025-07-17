@@ -119,7 +119,8 @@ class Buffer:
         return self._write_buffer(erase_commands + write_commands)
 
     def _write_buffer(self, commands):
-        if len(commands) > 5: return False
+        if len(commands) > 5:
+            return False
 
         self.reset()
         for idx, command in enumerate(commands):

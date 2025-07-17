@@ -40,7 +40,6 @@ def test_command_buffer_flush(shell, ssd):
     assert actual_files == expected_files
 
 
-# 1_W_20_0xABCDABCD , 2_W_20_0x12341234 , 3_E_20_1
 def test_command_buffer_example_1(mocker: MockerFixture, shell, ssd):
     ssd_write_mock = mocker.patch('ssd.SSD._write')
     ssd_erase_mock = mocker.patch('ssd.SSD._erase')
