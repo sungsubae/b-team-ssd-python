@@ -28,15 +28,15 @@ def test_ssd_write_with_params(test_params, ssd: SSD):
 
 
 @pytest.mark.parametrize(
-    "address, expected",
+    "lba, expected",
     [(-1, False),
      (100, False),
      ('asd', False),
      (0, True),
      (99, True)]
 )
-def test_ssd_write_address_validation(address, expected: bool, ssd: SSD):
-    assert ssd.is_valid_address(address) is expected
+def test_ssd_write_lba_validation(lba, expected: bool, ssd: SSD):
+    assert ssd.is_valid_lba(lba) is expected
 
 
 @pytest.mark.parametrize(
