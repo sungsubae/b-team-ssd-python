@@ -382,4 +382,12 @@ def test_runner_incorrect_path(mocker: MockerFixture, capsys):
     captured = capsys.readouterr().out
     assert captured.strip() == "1_PASS2_PASS3_PASS4_PASS"
 
+def test_runner_fail(mocker:MockerFixture, capsys):
+    mk_test_1 = mocker.patch('shell.Shell.full_write_and_read_compare')
 
+    mk_test_1.return_value = 'FAIL'
+
+    expect = '''1_FullWriteAndReadCompare  ___   Run...FAIL!'''
+    shell.start_runner(Shell(), r'.\path\to\shell_script.txt')
+    captured = capsys.readouterr().out
+    assert captured.strip() == expect
