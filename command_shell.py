@@ -1,6 +1,7 @@
-from abc import ABC, abstractmethod
 
 from shell import Shell
+
+from abc import ABC, abstractmethod
 
 class Command(ABC):
     @abstractmethod
@@ -65,6 +66,10 @@ class FullReadCommand(Command):
     def execute(self, shell, *args):
         shell.full_read()
 
+class FlushCommand(Command):
+    def execute(self, shell, *args):
+        shell.flush()
+
 class FullWriteAndReadCompareCommand(Command):
     def execute(self, shell, *args):
         shell.logging_and_printing(shell.full_write_and_read_compare())
@@ -97,6 +102,7 @@ COMMANDS = {
     "erase_range": EraseRangeCommand(),
     "fullwrite": FullWriteCommand(),
     "fullread": FullReadCommand(),
+    "flush": FlushCommand(),
     "1_": FullWriteAndReadCompareCommand(),
     "1_fullwriteandreadcompare": FullWriteAndReadCompareCommand(),
     "2_": PartialLBAWriteCommand(),
