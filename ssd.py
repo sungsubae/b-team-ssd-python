@@ -2,6 +2,7 @@ import argparse
 import os
 from buffer import Buffer
 
+
 class SSD:
     _instance = None
 
@@ -101,34 +102,19 @@ class SSD:
 
     def is_valid_address(self, address: int):
         try:
-            if 0 <= address <= 99:
-                return True
-            else:
-                return False
-        except Exception as e:
+            return 0 <= address <= 99
+        except TypeError:
             return False
 
     def is_valid_value(self, hex_input: str):
         try:
             value = int(hex_input, 16)
-
-            if 0 <= value <= 0xFFFFFFFF:
-                return True
-            else:
-                return False
-        except Exception as e:
+            return 0 <= value <= 0xFFFFFFFF
+        except ValueError:
             return False
 
     def is_valid_size(self, size):
-        try:
-            if 1 <= size <= 10:
-                return True
-            else:
-                return False
-        except Exception as e:
-            return False
-
-
+        return isinstance(size, int) and 1 <= size <= 10
 
 
 def main():
@@ -147,7 +133,7 @@ def main():
     erase_parser.add_argument('address', type=int, help='LBA address to write (0~99)')
     erase_parser.add_argument('size', type=int, help='1 <= SIZE <= 10')
 
-    flush_parser = subparsers.add_parser('F', help='Flush buffer')
+    subparsers.add_parser('F', help='Flush buffer')
 
     args = parser.parse_args()
     ssd = SSD()
