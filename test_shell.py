@@ -227,7 +227,7 @@ def test_full_write_and_read_compare_success(mocker: MockerFixture, capsys):
     read_calls = []
     random.seed(seed)
     for i in range(ssd_length // block_length):
-        random_val = random.randint(0x00000001, 0xFFFFFFFF)
+        random_val = random.randint(0x00000000, 0xFFFFFFFF)
         for j in range(block_length):
             random_values.append(f'{random_val:#010x}')
             write_calls.append(call(i * block_length + j, f'{random_val:#010x}'))
