@@ -32,6 +32,30 @@ class WriteCommand(Command):
         except Exception:
             print("Usage: write <LBA> <VALUE>")
 
+class EraseCommand(Command):
+    def execute(self, shell, *args):
+        if len(args) != 2:
+            print("[Erase] ERROR")
+            return
+        try:
+            lba = int(args[0])
+            size = int(args[1])
+            shell.erase(lba, size)
+        except Exception:
+            print("[Erase] ERROR")
+
+class EraseRangeCommand(Command):
+    def execute(self, shell, *args):
+        if len(args) != 2:
+            print("[EraseRange] ERROR")
+            return
+        try:
+            start_lba = int(args[0])
+            end_lba = int(args[1])
+            shell.erase_range(start_lba, end_lba)
+        except Exception:
+            print("[EraseRange] ERROR")
+
 class FullWriteCommand(Command):
     def execute(self, shell, *args):
         if len(args) != 1:
@@ -71,6 +95,8 @@ class ExitCommand(Command):
 COMMANDS = {
     "read": ReadCommand(),
     "write": WriteCommand(),
+    "erase": EraseCommand(),
+    "erase_range": EraseRangeCommand(),
     "fullwrite": FullWriteCommand(),
     "fullread": FullReadCommand(),
     "1_": FullWriteAndReadCompareCommand(),
