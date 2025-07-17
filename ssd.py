@@ -29,54 +29,54 @@ class SSD:
             self.reset_ssd()
 
     def reset_ssd(self):
-        self.write_nand([f'{lba:02d} {MIN_VALUE_STR}\n' for lba in range(100)])
-        self.write_output('')
+        self.write_nand([f"{lba:02d} {MIN_VALUE_STR}\n" for lba in range(100)])
+        self.write_output("")
         self.buffer.reset()
 
     def read_all(self):
-        with open(self.ssd_nand, 'r', encoding='utf-8') as f:
+        with open(self.ssd_nand, "r", encoding="utf-8") as f:
             return f.readlines()
 
     def read_output(self):
-        with open(self.ssd_output, 'r', encoding='utf-8') as f:
+        with open(self.ssd_output, "r", encoding="utf-8") as f:
             return f.read()
 
     def write_output(self, value: str):
-        with open(self.ssd_output, 'w', encoding='utf-8') as f:
+        with open(self.ssd_output, "w", encoding="utf-8") as f:
             f.write(value)
 
     def write_nand(self, lines: list[str]):
-        with open(self.ssd_nand, 'w', encoding='utf-8') as f:
+        with open(self.ssd_nand, "w", encoding="utf-8") as f:
             f.writelines(lines)
 
     def read(self, lba: int):
         if not self.is_valid_lba(lba):
-            self.write_output('ERROR')
+            self.write_output("ERROR")
             return
 
         value = self.buffer.read(lba)
         if not value:
             contents = self.read_all()
-            value = contents[lba].split(' ')[-1]
+            value = contents[lba].split(" ")[-1]
 
         self.write_output(value)
         return
 
     def write(self, lba: int, value: str):
         if not (self.is_valid_lba(lba) and self.is_valid_value(value)):
-            self.write_output('ERROR')
+            self.write_output("ERROR")
             return
 
-        if not self.buffer.write('W', lba, value):
+        if not self.buffer.write("W", lba, value):
             self.flush()
-            self.buffer.write('W', lba, value)
+            self.buffer.write("W", lba, value)
 
     def _write(self, lba: int, value: str):
         contents = self.read_all()
         contents[lba] = f"{lba:02d} {value}\n"
 
         self.write_nand(contents)
-        self.write_output('')
+        self.write_output("")
 
     def flush(self):
         command_list = self.buffer.get_command_list()
@@ -85,22 +85,26 @@ class SSD:
 
     def do_commmands(self, command_list):
         for command in command_list:
-            idx, cmd, lba, value = command.split('_')
-            if cmd == 'W':
+            idx, cmd, lba, value = command.split("_")
+            if cmd == "W":
                 self._write(int(lba), value)
             else:
                 self._erase(int(lba), int(value))
 
     def erase(self, lba: int, size: int):
-        if not (self.is_valid_lba(lba) and self.is_valid_size(size) and self.is_valid_lba(lba + size - 1)):
-            self.write_output('ERROR')
+        if not (
+            self.is_valid_lba(lba)
+            and self.is_valid_size(size)
+            and self.is_valid_lba(lba + size - 1)
+        ):
+            self.write_output("ERROR")
             return
 
-        if not self.buffer.write('E', lba, size=size):
+        if not self.buffer.write("E", lba, size=size):
             self.flush()
-            self.buffer.write('E', lba, size=size)
+            self.buffer.write("E", lba, size=size)
 
-        self.write_output('')
+        self.write_output("")
 
     def _erase(self, lba: int, size: int):
         contents = self.read_all()
@@ -128,32 +132,34 @@ class SSD:
 
 def main():
     parser = argparse.ArgumentParser(description="SSD Read/Write")
-    subparsers = parser.add_subparsers(dest='command', required=True)
+    subparsers = parser.add_subparsers(dest="command", required=True)
 
-    read_parser = subparsers.add_parser('R', help='Read from SSD')
-    read_parser.add_argument('address', type=int, help='LBA address to read (0~99)')
+    read_parser = subparsers.add_parser("R", help="Read from SSD")
+    read_parser.add_argument("address", type=int, help="LBA address to read (0~99)")
 
     # Write 명령
-    write_parser = subparsers.add_parser('W', help='Write to SSD')
-    write_parser.add_argument('address', type=int, help='LBA address to write (0~99)')
-    write_parser.add_argument('value', type=str, help='Hex value to write (e.g., 0x1234ABCD)')
+    write_parser = subparsers.add_parser("W", help="Write to SSD")
+    write_parser.add_argument("address", type=int, help="LBA address to write (0~99)")
+    write_parser.add_argument(
+        "value", type=str, help="Hex value to write (e.g., 0x1234ABCD)"
+    )
 
-    erase_parser = subparsers.add_parser('E', help='Erase to SSD')
-    erase_parser.add_argument('address', type=int, help='LBA address to write (0~99)')
-    erase_parser.add_argument('size', type=int, help='1 <= SIZE <= 10')
+    erase_parser = subparsers.add_parser("E", help="Erase to SSD")
+    erase_parser.add_argument("address", type=int, help="LBA address to write (0~99)")
+    erase_parser.add_argument("size", type=int, help="1 <= SIZE <= 10")
 
-    subparsers.add_parser('F', help='Flush buffer')
+    subparsers.add_parser("F", help="Flush buffer")
 
     args = parser.parse_args()
     ssd = SSD()
 
-    if args.command == 'R':
+    if args.command == "R":
         ssd.read(args.address)
-    elif args.command == 'W':
+    elif args.command == "W":
         ssd.write(args.address, args.value)
-    elif args.command == 'E':
+    elif args.command == "E":
         ssd.erase(args.address, args.size)
-    elif args.command == 'F':
+    elif args.command == "F":
         ssd.flush()
 
 
