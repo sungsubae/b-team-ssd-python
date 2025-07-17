@@ -37,7 +37,7 @@ class Logger:
             new_path = old_path.replace(".log", ".zip")
             os.rename(old_path, new_path)
 
-    def print(self, message: str,location: str = None):
+    def print(self, message: str, location: str = None):
         self.create_until_file()
 
         now = datetime.now().strftime("[%y.%m.%d %H:%M]")
