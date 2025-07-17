@@ -1,6 +1,6 @@
 import os
-import re
 from pathlib import Path
+
 
 class Buffer:
     def __init__(self):
@@ -48,7 +48,7 @@ class Buffer:
                 self._join_erase_command(lba, size)
                 return True
 
-            os.rename(self.folder_path/file_name, self.folder_path/new_file_name)
+            os.rename(self.folder_path / file_name, self.folder_path / new_file_name)
             return True
         return False
 
@@ -56,7 +56,7 @@ class Buffer:
         try:
             self.folder_path.mkdir(parents=True, exist_ok=True)
             for filename in os.listdir(self.folder_path):
-                file_path = self.folder_path/filename
+                file_path = self.folder_path / filename
                 os.remove(file_path)  # 파일 삭제
 
             for idx in range(1, 6):
@@ -64,21 +64,6 @@ class Buffer:
                 file_path.touch()
         except OSError as e:
             print(f"오류 발생: {e}")
-
-    def _compact_buffer(self):
-        file_list = self.get_sorted_buffer_file_list()
-
-        for idx, file_name in enumerate(file_list):
-            if idx == len(file_list) - 1:
-                break
-            if 'empty' in file_name:
-                candidate_idx, candidate_name =  self._getElementsAfterIndex(file_list, idx)
-                if candidate_name is None:
-                    break
-                new_file_name = file_name[0] + candidate_name[1:]
-                os.rename(os.path.join(self.folder_path, file_name), os.path.join(self.folder_path, new_file_name))
-                os.rename(os.path.join(self.folder_path, candidate_name), os.path.join(self.folder_path, f'{candidate_name[0]}_empty'))
-                file_list[candidate_idx] = f'{candidate_name[0]}_empty'
 
     def _join_write_command(self, lba: int, value: str):
         file_list = self.get_sorted_buffer_file_list()
@@ -103,10 +88,10 @@ class Buffer:
                 else:
                     new_file_name = str(old_file_idx+1) + file_list[old_file_idx+1][1:]
                 last_file_name = new_file_name
-                os.rename(os.path.join(self.folder_path, old_file_name), os.path.join(self.folder_path, new_file_name))
+                os.rename(self.folder_path / old_file_name, self.folder_path / new_file_name)
 
             new_file_name = f'{last_file_name[0]}_W_{lba}_{value}'
-            os.rename(os.path.join(self.folder_path, last_file_name), os.path.join(self.folder_path, new_file_name))
+            os.rename(self.folder_path / last_file_name, self.folder_path / new_file_name)
             return True
 
         return False
@@ -128,7 +113,7 @@ class Buffer:
                     new_file_name = f'{old_file_idx + 1}_empty'
                 else:
                     new_file_name = str(old_file_idx + 1) + file_list[old_file_idx + 1][1:]
-                os.rename(os.path.join(self.folder_path, old_file_name), os.path.join(self.folder_path, new_file_name))
+                os.rename(self.folder_path / old_file_name, self.folder_path / new_file_name)
 
     def _getElementsAfterIndex(self, file_list, s_idx):
         for idx, file_name in enumerate(file_list):
@@ -137,7 +122,6 @@ class Buffer:
             if 'empty' not in file_name:
                 return idx, file_name
         return None, None
-
 
     def merge_intervals(self, intervals: list):
         intervals.sort(key=lambda x: x[0])
@@ -178,7 +162,4 @@ class Buffer:
 
         self.reset()
         for idx, command in enumerate(erase_commands + write_commands):
-            os.rename(self.folder_path/f"{idx+1}_empty", self.folder_path/f"{idx+1}_{command}")
-
-
-
+            os.rename(self.folder_path / f"{idx+1}_empty", self.folder_path / f"{idx+1}_{command}")
