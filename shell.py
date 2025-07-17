@@ -64,7 +64,7 @@ class Shell:
     def write(self, lba, value):
         try:
             if not (0 <= lba < self.MAX_INDEX):
-                print("[Write] ERROR")
+                self.msg.append("[Write] ERROR")
                 return
             if not self.is_hex_string(value):
                 self.msg.append("[Write] ERROR")
@@ -170,6 +170,7 @@ class Shell:
         return self.msg
 
 
+    @log_and_print
     def full_write_and_read_compare(self):
         ssd_length = self.MAX_INDEX
         block_length = 5
@@ -188,9 +189,12 @@ class Shell:
                 remove_duplicates.add(result)
             if len(remove_duplicates) == 1 and random_val in remove_duplicates:
                 continue
-            return "FAIL"
-        return "PASS"
+            self.msg.append("FAIL")
+            return self.msg
+        self.msg.append("PASS")
+        return self.msg
 
+    @log_and_print
     def partial_lba_write(self, repeat=30, seed=42):
         random.seed(seed)
         for _ in range(repeat):
@@ -202,9 +206,13 @@ class Shell:
             read_value = self._read(0)
             for lba in range(1, 5):
                 if read_value != self._read(lba):
-                    return "FAIL"
-        return "PASS"
+                    self.msg.append("FAIL")
+                    return self.msg
 
+        self.msg.append("PASS")
+        return self.msg
+
+    @log_and_print
     def write_read_aging(self):
         for _ in range(200):
             random_val = random.randint(0x00000000, 0xFFFFFFFF)
@@ -212,9 +220,13 @@ class Shell:
             self._write(0, write_value)
             self._write(99, write_value)
             if self._read(0).strip() != self._read(99).strip():
-                return "FAIL"
-        return "PASS"
+                self.msg.append("FAIL")
+                return self.msg
 
+        self.msg.append("PASS")
+        return self.msg
+
+    @log_and_print
     def erase_and_write_aging(self, loop=30):
         try:
             for cnt in range(loop):
@@ -233,11 +245,11 @@ class Shell:
                             rand_val2 = f"{rand_val2:#010x}"
                         self._write(en, rand_val1)
                         self._write(en, rand_val2)
-            print("[EraseAndWriteAging] Done")
-            return "PASS"
+            self.msg.append("[EraseAndWriteAging] Done")
+            return self.msg
         except Exception as e:
-            print(f"[EraseAndWriteAging] FAIL: {e}")
-            return "FAIL"
+            self.msg.append(f"[EraseAndWriteAging] FAIL: {e}")
+            return self.msg
 
     @log_and_print
     def help(self):

@@ -199,7 +199,9 @@ def test_full_write_and_read_compare_success(mocker: MockerFixture, capsys):
             read_calls.append(call(i * block_length + j))
     shell_read_mock.side_effect = random_values
     random.seed(seed)
-    assert shell.full_write_and_read_compare() == "PASS"
+    shell.full_write_and_read_compare()
+    captured = capsys.readouterr()
+    assert captured.out.strip() == "PASS"
     shell_write_mock.assert_has_calls(write_calls)
     shell_read_mock.assert_has_calls(read_calls)
 
@@ -223,7 +225,10 @@ def test_full_write_and_read_compare_fail(mocker: MockerFixture, capsys):
             read_calls.append(call(i * block_length + j))
     shell_read_mock.side_effect = random_values
     random.seed(seed+1)
-    assert shell.full_write_and_read_compare() == 'FAIL'
+
+    shell.full_write_and_read_compare()
+    captured = capsys.readouterr()
+    assert captured.out.strip() == "FAIL"
 
 
 def test_full_read_call(mocker: MockerFixture):
@@ -242,13 +247,15 @@ def test_full_read_valid(mocker: MockerFixture, capsys):
     assert captured.out.strip() == '[Full Read]\n' + '\n'.join([f"LBA {i:02d} : 0x00000000" for i in range(100)])
 
 
-def test_write_read_aging_calls_write_read_400_times(mocker: MockerFixture):
+def test_write_read_aging_calls_write_read_400_times(mocker: MockerFixture, capsys):
     mock_write = mocker.patch('shell.Shell._write')
     mock_read = mocker.patch('shell.Shell._read')
     mock_read.return_value = '0x00000001'
     shell = Shell()
 
-    assert shell.write_read_aging() == "PASS"
+    shell.write_read_aging()
+    captured = capsys.readouterr()
+    assert captured.out.strip() == "PASS"
     assert mock_write.call_count == 400
     assert mock_read.call_count == 400
 
@@ -279,10 +286,14 @@ def test_partial_lba_write_pass_and_fail(mocker: MockerFixture, capsys):
     mock_read.return_value = '0x00000001'
 
     shell = Shell()
-    assert shell.partial_lba_write(repeat=1, seed=42) == "PASS"
+    shell.partial_lba_write(repeat=1, seed=42)
+    captured = capsys.readouterr()
+    assert captured.out.strip() == "PASS"
 
     mock_read.side_effect = ['0x00000001', '0x00000001', '0x00000002', '0x00000001', '0x00000001']
-    assert shell.partial_lba_write(repeat=1, seed=42) == "FAIL"
+    shell.partial_lba_write(repeat=1, seed=42)
+    captured = capsys.readouterr()
+    assert  captured.out.strip()  == "FAIL"
 
 
 
