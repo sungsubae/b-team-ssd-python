@@ -1,4 +1,10 @@
-from command_shell import *
+from command_shell import (
+    ReadCommand, WriteCommand, EraseCommand, EraseRangeCommand,
+    FullWriteCommand, FullReadCommand, FlushCommand,
+    FullWriteAndReadCompareCommand, PartialLBAWriteCommand,
+    WriteReadAgingCommand, EraseAndWriteAging,
+    HelpCommand, ExitCommand
+)
 
 
 class CommandFactory:

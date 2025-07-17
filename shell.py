@@ -40,7 +40,6 @@ class Shell:
         else:
             self.msg.append(f"[Read] LBA {lba:02d} : {line}")
 
-
     def _read(self, lba):
         subprocess.run(
             ["python", "ssd.py", "R", str(lba)],
@@ -77,7 +76,6 @@ class Shell:
         except Exception:
             self.msg.append("Usage: write <LBA> <VALUE>")
 
-
     @log_and_print
     def _write(self, lba, value):
         try:
@@ -91,7 +89,6 @@ class Shell:
             return output_msg
         except Exception:
             self.msg.append("Usage: write <LBA> <VALUE>")
-
 
     def _erase(self, lba, size):
         subprocess.run(
@@ -119,12 +116,10 @@ class Shell:
 
         self.msg.append("[Erase] Done")
 
-
     @log_and_print
     def erase_range(self, start_lba, end_lba):
         result = "[Erase Range] " + self._erase_range(start_lba, end_lba)
         self.msg.append(result)
-
 
     def _erase_range(self, start_lba, end_lba):
         if not (self.MIN_INDEX <= start_lba <= end_lba < self.MAX_INDEX):
@@ -141,13 +136,11 @@ class Shell:
 
         self.msg.append("[Full Write] Done")
 
-
     @log_and_print
     def full_read(self):
         self.msg.append("[Full Read]")
         for lba in range(self.MAX_INDEX):
             self.msg.append(f'LBA {lba:02d} : {self._read(lba)}')
-
 
     @log_and_print
     def flush(self):
@@ -320,12 +313,6 @@ def start_runner(shell: Shell, file_path):
                     break
     except Exception:
         print('INVALID COMMAND')
-
-
-def find_command(cmd_type):
-    if cmd_type in COMMANDS:
-        return COMMANDS[cmd_type]
-    return None
 
 
 def start_factory_shell(shell: Shell):
