@@ -1,6 +1,3 @@
-
-from shell import Shell
-
 from abc import ABC, abstractmethod
 
 class Command(ABC):
@@ -114,29 +111,3 @@ COMMANDS = {
     "help": HelpCommand(),
     "exit": ExitCommand(),
 }
-
-def find_command(cmd_type):
-    if cmd_type in COMMANDS:
-        return COMMANDS[cmd_type]
-    return None
-
-def command_main(shell: Shell):
-    while True:
-        user_input = input("Shell> ")
-        user_input_list = user_input.strip().split()
-        if not user_input_list:
-            print("INVALID COMMAND")
-            continue
-
-        cmd_type = user_input_list[0].lower()
-        args = user_input_list[1:]
-
-        command = find_command(cmd_type)
-        if command:
-            command.execute(shell, *args)
-        else:
-            print("INVALID COMMAND")
-
-if __name__ == "__main__":
-    shell = Shell()
-    command_main(shell)
