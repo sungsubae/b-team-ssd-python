@@ -127,18 +127,19 @@ class Shell:
 
     @log_and_print
     def erase_range(self, start_lba, end_lba):
+        result = "[Erase Range] " + self._erase_range(start_lba, end_lba)
+        self.msg.append(result)
+        return self.msg
+
+    def _erase_range(self, start_lba, end_lba):
         if not (self.MIN_INDEX <= start_lba
                 and start_lba <= end_lba
                 and end_lba < self.MAX_INDEX):
-
-            self.msg.append("[Erase Range] ERROR")
-            return self.msg
+            return "ERROR"
         for start in range(start_lba, end_lba + 1, 10):
             end = min(end_lba + 1 - start, 10)
             self._erase(start, end)
-        self.msg.append("[Erase Range] Done")
-
-        return self.msg
+        return "Done"
 
     @log_and_print
     def full_write(self, value):
@@ -220,7 +221,7 @@ class Shell:
                 for i in range(50):
                     st = i * 2
                     en = st + 2
-                    self.erase_range(st, min(en, 99))
+                    self._erase_range(st, min(en, 99))
                     # 마지막 LBA에 "서로 다른" 랜덤 값 2번 write
                     if en <= 99:
                         rand_val1 = random.randint(0x00000000, 0xFFFFFFFF)
