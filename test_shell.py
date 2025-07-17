@@ -383,6 +383,11 @@ def test_runner_incorrect_path(mocker: MockerFixture, capsys):
     assert captured.strip() == "1_PASS2_PASS3_PASS4_PASS"
 
 def test_runner_fail(mocker:MockerFixture, capsys):
+    def do_test(expect):
+        shell.start_runner(Shell(), r'.\path\to\shell_script.txt')
+        captured = capsys.readouterr().out
+        assert captured.strip() == expect
+
     mk_test_1 = mocker.patch('shell.Shell.full_write_and_read_compare')
     mk_test_2 = mocker.patch('shell.Shell.partial_lba_write')
     mk_test_3 = mocker.patch('shell.Shell.write_read_aging')
@@ -394,35 +399,25 @@ def test_runner_fail(mocker:MockerFixture, capsys):
     mk_test_4.side_effect = ['FAIL', 'PASS']
 
     expect = '''1_FullWriteAndReadCompare  ___   Run...FAIL!'''
-    shell.start_runner(Shell(), r'.\path\to\shell_script.txt')
-    captured = capsys.readouterr().out
-    assert captured.strip() == expect
+    do_test(expect)
 
     expect = '''1_FullWriteAndReadCompare  ___   Run...PASS
 2_PartialLBAWrite          ___   Run...FAIL!'''
-    shell.start_runner(Shell(), r'.\path\to\shell_script.txt')
-    captured = capsys.readouterr().out
-    assert captured.strip() == expect
+    do_test(expect)
 
     expect = '''1_FullWriteAndReadCompare  ___   Run...PASS
 2_PartialLBAWrite          ___   Run...PASS
 3_WriteReadAging           ___   Run...FAIL!'''
-    shell.start_runner(Shell(), r'.\path\to\shell_script.txt')
-    captured = capsys.readouterr().out
-    assert captured.strip() == expect
+    do_test(expect)
 
     expect = '''1_FullWriteAndReadCompare  ___   Run...PASS
 2_PartialLBAWrite          ___   Run...PASS
 3_WriteReadAging           ___   Run...PASS
 4_EraseAndWriteAging       ___   Run...FAIL!'''
-    shell.start_runner(Shell(), r'.\path\to\shell_script.txt')
-    captured = capsys.readouterr().out
-    assert captured.strip() == expect
+    do_test(expect)
 
     expect = '''1_FullWriteAndReadCompare  ___   Run...PASS
 2_PartialLBAWrite          ___   Run...PASS
 3_WriteReadAging           ___   Run...PASS
 4_EraseAndWriteAging       ___   Run...PASS'''
-    shell.start_runner(Shell(), r'.\path\to\shell_script.txt')
-    captured = capsys.readouterr().out
-    assert captured.strip() == expect
+    do_test(expect)
