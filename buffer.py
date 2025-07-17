@@ -116,12 +116,15 @@ class Buffer:
         erase_commands = self._get_erase_commands(merged_intervals)
 
         write_commands = self._get_write_commands()
-        self._write_buffer(erase_commands + write_commands)
+        return self._write_buffer(erase_commands + write_commands)
 
     def _write_buffer(self, commands):
+        if len(commands) > 5: return False
+
         self.reset()
         for idx, command in enumerate(commands):
             os.rename(self.folder_path / f"{idx + 1}_empty", self.folder_path / f"{idx + 1}_{command}")
+        return True
 
     def _get_erase_commands(self, merged_intervals):
         erase_commands = []
