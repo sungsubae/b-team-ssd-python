@@ -224,6 +224,10 @@ def test_full_write_and_read_compare_fail(mocker:MockerFixture, capsys):
 
 
 def test_full_read_call(mocker:MockerFixture):
+    '''
+    fullread 실핼 시,
+    fullread 함수를 정상적으로 호출하는지 확인하는 테스트
+    '''
     mk = mocker.Mock(spec=Shell)
     mk.full_read()
 
@@ -231,6 +235,11 @@ def test_full_read_call(mocker:MockerFixture):
 
 
 def test_full_read_valid(mocker:MockerFixture, capsys):
+    '''
+    fullread 실행 시,
+    정상적으로 read를 호출하는지를 확인하고,
+    read 값을 제외한 나머지 출력값이 정상인지를 확인하는 테스트
+    '''
     mk_full_read = mocker.patch('shell.Shell._read')
     mk_full_read.return_value = '0x00000000'
     shell = Shell()
