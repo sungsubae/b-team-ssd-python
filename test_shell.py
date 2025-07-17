@@ -383,6 +383,10 @@ def test_runner_incorrect_path(mocker: MockerFixture, capsys):
     assert captured.strip() == "1_PASS2_PASS3_PASS4_PASS"
 
 def test_runner_fail(mocker:MockerFixture, capsys):
+    '''
+    runner 진행 간, test_script fail 발생 시,
+    FAIL! 정상 출력 여부 및 break 동작 여부 확인 test 입니다.
+    '''
     def do_test(expect):
         shell.start_runner(Shell(), r'.\path\to\shell_script.txt')
         captured = capsys.readouterr().out
