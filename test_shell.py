@@ -1,7 +1,5 @@
 import builtins
 import sys
-
-import pytest, pytest_mock
 from pytest_mock import MockerFixture
 from unittest.mock import call, patch, mock_open
 
@@ -10,7 +8,7 @@ from shell import Shell, start_shell
 import random
 
 
-def test_read_valid_index(capsys, mocker:MockerFixture):
+def test_read_valid_index(capsys, mocker: MockerFixture):
     mock_run = mocker.patch("shell.subprocess.run")
 
     mocked_file = mocker.mock_open(read_data="0x00000000")
@@ -25,7 +23,7 @@ def test_read_valid_index(capsys, mocker:MockerFixture):
     assert captured.out.strip() == "[Read] LBA 03 : 0x00000000"
 
 
-def test_read_invalid_index(capsys, mocker:MockerFixture):
+def test_read_invalid_index(capsys, mocker: MockerFixture):
     mock_run = mocker.patch("shell.subprocess.run")
 
     mocked_file = mocker.mock_open(read_data="ERROR")
@@ -40,7 +38,7 @@ def test_read_invalid_index(capsys, mocker:MockerFixture):
     assert captured.out.strip() == "[Read] ERROR"
 
 
-def test_write(capsys, mocker :MockerFixture):
+def test_write(capsys, mocker: MockerFixture):
     value = "0xAAAABBBB"
     mock_write = mocker.patch('shell.Shell._write')
     shell = Shell()
@@ -48,6 +46,7 @@ def test_write(capsys, mocker :MockerFixture):
     captured = capsys.readouterr()
     assert captured.out.strip() == "[Write] Done"
     mock_write.assert_called_once_with(3, value)
+
 
 def test_write_invalid_hex_false(mocker):
     shell = Shell()
@@ -58,6 +57,7 @@ def test_write_invalid_hex_false(mocker):
     shell.write(3, "INVALID")
     print_spy.assert_called_with("[Write] ERROR")
 
+
 def test_write_invalid_hex_true(mocker):
     shell = Shell()
     # is_hex_string이 False를 반환하도록 mock
@@ -66,6 +66,7 @@ def test_write_invalid_hex_true(mocker):
     print_spy = mocker.spy(builtins, 'print')
     shell.write(3, "0xAAAABBBB")
     print_spy.assert_called_with("[Write] Done")
+
 
 def test_write_error_case(mocker):
     shell = Shell()
@@ -79,6 +80,7 @@ def test_write_error_case(mocker):
     shell.write(3, "0xAAAABBBB")
     print_spy.assert_called_with("[Write] ERROR")
 
+
 def test_write_success(mocker):
     shell = Shell()
     mocker.patch.object(shell, 'is_hex_string', return_value=True)
@@ -89,6 +91,7 @@ def test_write_success(mocker):
     print_spy = mocker.spy(builtins, 'print')
     shell.write(4, "0xAABBAABB")
     print_spy.assert_called_with("[Write] Done")
+
 
 def test_full_write_success(mocker: MockerFixture):
     ssd_write_mock = mocker.patch('shell.Shell._write')
@@ -108,7 +111,7 @@ def test_help_call(mocker: MockerFixture):
 
 def test_help_text_valid(capsys):
     shell = Shell()
-    ret = shell.help()
+    shell.help()
     captured = capsys.readouterr()
 
     assert captured.out.strip() == '''제작자: 배성수 팀장, 연진혁, 이정은, 이찬욱, 임창근, 정구환, 이근우
@@ -128,7 +131,7 @@ def test_help_text_valid(capsys):
 그 외 명령어 입력 시, INVALID COMMAND 가 출력 됩니다.'''
 
 
-def test_cmd_read(mocker:MockerFixture):
+def test_cmd_read(mocker: MockerFixture):
     mk = mocker.Mock(spec=Shell)
     with patch("builtins.input", side_effect=["read 0", "exit"]):
         start_shell(mk)
@@ -136,21 +139,21 @@ def test_cmd_read(mocker:MockerFixture):
     mk.read.assert_called_with(0)
 
 
-def test_cmd_write(mocker:MockerFixture):
+def test_cmd_write(mocker: MockerFixture):
     mk = mocker.Mock(spec=Shell)
     with patch("builtins.input", side_effect=["write 3 0xAAAABBBB", "exit"]):
         start_shell(mk)
     mk.write.assert_called_with(3, "0xAAAABBBB")
 
 
-def test_cmd_fullwrite(mocker:MockerFixture):
+def test_cmd_fullwrite(mocker: MockerFixture):
     mk = mocker.Mock(spec=Shell)
     with patch("builtins.input", side_effect=["fullwrite 0xAAAABBBB", "exit"]):
         start_shell(mk)
     mk.full_write.assert_called_with("0xAAAABBBB")
 
 
-def test_cmd_full_write_and_read_compare(mocker:MockerFixture):
+def test_cmd_full_write_and_read_compare(mocker: MockerFixture):
     mk = mocker.Mock(spec=Shell)
     with patch("builtins.input", side_effect=["1_", "exit"]):
         start_shell(mk)
@@ -161,7 +164,7 @@ def test_cmd_full_write_and_read_compare(mocker:MockerFixture):
     assert mk.full_write_and_read_compare.call_count == 2
 
 
-def test_cmd_partial_lba_write(mocker:MockerFixture):
+def test_cmd_partial_lba_write(mocker: MockerFixture):
     mk = mocker.Mock(spec=Shell)
     with patch("builtins.input", side_effect=["2_", "2_PartialLBAWrite", "exit"]):
         start_shell(mk)
@@ -169,7 +172,7 @@ def test_cmd_partial_lba_write(mocker:MockerFixture):
     assert mk.partial_lba_write.call_count == 2
 
 
-def test_cmd_write_read_aging(mocker:MockerFixture):
+def test_cmd_write_read_aging(mocker: MockerFixture):
     mk = mocker.Mock(spec=Shell)
     with patch("builtins.input", side_effect=["3_", "3_WriteReadAging", "exit"]):
         start_shell(mk)
@@ -177,7 +180,7 @@ def test_cmd_write_read_aging(mocker:MockerFixture):
     assert mk.write_read_aging.call_count == 2
 
 
-def test_full_write_and_read_compare_success(mocker:MockerFixture, capsys):
+def test_full_write_and_read_compare_success(mocker: MockerFixture, capsys):
     seed = 42
     shell_write_mock = mocker.patch('shell.Shell._write')
     shell_read_mock = mocker.patch('shell.Shell._read')
@@ -201,7 +204,7 @@ def test_full_write_and_read_compare_success(mocker:MockerFixture, capsys):
     shell_read_mock.assert_has_calls(read_calls)
 
 
-def test_full_write_and_read_compare_fail(mocker:MockerFixture, capsys):
+def test_full_write_and_read_compare_fail(mocker: MockerFixture, capsys):
     seed = 42
     shell_write_mock = mocker.patch('shell.Shell._write')
     shell_read_mock = mocker.patch('shell.Shell._read')
@@ -223,14 +226,14 @@ def test_full_write_and_read_compare_fail(mocker:MockerFixture, capsys):
     assert shell.full_write_and_read_compare() == 'FAIL'
 
 
-def test_full_read_call(mocker:MockerFixture):
+def test_full_read_call(mocker: MockerFixture):
     mk = mocker.Mock(spec=Shell)
     mk.full_read()
 
     mk.full_read.assert_called_once()
 
 
-def test_full_read_valid(mocker:MockerFixture, capsys):
+def test_full_read_valid(mocker: MockerFixture, capsys):
     mk_full_read = mocker.patch('shell.Shell._read')
     mk_full_read.return_value = '0x00000000'
     shell = Shell()
@@ -248,6 +251,7 @@ def test_write_read_aging_calls_write_read_400_times(mocker: MockerFixture):
     assert shell.write_read_aging() == "PASS"
     assert mock_write.call_count == 400
     assert mock_read.call_count == 400
+
 
 def test_partial_lba_write(mocker: MockerFixture):
     mock_write = mocker.patch('shell.Shell._write')
@@ -342,8 +346,6 @@ def test_runner_call(mocker: MockerFixture):
     mk_startrunner.assert_called_once()
 
 
-
-
 def _mock_runner_invalid_input(file_path):
     try:
         with open(file_path, encoding="utf-8") as f:
@@ -361,6 +363,7 @@ def _mock_runner_invalid_input(file_path):
                     continue
     except:
         print('INVALID COMMAND')
+
 
 def test_runner_incorrect_path(mocker: MockerFixture, capsys):
     '''
