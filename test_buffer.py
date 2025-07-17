@@ -1,9 +1,7 @@
 import pytest
 from pytest_mock import MockerFixture
-from unittest.mock import call, patch, mock_open
-import builtins
 import os
-from shell import Shell, main
+from shell import Shell
 from buffer import Buffer
 from ssd import SSD
 import subprocess
@@ -61,7 +59,6 @@ def test_command_buffer_example_1(mocker: MockerFixture, shell, ssd):
     assert actual_files == expected_files
 
 
-
 def test_command_buffer_example_2(mocker: MockerFixture, shell, ssd):
     ssd_read_mock = mocker.patch('ssd.SSD.read_all')
 
@@ -92,6 +89,7 @@ def test_command_buffer_example_3(mocker: MockerFixture, shell, ssd):
     ssd_write_mock.assert_not_called()
     ssd_erase_mock.assert_not_called()
     assert expected_buffer_set_without_index == actual_files
+
 
 def test_command_buffer_write_over_buffer_limit(shell, ssd, output):
     shell.write(1, "0x00000001")
@@ -125,7 +123,7 @@ def test_command_buffer_write_same_lba(mocker: MockerFixture, shell, ssd, output
 
     ssd_write_mock.assert_not_called()
     ssd.read(13)
-    assert output.read_text().strip() == f"0x00000006"
+    assert output.read_text().strip() == "0x00000006"
     assert actual_files == expected_buffer_set_without_index
 
 
@@ -172,6 +170,7 @@ def test_buffer_write_not_join_erase_command():
     file_list = os.listdir(Buffer().folder_path)
 
     assert get_empty_buffer_cnt(file_list) == len(file_list) - 2
+
 
 def test_write_with_same_lba():
     buffer = Buffer()
@@ -292,8 +291,8 @@ def test_buffer_erase_merge_4():
             text=True
         )
 
-    expected_buffer_set_without_index = ['E_1_10', 'E_11_10', 'E_21_10']
-    actual_files = [fn[2:] for fn in os.listdir(r"./buffer") if "empty" not in fn]
+    expected_buffer_set_without_index = {'E_1_10', 'E_11_10', 'E_21_10'}
+    actual_files = set([fn[2:] for fn in os.listdir(r"./buffer") if "empty" not in fn])
 
     assert len(actual_files) == 3
     assert actual_files == expected_buffer_set_without_index
