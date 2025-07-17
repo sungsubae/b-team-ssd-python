@@ -69,17 +69,17 @@ class SSD:
         self.write_output('')
 
     def flush(self):
-        file_list = self.buffer.get_sorted_buffer_file_list()
-        for filename in file_list:
-            if 'empty' in filename:
-                break
+        command_list = self.buffer.get_command_list()
+        self.do_commmands(command_list)
+        self.buffer.reset()
 
-            idx, cmd, lba, value = filename.split('_')
+    def do_commmands(self, command_list):
+        for command in command_list:
+            idx, cmd, lba, value = command.split('_')
             if cmd == 'W':
                 self._write(int(lba), value)
             else:
                 self._erase(int(lba), int(value))
-        self.buffer.reset()
 
     def erase(self, lba: int, size: int):
         if not (self.is_valid_address(lba) and self.is_valid_size(size) and self.is_valid_address(lba + size - 1)):
@@ -127,6 +127,9 @@ class SSD:
                 return False
         except Exception as e:
             return False
+
+
+
 
 def main():
     parser = argparse.ArgumentParser(description="SSD Read/Write")
