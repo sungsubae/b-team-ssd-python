@@ -4,33 +4,33 @@ from pathlib import Path
 
 class Buffer:
     def __init__(self):
-        self.folder_path = Path('./buffer')
-        if not self.folder_path.exists():
+        self.buffer_path = Path('./buffer')
+        if not self.buffer_path.exists():
             self.reset()
 
-    def get_sorted_buffer_file_list(self, reverse=False):
-        return sorted(os.listdir(self.folder_path), reverse=reverse)
+    def _get_sorted_buffer_file_list(self, reverse=False):
+        return sorted(os.listdir(self.buffer_path), reverse=reverse)
 
     def get_command_list(self):
         command_list = []
-        for filename in self.get_sorted_buffer_file_list():
+        for filename in self._get_sorted_buffer_file_list():
             if 'empty' in filename:
                 break
             command_list.append(filename)
         return command_list
 
     def read(self, lba: int):
-        file_list = self.get_sorted_buffer_file_list(reverse=True)
+        file_list = self._get_sorted_buffer_file_list(reverse=True)
 
         for filename in file_list:
             if 'empty' in filename:
                 continue
-            parts = filename.split('_')
-            if parts[1] == 'W' and int(parts[2]) == lba:
-                return parts[-1]
-            elif parts[1] == 'E' and int(parts[2]) <= lba <= int(parts[2]) + int(parts[3]) - 1:
+            idx, cmd, buffer_lba, value = filename.split('_')
+            buffer_lba = int(buffer_lba)
+            if cmd == 'W' and buffer_lba == lba:
+                return value
+            if cmd == 'E' and buffer_lba <= lba < buffer_lba + int(value):
                 return '0x00000000'
-
         return ''
 
     def write(self, cmd: str, lba: int, value: str = '', size: int = 1):
@@ -43,13 +43,12 @@ class Buffer:
 
     def reset(self):
         try:
-            self.folder_path.mkdir(parents=True, exist_ok=True)
-            for filename in os.listdir(self.folder_path):
-                file_path = self.folder_path / filename
-                os.remove(file_path)  # 파일 삭제
+            self.buffer_path.mkdir(parents=True, exist_ok=True)
+            for file in self.buffer_path.iterdir():
+                file.unlink()
 
             for idx in range(1, 6):
-                file_path = self.folder_path / f"{idx}_empty"
+                file_path = self.buffer_path / f"{idx}_empty"
                 file_path.touch()
         except OSError as e:
             print(f"오류 발생: {e}")
@@ -71,31 +70,19 @@ class Buffer:
         return self._write_buffer(commands)
 
     def _delete_write_command(self, lba, size):
-        file_list = self.get_sorted_buffer_file_list()
+        commands = self.get_command_list()
+        commands_after_delete = []
 
-        for idx, file_name in enumerate(file_list):
-            if 'W' not in file_name:
+        for command in commands:
+            idx, cmd, buffer_lba, value = command.split('_')
+            buffer_lba = int(buffer_lba)
+            if cmd == 'W' and lba <= buffer_lba < lba + size:
                 continue
-            buffer_lba = int(file_name.split('_')[2])
-            if not (lba <= buffer_lba < lba + size):
-                continue
+            commands_after_delete.append(command)
 
-            for old_file_idx, old_file_name in enumerate(file_list):
-                if old_file_idx < idx or 'empty' in old_file_name:
-                    continue
-                if old_file_idx == len(file_list) - 1:
-                    new_file_name = f'{old_file_idx + 1}_empty'
-                else:
-                    new_file_name = str(old_file_idx + 1) + file_list[old_file_idx + 1][1:]
-                os.rename(self.folder_path / old_file_name, self.folder_path / new_file_name)
-
-    def _getElementsAfterIndex(self, file_list, s_idx):
-        for idx, file_name in enumerate(file_list):
-            if idx < s_idx:
-                continue
-            if 'empty' not in file_name:
-                return idx, file_name
-        return None, None
+        if len(commands_after_delete) == len(commands):
+            return
+        self._write_buffer(commands_after_delete)
 
     def _merge_intervals(self, intervals: list):
         intervals.sort(key=lambda x: x[0])
@@ -124,7 +111,7 @@ class Buffer:
 
         self.reset()
         for idx, command in enumerate(commands):
-            os.rename(self.folder_path / f"{idx + 1}_empty", self.folder_path / f"{idx + 1}_{command}")
+            os.rename(self.buffer_path / f"{idx + 1}_empty", self.buffer_path / f"{idx + 1}_{command}")
         return True
 
     def _get_erase_commands(self, merged_intervals):

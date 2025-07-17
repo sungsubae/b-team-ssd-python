@@ -154,7 +154,7 @@ def test_buffer_write_join_command():
     buffer.write('E', 7, size=5)
     buffer.write('E', 9, size=5)
 
-    file_list = os.listdir(Buffer().folder_path)
+    file_list = os.listdir(Buffer().buffer_path)
 
     assert get_empty_buffer_cnt(file_list) == len(file_list) - 1
 
@@ -166,7 +166,7 @@ def test_buffer_write_not_join_erase_command():
     buffer.write('E', 5, size=5)
     buffer.write('E', 10, size=6)
 
-    file_list = os.listdir(Buffer().folder_path)
+    file_list = os.listdir(Buffer().buffer_path)
 
     assert get_empty_buffer_cnt(file_list) == len(file_list) - 2
 
@@ -182,7 +182,7 @@ def test_write_with_same_lba():
     buffer.write('W', 6, value='0x00000002')
     buffer.write('W', 7, value='0x00000002')
 
-    file_list = os.listdir(Buffer().folder_path)
+    file_list = os.listdir(Buffer().buffer_path)
 
     assert get_empty_buffer_cnt(file_list) == len(file_list) - 3
 
