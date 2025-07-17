@@ -20,6 +20,14 @@ class Buffer:
 
         return file_list
 
+    def get_command_list(self):
+        command_list = []
+        for filename in self.get_sorted_buffer_file_list():
+            if 'empty' in filename:
+                break
+            command_list.append(filename)
+        return command_list
+
     def read(self, lba: int):
         file_list = self.get_sorted_buffer_file_list(reverse=True)
 
