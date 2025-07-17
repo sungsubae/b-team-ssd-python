@@ -260,13 +260,14 @@ def test_buffer_erase_merge_3():
     # 아래 조건을 만족시키며 두 개로 Merge 되어야 한다.
     # A + B = 15, A, B <= 10 를 만족하는 자연수
     # E_0_A, E_A_B
-    expected_buffer_set_without_index = {'E_0_A', 'E_A_B'}
-    actual_files = [fn[2:] for fn in os.listdir(r"./buffer") if "empty" not in fn]
+
+    actual_files = [fn[2:] for fn in os.listdir(r"./buffer") if "empty" not in fn and '_E_' in fn]
     actual_files.sort()
+    assert len(actual_files) == 2
 
     A = int(actual_files[0][-1:])
     B = int(actual_files[1][-1:])
 
     assert A + B == 15
     assert A <= 10 and B <= 10
-    assert len(expected_buffer_set_without_index) == 2
+
