@@ -333,27 +333,29 @@ def start_runner(shell: Shell, file_path):
             return False
         return True
 
-    with open(file_path, encoding="utf-8") as f:
-        for raw_line in f:
-            line = raw_line.rstrip("\n")  # 줄 끝 개행 문자 제거
-            if line == '1_' or line == '1_FullWriteAndReadCompare':
-                print('1_FullWriteAndReadCompare  ___   Run...', end='', flush=True)
-                if not test_run_and_pass_check(shell.full_write_and_read_compare):
-                    break
-            elif line == '2_' or line == '2_PartialLBAWrite':
-                print('2_PartialLBAWrite          ___   Run...', end='', flush=True)
-                if not test_run_and_pass_check(shell.partial_lba_write):
-                    break
-            elif line == '3_' or line == '3_WriteReadAging':
-                print('3_WriteReadAging           ___   Run...', end='', flush=True)
-                if not test_run_and_pass_check(shell.write_read_aging):
-                    break
-            elif line == '4_' or line == '4_EraseAndWriteAging':
-                print('4_EraseAndWriteAging       ___   Run...', end='', flush=True)
-                # shell.erase_and_write_aging()
-            else:
-                continue
-
+    try:
+        with open(file_path, encoding="utf-8") as f:
+            for raw_line in f:
+                line = raw_line.rstrip("\n")  # 줄 끝 개행 문자 제거
+                if line == '1_' or line == '1_FullWriteAndReadCompare':
+                    print('1_FullWriteAndReadCompare  ___   Run...', end='', flush=True)
+                    if not test_run_and_pass_check(shell.full_write_and_read_compare):
+                        break
+                elif line == '2_' or line == '2_PartialLBAWrite':
+                    print('2_PartialLBAWrite          ___   Run...', end='', flush=True)
+                    if not test_run_and_pass_check(shell.partial_lba_write):
+                        break
+                elif line == '3_' or line == '3_WriteReadAging':
+                    print('3_WriteReadAging           ___   Run...', end='', flush=True)
+                    if not test_run_and_pass_check(shell.write_read_aging):
+                        break
+                elif line == '4_' or line == '4_EraseAndWriteAging':
+                    print('4_EraseAndWriteAging       ___   Run...', end='', flush=True)
+                    # shell.erase_and_write_aging()
+                else:
+                    continue
+    except:
+        print('INVALID COMMAND')
 
 def main():
     shell = Shell()
