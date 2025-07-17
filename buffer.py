@@ -34,23 +34,12 @@ class Buffer:
         return ''
 
     def write(self, cmd: str, lba: int, value: str = '', size: int = 1):
-        file_list = self.get_sorted_buffer_file_list()
+        if cmd == 'W':
+            return self._join_write_command(lba, value)
 
-        for file_name in file_list:
-            if 'empty' not in file_name:
-                continue
-            if cmd == 'W':
-                if self._join_write_command(lba, value):
-                    return True
-                new_file_name = f'{file_name[0]}_{cmd}_{lba}_{value}'
-            else:
-                self._delete_write_command(lba, size)
-                self._join_erase_command(lba, size)
-                return True
-
-            os.rename(self.folder_path / file_name, self.folder_path / new_file_name)
-            return True
-        return False
+        if cmd == 'E':
+            self._delete_write_command(lba, size)
+            return self._join_erase_command(lba, size)
 
     def reset(self):
         try:
@@ -66,35 +55,20 @@ class Buffer:
             print(f"오류 발생: {e}")
 
     def _join_write_command(self, lba: int, value: str):
-        file_list = self.get_sorted_buffer_file_list()
+        commands = []
+        for command in self.get_command_list():
+            idx, cmd, buffer_lba, buffer_value = command.split('_')
+            buffer_lba = int(buffer_lba)
 
-        for idx, file_name in enumerate(file_list):
-            parts = file_name.split('_')
-            if parts[-1] == 'empty':
+            if cmd == 'W' and buffer_lba == lba:
                 continue
-            buffer_lba = int(file_name.split('_')[2])
-            if buffer_lba != lba:
-                continue
-            if parts[1] == 'E' and int(parts[-1]) != 1:
+            if cmd == 'E' and buffer_lba == lba and int(buffer_value) == 1:
                 continue
 
-            last_file_name = ''
+            commands.append(f"{cmd}_{buffer_lba}_{buffer_value}")
 
-            for old_file_idx, old_file_name in enumerate(file_list):
-                if old_file_idx < idx or 'empty' in old_file_name:
-                    continue
-                if old_file_idx == len(file_list) - 1:
-                    new_file_name = f'{old_file_idx+1}_empty'
-                else:
-                    new_file_name = str(old_file_idx + 1) + file_list[old_file_idx + 1][1:]
-                last_file_name = new_file_name
-                os.rename(self.folder_path / old_file_name, self.folder_path / new_file_name)
-
-            new_file_name = f'{last_file_name[0]}_W_{lba}_{value}'
-            os.rename(self.folder_path / last_file_name, self.folder_path / new_file_name)
-            return True
-
-        return False
+        commands.append(f"W_{lba}_{value}")
+        return self._write_buffer(commands)
 
     def _delete_write_command(self, lba, size):
         file_list = self.get_sorted_buffer_file_list()
