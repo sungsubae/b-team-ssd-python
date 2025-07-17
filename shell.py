@@ -293,11 +293,9 @@ def check_invalid(user_input_list):
 def start_runner(shell: Shell, file_path):
     def test_run_and_pass_check(func):
         ret = func()
-        if ret == "FAIL":
-            print(f'{ret}!')
-            return False
-        print(ret)
-        return True
+        if ret == "PASS":
+            return True
+        return False
 
     try:
         with open(file_path, encoding="utf-8") as f:
