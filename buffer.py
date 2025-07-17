@@ -92,11 +92,15 @@ class Buffer:
         file_list = self.get_sorted_buffer_file_list()
 
         for idx, file_name in enumerate(file_list):
-            if 'W' not in file_name:
+            parts = file_name.split('_')
+            if parts[-1] == 'empty':
                 continue
             buffer_lba = int(file_name.split('_')[2])
             if buffer_lba != lba:
                 continue
+            if parts[1] == 'E' and int(parts[-1]) != 1:
+                continue
+
             last_file_name = ''
 
             for old_file_idx, old_file_name in enumerate(file_list):
