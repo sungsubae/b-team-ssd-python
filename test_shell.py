@@ -123,7 +123,7 @@ def test_help_text_valid(capsys):
     captured = capsys.readouterr()
 
     assert captured.out.strip() == '''제작자: 배성수 팀장, 연진혁, 이정은, 이찬욱, 임창근, 정구환, 이근우
-명령어 사용 법 : 
+명령어 사용 법 :
  1. read: read [LBA]
  2. write: write [LBA] [VALUE]
  3. erase: erase [LBA] [SIZE]
@@ -216,7 +216,6 @@ def test_full_write_and_read_compare_success(mocker: MockerFixture, capsys):
 
 def test_full_write_and_read_compare_fail(mocker: MockerFixture, capsys):
     seed = 42
-    shell_write_mock = mocker.patch('shell.Shell._write')
     shell_read_mock = mocker.patch('shell.Shell._read')
     shell = Shell()
     ssd_length = 100
@@ -232,7 +231,7 @@ def test_full_write_and_read_compare_fail(mocker: MockerFixture, capsys):
             write_calls.append(call(i * block_length + j, f'{random_val:#010x}'))
             read_calls.append(call(i * block_length + j))
     shell_read_mock.side_effect = random_values
-    random.seed(seed+1)
+    random.seed(seed + 1)
 
     shell.full_write_and_read_compare()
     captured = capsys.readouterr()
@@ -314,8 +313,7 @@ def test_partial_lba_write_pass_and_fail(mocker: MockerFixture, capsys):
     mock_read.side_effect = ['0x00000001', '0x00000001', '0x00000002', '0x00000001', '0x00000001']
     shell.partial_lba_write(repeat=1, seed=42)
     captured = capsys.readouterr()
-    assert  captured.out.strip()  == "FAIL"
-
+    assert captured.out.strip() == "FAIL"
 
 
 def test_erase(mocker: MockerFixture, capsys):
@@ -340,6 +338,7 @@ def test_erase_range(mocker: MockerFixture, capsys):
     calls = [call(start, min(end_lba + 1 - start, 10)) for start in range(start_lba, end_lba + 1, 10)]
     mock_erase_range.assert_has_calls(calls)
     assert captured.strip() == "[Erase Range] Done"
+
 
 def test_erase_and_write_aging(mocker):
     shell = Shell()
@@ -401,7 +400,7 @@ def _mock_runner_invalid_input(file_path):
                     print('4_PASS', end='', flush=True)
                 else:
                     continue
-    except:
+    except Exception:
         print('INVALID COMMAND')
 
 
@@ -425,7 +424,8 @@ def test_runner_incorrect_path(mocker: MockerFixture, capsys):
     captured = capsys.readouterr().out
     assert captured.strip() == "1_PASS2_PASS3_PASS4_PASS"
 
-def test_runner_fail(mocker:MockerFixture, capsys):
+
+def test_runner_fail(mocker: MockerFixture, capsys):
     '''
     runner 진행 간, test_script fail 발생 시,
     FAIL! 정상 출력 여부 및 break 동작 여부 확인 test 입니다.
