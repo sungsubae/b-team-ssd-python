@@ -2,6 +2,7 @@ import random
 import subprocess
 from functools import wraps
 
+from command_factory import CommandFactory
 from logger import Logger
 from command_shell import COMMANDS
 import sys
@@ -357,7 +358,6 @@ def start_command_shell(shell: Shell):
 
 def command_main():
     shell = Shell()
-    # command_main(shell)
     if len(sys.argv) == 1:
         start_command_shell(shell)
     elif len(sys.argv) == 2:
@@ -367,5 +367,34 @@ def command_main():
         return 1
 
 
+def start_factory_shell(shell: Shell):
+    factory = CommandFactory()
+    while True:
+        user_input = input("Shell> ")
+        user_input_list = user_input.strip().split()
+        if not user_input_list:
+            print("INVALID COMMAND")
+            continue
+
+        cmd_type = user_input_list[0].lower()
+        args = user_input_list[1:]
+
+        command = factory.create(cmd_type)
+        if command:
+            command.execute(shell, *args)
+        else:
+            print("INVALID COMMAND")
+
+def factory_main():
+    shell = Shell()
+    if len(sys.argv) == 1:
+        start_factory_shell(shell)
+    elif len(sys.argv) == 2:
+        start_runner(shell, sys.argv[1])
+    else:
+        print("INVALID COMMAND")
+        return 1
+
 if __name__ == "__main__":
-    sys.exit(command_main())
+    # sys.exit(main())
+    sys.exit(factory_main())
