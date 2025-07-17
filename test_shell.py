@@ -262,7 +262,7 @@ def test_full_write_and_read_compare_fail(mocker: MockerFixture, capsys):
 
     shell.full_write_and_read_compare()
     captured = capsys.readouterr()
-    assert captured.out.strip() == "FAIL"
+    assert captured.out.strip() == "FAIL!"
 
 
 def test_full_read_call(mocker: MockerFixture):
@@ -346,7 +346,7 @@ def test_partial_lba_write_pass_and_fail(mocker: MockerFixture, capsys):
     mock_read.side_effect = ['0x00000001', '0x00000001', '0x00000002', '0x00000001', '0x00000001']
     shell.partial_lba_write(repeat=1, seed=42)
     captured = capsys.readouterr()
-    assert captured.out.strip() == "FAIL"
+    assert captured.out.strip() == "FAIL!"
 
 
 def test_erase(mocker: MockerFixture, capsys):
@@ -473,31 +473,22 @@ def test_runner_fail(mocker: MockerFixture, capsys):
     mk_test_3 = mocker.patch('shell.Shell.write_read_aging')
     mk_test_4 = mocker.patch('shell.Shell.erase_and_write_aging')
 
-    mk_test_1.side_effect = ['FAIL', 'PASS', 'PASS', 'PASS', 'PASS']
-    mk_test_2.side_effect = ['FAIL', 'PASS', 'PASS', 'PASS']
-    mk_test_3.side_effect = ['FAIL', 'PASS', 'PASS']
-    mk_test_4.side_effect = ['FAIL', 'PASS']
+    mk_test_1.side_effect = ['FAIL!', 'PASS', 'PASS', 'PASS', 'PASS']
+    mk_test_2.side_effect = ['FAIL!', 'PASS', 'PASS', 'PASS']
+    mk_test_3.side_effect = ['FAIL!', 'PASS', 'PASS']
+    mk_test_4.side_effect = ['FAIL!', 'PASS']
 
-    expect = '''1_FullWriteAndReadCompare  ___   Run...FAIL!'''
+    expect = '''1_FullWriteAndReadCompare  ___   Run...'''
     do_test(expect)
 
-    expect = '''1_FullWriteAndReadCompare  ___   Run...PASS
-2_PartialLBAWrite          ___   Run...FAIL!'''
+    expect = '''1_FullWriteAndReadCompare  ___   Run...2_PartialLBAWrite          ___   Run...'''
     do_test(expect)
 
-    expect = '''1_FullWriteAndReadCompare  ___   Run...PASS
-2_PartialLBAWrite          ___   Run...PASS
-3_WriteReadAging           ___   Run...FAIL!'''
+    expect = '''1_FullWriteAndReadCompare  ___   Run...2_PartialLBAWrite          ___   Run...3_WriteReadAging           ___   Run...'''
     do_test(expect)
 
-    expect = '''1_FullWriteAndReadCompare  ___   Run...PASS
-2_PartialLBAWrite          ___   Run...PASS
-3_WriteReadAging           ___   Run...PASS
-4_EraseAndWriteAging       ___   Run...FAIL!'''
+    expect = '''1_FullWriteAndReadCompare  ___   Run...2_PartialLBAWrite          ___   Run...3_WriteReadAging           ___   Run...4_EraseAndWriteAging       ___   Run...'''
     do_test(expect)
 
-    expect = '''1_FullWriteAndReadCompare  ___   Run...PASS
-2_PartialLBAWrite          ___   Run...PASS
-3_WriteReadAging           ___   Run...PASS
-4_EraseAndWriteAging       ___   Run...PASS'''
+    expect = '''1_FullWriteAndReadCompare  ___   Run...2_PartialLBAWrite          ___   Run...3_WriteReadAging           ___   Run...4_EraseAndWriteAging       ___   Run...'''
     do_test(expect)
