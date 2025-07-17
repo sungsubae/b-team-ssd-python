@@ -332,6 +332,10 @@ def test_erase_and_write_aging(mocker):
 
 
 def test_runner_call(mocker: MockerFixture):
+    '''
+    cmd에서 명령어를 입력 했을때,
+    정상적으로 runner를 call 하는지 확인 하는 테스트
+    '''
     mk_startrunner = mocker.patch('shell.start_runner')
     mk_startrunner.side_effect = None
 
@@ -340,8 +344,6 @@ def test_runner_call(mocker: MockerFixture):
         shell.main()
 
     mk_startrunner.assert_called_once()
-
-
 
 
 def _mock_runner_invalid_input(file_path):
