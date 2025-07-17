@@ -60,7 +60,7 @@ class Buffer:
                 os.remove(file_path)  # 파일 삭제
 
             for idx in range(1, 6):
-                file_path = self.folder_path/f"{idx}_empty"
+                file_path = self.folder_path / f"{idx}_empty"
                 file_path.touch()
         except OSError as e:
             print(f"오류 발생: {e}")
@@ -86,7 +86,7 @@ class Buffer:
                 if old_file_idx == len(file_list) - 1:
                     new_file_name = f'{old_file_idx+1}_empty'
                 else:
-                    new_file_name = str(old_file_idx+1) + file_list[old_file_idx+1][1:]
+                    new_file_name = str(old_file_idx + 1) + file_list[old_file_idx + 1][1:]
                 last_file_name = new_file_name
                 os.rename(self.folder_path / old_file_name, self.folder_path / new_file_name)
 
