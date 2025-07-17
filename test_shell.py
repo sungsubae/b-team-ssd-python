@@ -409,7 +409,7 @@ def test_runner_call(mocker: MockerFixture):
 
     test_args = ['shell.py', r'.\path\to\shell_script.txt']
     with mk_startrunner.patch.object(sys, 'argv', test_args):
-        shell.main()
+        shell.command_main()
 
     mk_startrunner.assert_called_once()
 
