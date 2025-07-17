@@ -156,6 +156,17 @@ class Shell:
 
         return self.msg
 
+    @log_and_print
+    def flush(self):
+        subprocess.run(
+            ["python", "ssd.py", "F"],
+            capture_output=True,
+            text=True
+        )
+        self.msg.append("[Flush]")
+        return self.msg
+
+
     def full_write_and_read_compare(self):
         ssd_length = self.MAX_INDEX
         block_length = 5
@@ -237,14 +248,17 @@ class Shell:
  4. erase_range: erase_range [ST_LBA] [EN_LBA]
  5. fullwrite: fullwrite [VALUE]
  6. fullread: fullread
- 7. 1_FullWriteAndReadCompare: 1_ 혹은 1_FullWriteAndReadCompare 입력
- 8. 2_PartialLBAWrite: 2_ 혹은 2_PartialLBAWrite 입력
- 9. 3_WriteReadAging: 3_ 혹은 3_WriteReadAging 입력
-10. 4_EraseAndWriteAging: 4_ 혹은 4_EraseAndWriteAging 입력
-11. exit: exit
+ 7. flush: flush
+ 8. 1_FullWriteAndReadCompare: 1_ 혹은 1_FullWriteAndReadCompare 입력
+ 9. 2_PartialLBAWrite: 2_ 혹은 2_PartialLBAWrite 입력
+10. 3_WriteReadAging: 3_ 혹은 3_WriteReadAging 입력
+11. 4_EraseAndWriteAging: 4_ 혹은 4_EraseAndWriteAging 입력
+12. exit: exit
 그 외 명령어 입력 시, INVALID COMMAND 가 출력 됩니다.'''
         self.msg.append(message)
         return self.msg
+
+
 
 
 def check_invalid(user_input_list):
@@ -252,7 +266,7 @@ def check_invalid(user_input_list):
         return True
 
     cmd_type = user_input_list[0]
-    if cmd_type not in ['read', 'write', 'erase', 'erase_range', 'exit', 'help', 'fullwrite', 'fullread', '1_', '1_FullWriteAndReadCompare', '2_', '2_PartialLBAWrite', '3_', '3_WriteReadAging', '4_', '4_EraseAndWriteAging']:
+    if cmd_type not in ['read', 'write', 'erase', 'erase_range', 'exit', 'help', 'fullwrite', 'fullread', 'flush', '1_', '1_FullWriteAndReadCompare', '2_', '2_PartialLBAWrite', '3_', '3_WriteReadAging', '4_', '4_EraseAndWriteAging']:
         return True
 
     try:
@@ -312,6 +326,8 @@ def start_shell(shell: Shell):
             shell.full_write(value)
         elif cmd_type == "fullread":
             shell.full_read()
+        elif cmd_type == "flush":
+            shell.flush()
         elif cmd_type == "1_" or cmd_type == "1_FullWriteAndReadCompare":
             logging_and_printing(shell.full_write_and_read_compare())
         elif cmd_type == "2_" or cmd_type == "2_PartialLBAWrite":
