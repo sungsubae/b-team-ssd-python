@@ -4,7 +4,7 @@ from pytest_mock import MockerFixture
 from unittest.mock import call, patch, mock_open
 
 import shell
-from shell import Shell, start_command_shell
+from shell import Shell, start_factory_shell
 import random
 
 
@@ -110,7 +110,7 @@ def test_help_call(mocker: MockerFixture):
     mk = mocker.Mock(spec=Shell)
     with patch("builtins.input", side_effect=["help", "exit"]):
         try:
-            start_command_shell(mk)
+            start_factory_shell(mk)
         except SystemExit:
             pass
     mk.help.assert_called_once()
@@ -123,7 +123,7 @@ def test_help_text_valid(capsys):
     '''
     with patch("builtins.input", side_effect=["help", "exit"]):
         try:
-            start_command_shell(Shell())
+            start_factory_shell(Shell())
         except SystemExit:
             pass
     captured = capsys.readouterr()
@@ -149,7 +149,7 @@ def test_cmd_read(mocker: MockerFixture):
     mk = mocker.Mock(spec=Shell)
     with patch("builtins.input", side_effect=["read 0", "exit"]):
         try:
-            start_command_shell(mk)
+            start_factory_shell(mk)
         except SystemExit:
             pass
 
@@ -160,7 +160,7 @@ def test_cmd_write(mocker: MockerFixture):
     mk = mocker.Mock(spec=Shell)
     with patch("builtins.input", side_effect=["write 3 0xAAAABBBB", "exit"]):
         try:
-            start_command_shell(mk)
+            start_factory_shell(mk)
         except SystemExit:
             pass
     mk.write.assert_called_with(3, "0xAAAABBBB")
@@ -170,7 +170,7 @@ def test_cmd_fullwrite(mocker: MockerFixture):
     mk = mocker.Mock(spec=Shell)
     with patch("builtins.input", side_effect=["fullwrite 0xAAAABBBB", "exit"]):
         try:
-            start_command_shell(mk)
+            start_factory_shell(mk)
         except SystemExit:
             pass
     mk.full_write.assert_called_with("0xAAAABBBB")
@@ -180,13 +180,13 @@ def test_cmd_full_write_and_read_compare(mocker: MockerFixture):
     mk = mocker.Mock(spec=Shell)
     with patch("builtins.input", side_effect=["1_", "exit"]):
         try:
-            start_command_shell(mk)
+            start_factory_shell(mk)
         except SystemExit:
             pass
 
     with patch("builtins.input", side_effect=["1_FullWriteAndReadCompare", "exit"]):
         try:
-            start_command_shell(mk)
+            start_factory_shell(mk)
         except SystemExit:
             pass
 
@@ -197,7 +197,7 @@ def test_cmd_partial_lba_write(mocker: MockerFixture):
     mk = mocker.Mock(spec=Shell)
     with patch("builtins.input", side_effect=["2_", "2_PartialLBAWrite", "exit"]):
         try:
-            start_command_shell(mk)
+            start_factory_shell(mk)
         except SystemExit:
             pass
 
@@ -208,7 +208,7 @@ def test_cmd_write_read_aging(mocker: MockerFixture):
     mk = mocker.Mock(spec=Shell)
     with patch("builtins.input", side_effect=["3_", "3_WriteReadAging", "exit"]):
         try:
-            start_command_shell(mk)
+            start_factory_shell(mk)
         except SystemExit:
             pass
 
@@ -273,7 +273,7 @@ def test_full_read_call(mocker: MockerFixture):
     mk = mocker.Mock(spec=Shell)
     with patch("builtins.input", side_effect=["fullread", "exit"]):
         try:
-            start_command_shell(mk)
+            start_factory_shell(mk)
         except SystemExit:
             pass
 
@@ -291,7 +291,7 @@ def test_full_read_valid(mocker: MockerFixture, capsys):
 
     with patch("builtins.input", side_effect=["fullread", "exit"]):
         try:
-            start_command_shell(Shell())
+            start_factory_shell(Shell())
         except SystemExit:
             pass
 
@@ -409,7 +409,7 @@ def test_runner_call(mocker: MockerFixture):
 
     test_args = ['shell.py', r'.\path\to\shell_script.txt']
     with mk_startrunner.patch.object(sys, 'argv', test_args):
-        shell.command_main()
+        shell.factory_main()
 
     mk_startrunner.assert_called_once()
 
