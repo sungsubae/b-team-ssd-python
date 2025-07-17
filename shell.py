@@ -375,6 +375,7 @@ def start_factory_shell(shell: Shell):
         else:
             print("INVALID COMMAND")
 
+
 def factory_main():
     shell = Shell()
     if len(sys.argv) == 1:
@@ -384,6 +385,7 @@ def factory_main():
     else:
         print("INVALID COMMAND")
         return 1
+
 
 if __name__ == "__main__":
     # sys.exit(main())
