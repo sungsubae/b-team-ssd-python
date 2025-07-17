@@ -265,8 +265,8 @@ def test_buffer_erase_merge_3():
     actual_files.sort()
     assert len(actual_files) == 2
 
-    A = int(actual_files[0][-1:])
-    B = int(actual_files[1][-1:])
+    A = int(actual_files[0].split('_')[-1])
+    B = int(actual_files[1].split('_')[-1])
 
     assert A + B == 15
     assert A <= 10 and B <= 10
@@ -292,7 +292,7 @@ def test_buffer_erase_merge_4():
             text=True
         )
 
-    expected_buffer_set_without_index = {'E_1_10', 'E_11_10', 'E_21_10'}
+    expected_buffer_set_without_index = ['E_1_10', 'E_11_10', 'E_21_10']
     actual_files = [fn[2:] for fn in os.listdir(r"./buffer") if "empty" not in fn]
 
     assert len(actual_files) == 3

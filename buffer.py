@@ -45,9 +45,8 @@ class Buffer:
                 new_file_name = f'{file_name[0]}_{cmd}_{lba}_{value}'
             else:
                 self._delete_write_command(lba, size)
-                if self._join_erase_command(lba, size):
-                    return True
-                new_file_name = f'{file_name[0]}_{cmd}_{lba}_{size}'
+                self._join_erase_command(lba, size)
+                return True
 
             os.rename(self.folder_path/file_name, self.folder_path/new_file_name)
             return True
@@ -80,35 +79,6 @@ class Buffer:
                 os.rename(os.path.join(self.folder_path, file_name), os.path.join(self.folder_path, new_file_name))
                 os.rename(os.path.join(self.folder_path, candidate_name), os.path.join(self.folder_path, f'{candidate_name[0]}_empty'))
                 file_list[candidate_idx] = f'{candidate_name[0]}_empty'
-
-    def _join_erase_command(self, lba: int, size: int):
-        file_list = self.get_sorted_buffer_file_list(reverse=True)
-
-        last_empty_file_name = ''
-        new_file_name = ''
-        for file_name in file_list:
-            if 'E' not in file_name:
-                continue
-            parts = file_name.split('_')
-            buffer_lba = int(parts[2])
-            buffer_size = int(parts[3])
-            if buffer_lba <= lba <= buffer_lba + buffer_size or lba <= buffer_lba <= lba + size:
-                start = min(buffer_lba, lba)
-                end = max(buffer_lba + buffer_size - 1, lba + size - 1)
-                new_size = end - start + 1
-                if new_size <= 10:
-                    lba = start
-                    size = new_size
-                    new_file_name = f'{file_name[0]}_E_{start}_{new_size}'
-                    empty_file_name = f'{file_name[0]}_empty'
-                    last_empty_file_name = empty_file_name
-                    os.rename(os.path.join(self.folder_path, file_name), os.path.join(self.folder_path, empty_file_name))
-
-        if new_file_name != '':
-            os.rename(os.path.join(self.folder_path, last_empty_file_name), os.path.join(self.folder_path, new_file_name))
-            self._compact_buffer()
-            return True
-        return False
 
     def _join_write_command(self, lba: int, value: str):
         file_list = self.get_sorted_buffer_file_list()
@@ -167,4 +137,48 @@ class Buffer:
             if 'empty' not in file_name:
                 return idx, file_name
         return None, None
+
+
+    def merge_intervals(self, intervals: list):
+        intervals.sort(key=lambda x: x[0])
+        merged = []
+
+        for interval in intervals:
+            if not merged or merged[-1][1] < interval[0]:
+                merged.append(interval)
+            else:
+                merged[-1][1] = max(merged[-1][1], interval[1])
+
+        return merged
+
+    def _join_erase_command(self, lba: int, size: int):
+        write_commands = []
+        erase_intervals = [[lba, lba + size]]
+        for command in self.get_command_list():
+            idx, cmd, lba, value = command.split('_')
+            if cmd == 'W':
+                write_commands.append(f'{cmd}_{lba}_{value}')
+            else:
+                lba = int(lba)
+                size = int(value)
+                erase_intervals.append([lba, lba + size])
+
+        merged_intervals = self.merge_intervals(erase_intervals)
+
+        erase_commands = []
+        for interval in merged_intervals:
+            lba = interval[0]
+            size = interval[1] - interval[0]
+
+            while size > 10:
+                erase_commands.append(f'E_{lba}_10')
+                lba += 10
+                size -= 10
+            erase_commands.append(f'E_{lba}_{size}')
+
+        self.reset()
+        for idx, command in enumerate(erase_commands + write_commands):
+            os.rename(self.folder_path/f"{idx+1}_empty", self.folder_path/f"{idx+1}_{command}")
+
+
 
