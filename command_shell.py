@@ -1,9 +1,11 @@
 from abc import ABC, abstractmethod
 
+
 class Command(ABC):
     @abstractmethod
     def execute(self, shell, *args):
         pass
+
 
 class ReadCommand(Command):
     def execute(self, shell, *args):
@@ -15,6 +17,7 @@ class ReadCommand(Command):
             shell.read(lba)
         except Exception:
             print("Usage: read <LBA>")
+
 
 class WriteCommand(Command):
     def execute(self, shell, *args):
@@ -28,6 +31,7 @@ class WriteCommand(Command):
         except Exception:
             print("[Write] ERROR")
 
+
 class EraseCommand(Command):
     def execute(self, shell, *args):
         if len(args) != 2:
@@ -39,6 +43,7 @@ class EraseCommand(Command):
             shell.erase(lba, size)
         except Exception:
             print("[Erase] ERROR")
+
 
 class EraseRangeCommand(Command):
     def execute(self, shell, *args):
@@ -52,6 +57,7 @@ class EraseRangeCommand(Command):
         except Exception:
             print("[EraseRange] ERROR")
 
+
 class FullWriteCommand(Command):
     def execute(self, shell, *args):
         if len(args) != 1:
@@ -59,33 +65,41 @@ class FullWriteCommand(Command):
             return
         shell.full_write(args[0])
 
+
 class FullReadCommand(Command):
     def execute(self, shell, *args):
         shell.full_read()
+
 
 class FlushCommand(Command):
     def execute(self, shell, *args):
         shell.flush()
 
+
 class FullWriteAndReadCompareCommand(Command):
     def execute(self, shell, *args):
         shell.full_write_and_read_compare()
+
 
 class PartialLBAWriteCommand(Command):
     def execute(self, shell, *args):
         shell.partial_lba_write()
 
+
 class WriteReadAgingCommand(Command):
     def execute(self, shell, *args):
         shell.write_read_aging()
+
 
 class EraseAndWriteAging(Command):
     def execute(self, shell, *args):
         shell.erase_and_write_aging()
 
+
 class HelpCommand(Command):
     def execute(self, shell, *args):
         shell.help()
+
 
 class ExitCommand(Command):
     def execute(self, shell, *args):
