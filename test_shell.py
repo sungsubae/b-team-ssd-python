@@ -362,11 +362,15 @@ def _mock_runner_invalid_input(file_path):
         print('INVALID COMMAND')
 
 def test_runner_incorrect_path(mocker: MockerFixture, capsys):
+    '''
+    runner 실행 시, 파일 경로가 잘 못 입력 되었을 때, 확인 하는 테스트 입니다.
+    바로 위에서 정의한 _mock_runner_invalid_input 를 사용하여 test 하였고,
+    test PASS 후, 함수 개선 결과를 real 함수에 반영 완료 했습니다.
+    '''
     mk_startrunner = mocker.patch('shell.start_runner')
     mk_startrunner.side_effect = _mock_runner_invalid_input
 
     incorrect_path = r'./incorrect_path.txt'
-
     mk_startrunner(incorrect_path)
     captured = capsys.readouterr().out
     mk_startrunner.assert_called_once()
