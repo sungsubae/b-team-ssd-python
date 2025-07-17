@@ -351,7 +351,8 @@ def start_runner(shell: Shell, file_path):
                         break
                 elif line == '4_' or line == '4_EraseAndWriteAging':
                     print('4_EraseAndWriteAging       ___   Run...', end='', flush=True)
-                    # shell.erase_and_write_aging()
+                    if not test_run_and_pass_check(shell.erase_and_write_aging):
+                        break
                 else:
                     continue
     except:
