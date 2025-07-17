@@ -329,34 +329,6 @@ def find_command(cmd_type):
     return None
 
 
-def start_command_shell(shell: Shell):
-    while True:
-        user_input = input("Shell> ")
-        user_input_list = user_input.strip().split()
-        if not user_input_list:
-            print("INVALID COMMAND")
-            continue
-
-        cmd_type = user_input_list[0].lower()
-        args = user_input_list[1:]
-        command = find_command(cmd_type)
-        if command:
-            command.execute(shell, *args)
-        else:
-            print("INVALID COMMAND")
-
-
-def command_main():
-    shell = Shell()
-    if len(sys.argv) == 1:
-        start_command_shell(shell)
-    elif len(sys.argv) == 2:
-        start_runner(shell, sys.argv[1])
-    else:
-        print("INVALID COMMAND")
-        return 1
-
-
 def start_factory_shell(shell: Shell):
     factory = CommandFactory()
     while True:
