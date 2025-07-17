@@ -103,15 +103,23 @@ def test_full_write_success(mocker: MockerFixture):
 
 
 def test_help_call(mocker: MockerFixture):
+    '''
+    cmd창에서 help command 입력 시,
+    help 함수를 정상적으로 호출하는지 확인하는 테스트
+    '''
     mk = mocker.Mock(spec=Shell)
-    mk.help()
-
+    with patch("builtins.input", side_effect=["help", "exit"]):
+        start_shell(mk)
     mk.help.assert_called_once()
 
 
 def test_help_text_valid(capsys):
-    shell = Shell()
-    shell.help()
+    '''
+    cmd창에서 help command 입력 시,
+    출력되는 내용이 정상인지 확인 하는 테스트
+    '''
+    with patch("builtins.input", side_effect=["help", "exit"]):
+        start_shell(Shell())
     captured = capsys.readouterr()
 
     assert captured.out.strip() == '''제작자: 배성수 팀장, 연진혁, 이정은, 이찬욱, 임창근, 정구환, 이근우
