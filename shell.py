@@ -6,6 +6,15 @@ from command_factory import CommandFactory
 from logger import Logger
 import sys
 
+MIN_VALUE = 0
+MAX_VALUE = 0xFFFFFFFF
+MIN_VALUE_STR = "0x00000000"
+MAX_VALUE_STR = "0xFFFFFFFF"
+MIN_LBA = 0
+MAX_LBA = 99
+SSD_LENGTH = MAX_LBA - MIN_LBA + 1
+MIN_SIZE = 1
+MAX_SIZE = 100
 
 def log_and_print(func):
     @wraps(func)
@@ -24,9 +33,6 @@ def log_and_print(func):
 
 
 class Shell:
-    MIN_INDEX = 0
-    MAX_INDEX = 100  # 99번까지
-
     def __init__(self):
         self.logger = Logger()
         self.msg = []
@@ -61,7 +67,7 @@ class Shell:
     @log_and_print
     def write(self, lba, value):
         try:
-            if not (0 <= lba < self.MAX_INDEX):
+            if not self.is_valid_lba(lba):
                 self.msg.append("[Write] ERROR")
                 return
             if not self.is_hex_string(value):
@@ -103,11 +109,11 @@ class Shell:
 
     @log_and_print
     def erase(self, lba, size):
-        if (lba < self.MIN_INDEX or lba >= self.MAX_INDEX):
+        if not self.is_valid_lba(lba):
             self.msg.append("[Erase] ERROR")
-        if size <= self.MIN_INDEX or size > self.MAX_INDEX:
+        if not self.is_valid_size(size):
             self.msg.append("[Erase] ERROR")
-        if lba + size > self.MAX_INDEX:
+        if lba + size > MAX_LBA + 1:
             self.msg.append("[Erase] ERROR")
 
         for start in range(lba, lba + size, 10):
@@ -122,7 +128,7 @@ class Shell:
         self.msg.append(result)
 
     def _erase_range(self, start_lba, end_lba):
-        if not (self.MIN_INDEX <= start_lba <= end_lba < self.MAX_INDEX):
+        if not (MIN_LBA <= start_lba <= end_lba <= MAX_LBA):
             return "ERROR"
         for start in range(start_lba, end_lba + 1, 10):
             end = min(end_lba + 1 - start, 10)
@@ -131,7 +137,7 @@ class Shell:
 
     @log_and_print
     def full_write(self, value):
-        for lba in range(self.MAX_INDEX):
+        for lba in range(MIN_LBA, MAX_LBA + 1):
             self._write(lba, value)
 
         self.msg.append("[Full Write] Done")
@@ -139,7 +145,7 @@ class Shell:
     @log_and_print
     def full_read(self):
         self.msg.append("[Full Read]")
-        for lba in range(self.MAX_INDEX):
+        for lba in range(MIN_LBA, MAX_LBA + 1):
             self.msg.append(f'LBA {lba:02d} : {self._read(lba)}')
 
     @log_and_print
@@ -153,13 +159,13 @@ class Shell:
 
     @log_and_print
     def full_write_and_read_compare(self):
-        ssd_length = self.MAX_INDEX
+        ssd_length = SSD_LENGTH
         block_length = 5
-        before_random_val = "0x00000000"
-        random_val = "0x00000000"
+        before_random_val = MIN_VALUE_STR
+        random_val = MIN_VALUE_STR
         for block_idx in range(ssd_length // block_length):
             while before_random_val == random_val:
-                random_val = random.randint(0X00000001, 0XFFFFFFFF)
+                random_val = random.randint(MIN_VALUE, MAX_VALUE)
                 random_val = f"{random_val:#010x}"
             before_random_val = random_val
             remove_duplicates = set()
@@ -179,7 +185,7 @@ class Shell:
     def partial_lba_write(self, repeat=30, seed=42):
         random.seed(seed)
         for _ in range(repeat):
-            random_val = random.randint(0x00000000, 0xFFFFFFFF)
+            random_val = random.randint(MIN_VALUE, MAX_VALUE)
             write_value = f"{random_val:#010x}"
             for lba in [4, 0, 3, 1, 2]:
                 self._write(lba, write_value)
@@ -196,7 +202,7 @@ class Shell:
     @log_and_print
     def write_read_aging(self):
         for _ in range(200):
-            random_val = random.randint(0x00000000, 0xFFFFFFFF)
+            random_val = random.randint(MIN_VALUE, MAX_VALUE)
             write_value = f"{random_val:#010x}"
             self._write(0, write_value)
             self._write(99, write_value)
@@ -217,12 +223,12 @@ class Shell:
                     self._erase_range(st, min(en, 99))
                     # 마지막 LBA에 "서로 다른" 랜덤 값 2번 write
                     if en <= 99:
-                        rand_val1 = random.randint(0x00000000, 0xFFFFFFFF)
+                        rand_val1 = random.randint(MIN_VALUE, MAX_VALUE)
                         rand_val1 = f"{rand_val1:#010x}"
                         rand_val2 = rand_val1
                         # rand_val2가 rand_val1과 다를 때까지 뽑기
                         while rand_val2 == rand_val1:
-                            rand_val2 = random.randint(0x00000000, 0xFFFFFFFF)
+                            rand_val2 = random.randint(MIN_VALUE, MAX_VALUE)
                             rand_val2 = f"{rand_val2:#010x}"
                         self._write(en, rand_val1)
                         self._write(en, rand_val2)
@@ -252,6 +258,11 @@ class Shell:
         self.msg.append(message)
         return self.msg
 
+    def is_valid_lba(self, lba):
+        return MIN_LBA <= lba <= MAX_LBA
+
+    def is_valid_size(self, size):
+        return MIN_SIZE <= size <= MAX_SIZE
 
 def check_invalid(user_input_list):
     if not user_input_list:
