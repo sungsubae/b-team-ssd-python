@@ -112,10 +112,13 @@ class Shell:
     def erase(self, lba, size):
         if not self.is_valid_lba(lba):
             self.msg.append("[Erase] ERROR")
+            return
         if not self.is_valid_size(size):
             self.msg.append("[Erase] ERROR")
+            return
         if lba + size > MAX_LBA + 1:
             self.msg.append("[Erase] ERROR")
+            return
 
         for start in range(lba, lba + size, 10):
             end = min(lba + size - start, 10)
