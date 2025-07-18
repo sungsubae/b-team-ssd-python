@@ -70,6 +70,7 @@ class SSD:
         if not self.buffer.write('W', lba, value):
             self.flush()
             self.buffer.write('W', lba, value)
+        self.write_output('')
 
     def _write(self, lba: int, value: str):
         contents = self.read_all()
