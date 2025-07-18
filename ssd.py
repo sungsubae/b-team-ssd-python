@@ -67,11 +67,7 @@ class SSD:
             self.write_output('ERROR')
             return
 
-        value = str(value)
-        if not value.startswith("0x"):
-            value = f"0x{int(value, 16):08X}"
-        else:
-            value = f"0x{int(value, 16):08X}"
+        value = f"0x{int(value, 16):08X}"
 
         if not self.buffer.write('W', lba, value):
             self.flush()
