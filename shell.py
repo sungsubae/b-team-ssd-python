@@ -16,6 +16,7 @@ SSD_LENGTH = MAX_LBA - MIN_LBA + 1
 MIN_SIZE = 1
 MAX_SIZE = 100
 
+
 def log_and_print(func):
     @wraps(func)
     def wrapper(self, *args, **kwargs):
@@ -234,7 +235,7 @@ class Shell:
                         self._write(en, rand_val2)
             self.msg.append("PASS")
             return "PASS"
-        except Exception as e:
+        except Exception:
             self.msg.append("FAIL!")
             return "FAIL!"
 
@@ -263,6 +264,7 @@ class Shell:
 
     def is_valid_size(self, size):
         return MIN_SIZE <= size <= MAX_SIZE
+
 
 def check_invalid(user_input_list):
     if not user_input_list:
