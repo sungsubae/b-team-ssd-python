@@ -282,9 +282,10 @@ def test_full_read_call(mocker: MockerFixture):
 
 def test_full_read_valid(mocker: MockerFixture, capsys):
     '''
-    fullread 호출 시,
-    _read 함수를 100회 정상 호출 하는지 확인하고,
-    _read 함수의 return 값을 제외한 나머지 부분이 정상적으로 출력되는지 확인하는 테스트 입니다.
+    full_read() 함수 호출 시, 다음을 검증합니다:
+    1. _read() 함수가 총 100회 호출 되는 지.
+    2. _read() 함수 호출 시, 전달된 인자가 올바른 지.
+    3. 반환값을 제외한 출력 내용(“LBA xx : …”)이 기대한 형식대로 출력 되는 지.
     '''
     mk_full_read = mocker.patch('shell.Shell._read')
     mk_full_read.return_value = '0x00000000'
