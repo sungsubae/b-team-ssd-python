@@ -297,6 +297,7 @@ def test_full_read_valid(mocker: MockerFixture, capsys):
 
     captured = capsys.readouterr()
     assert mk_full_read.call_count == 100
+    mk_full_read.assert_has_calls([call(x) for x in range(100)])
     assert captured.out.strip() == '[Full Read]\n' + '\n'.join([f"LBA {i:02d} : 0x00000000" for i in range(100)])
 
 
